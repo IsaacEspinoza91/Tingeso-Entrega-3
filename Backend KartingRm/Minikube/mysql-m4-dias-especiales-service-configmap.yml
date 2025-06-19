@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config-m4
+data:
+  host: mysql
+  name: dias_especiales_db

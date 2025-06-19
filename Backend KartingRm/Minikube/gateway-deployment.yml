@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-deployment
+  labels:
+    app: gateway-deployment   
+spec:
+  selector:
+    matchLabels:
+      app: gateway-deployment  # Coincide con el Service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: gateway-deployment  # Coincide con el selector
+    spec:
+      containers:
+        - name: gateway-service 
+          image: isaaccumbia/api-gateway:latest
+          ports:
+            - containerPort: 8050  # Es el puerto en el que el contenedor escucha dentro del Pod
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service  # Un nombre único para el Service
+  labels:
+    app: gateway-deployment  # Coincide con el Deployment
+spec:
+  type: ClusterIP 
+  selector:
+    app: gateway-deployment  # Debe coincidir con las etiquetas del Deployment
+  ports:
+    - protocol: TCP
+      port: 8050            # Es el puerto que expone el Service dentro del clúster Kubernetes. Los demás microservicios usan este puerto para comunicarse.
+      targetPort: 8050      # Es el puerto interno del Pod al que el Service enviará las solicitudes
+
+

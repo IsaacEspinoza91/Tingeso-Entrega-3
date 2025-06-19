@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config-m6
+data:
+  host: mysql
+  name: rack_semanal_db
