@@ -47,7 +47,7 @@ public class ComprobanteService {
         List<DetalleComprobanteConClienteDTO> detalles = new ArrayList<>();
         for (DetalleComprobante detalleActual : detallesOriginales) {
             ClienteDTO integranteObjeto = restTemplate.getForObject(
-                    "http://CLIENTEDESCFRECU/api/cliente-service/cliente/" + detalleActual.getIdCliente(),
+                    "http://cliente-desc-frecu-service/api/cliente-service/cliente/" + detalleActual.getIdCliente(),
                     ClienteDTO.class);
             detalles.add(new DetalleComprobanteConClienteDTO(detalleActual,integranteObjeto));
         }
@@ -65,8 +65,8 @@ public class ComprobanteService {
         reservaDTO.setEstado(reserva.getEstado());
         reservaDTO.setTotalPersonas(reserva.getTotalPersonas());
         // Obtener objetos cliente y plan mediante peticion http
-        ClienteDTO cliente = restTemplate.getForObject("http://CLIENTEDESCFRECU/api/cliente-service/cliente/" + reserva.getIdReservante(), ClienteDTO.class);
-        PlanDTO plan = restTemplate.getForObject("http://PLAN/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
+        ClienteDTO cliente = restTemplate.getForObject("http://cliente-desc-frecu-service/api/cliente-service/cliente/" + reserva.getIdReservante(), ClienteDTO.class);
+        PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
         reservaDTO.setPlan(plan);
         reservaDTO.setReservante(cliente);
 
@@ -98,7 +98,7 @@ public class ComprobanteService {
         List<DetalleComprobanteConClienteDTO> detalles = new ArrayList<>();
         for (DetalleComprobante detalleActual : detallesOriginales) {
             ClienteDTO integranteObjeto = restTemplate.getForObject(
-                    "http://CLIENTEDESCFRECU/api/cliente-service/cliente/" + detalleActual.getIdCliente(),
+                    "http://cliente-desc-frecu-service/api/cliente-service/cliente/" + detalleActual.getIdCliente(),
                     ClienteDTO.class);
             detalles.add(new DetalleComprobanteConClienteDTO(detalleActual,integranteObjeto));
         }
@@ -115,8 +115,8 @@ public class ComprobanteService {
         reservaDTO.setEstado(reserva.getEstado());
         reservaDTO.setTotalPersonas(reserva.getTotalPersonas());
         // Obtener objetos cliente y plan mediante peticion http
-        ClienteDTO cliente = restTemplate.getForObject("http://CLIENTEDESCFRECU/api/cliente-service/cliente/" + reserva.getIdReservante(), ClienteDTO.class);
-        PlanDTO plan = restTemplate.getForObject("http://PLAN/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
+        ClienteDTO cliente = restTemplate.getForObject("http://cliente-desc-frecu-service/api/cliente-service/cliente/" + reserva.getIdReservante(), ClienteDTO.class);
+        PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
         reservaDTO.setPlan(plan);
         reservaDTO.setReservante(cliente);
 
@@ -194,7 +194,7 @@ public class ComprobanteService {
             detalleComprobanteRepository.save(detalle);
             // Crear objeto DetalleComprobanteConClienteDTO para estructura de json
             ClienteDTO integranteObjeto = restTemplate.getForObject(
-                    "http://CLIENTEDESCFRECU/api/cliente-service/cliente/" + clienteActual.getIdCliente(),
+                    "http://cliente-desc-frecu-service/api/cliente-service/cliente/" + clienteActual.getIdCliente(),
                     ClienteDTO.class);
             detalles.add(new DetalleComprobanteConClienteDTO(detalle, integranteObjeto));
 
@@ -206,7 +206,7 @@ public class ComprobanteService {
         // Actualizacion del total del comprobante, considerando que ya estan creados los detalles
         actualizarTotalComprobante(comprobante);
 
-        PlanDTO plan = restTemplate.getForObject("http://PLAN/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
+        PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
 
         // Logica para poblar tabla de reportes
 
@@ -241,7 +241,7 @@ public class ComprobanteService {
         reservaDTO.setEstado(reserva.getEstado());
         reservaDTO.setTotalPersonas(reserva.getTotalPersonas());
         // Obtener objetos cliente mediante peticion http
-        ClienteDTO cliente = restTemplate.getForObject("http://CLIENTEDESCFRECU/api/cliente-service/cliente/" + reserva.getIdReservante(), ClienteDTO.class);
+        ClienteDTO cliente = restTemplate.getForObject("http://cliente-desc-frecu-service/api/cliente-service/cliente/" + reserva.getIdReservante(), ClienteDTO.class);
         reservaDTO.setPlan(plan);
         reservaDTO.setReservante(cliente);
 
@@ -341,7 +341,7 @@ public class ComprobanteService {
 
         // Obtener reserva y plan
         Reserva reserva = reservaService.getReservaById(comprobante.getIdReserva());
-        PlanDTO plan = restTemplate.getForObject("http://PLAN/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
+        PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
 
         // Creacion o actualizacion de registro en tabla reporte segun cantidad grupos
         boolean comprobantePagado = false;
@@ -378,7 +378,7 @@ public class ComprobanteService {
         Comprobante comprobante = comprobanteRepository.findById(idComprobante)
                 .orElseThrow(() -> new EntityNotFoundException("Comprobante no encontrado"));
         Reserva reserva = reservaService.getReservaById(comprobante.getIdReserva());
-        PlanDTO plan = restTemplate.getForObject("http://PLAN/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
+        PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
 
         // Eliminar comprobante
         comprobanteRepository.deleteById(idComprobante);
@@ -415,7 +415,7 @@ public class ComprobanteService {
     // Peticion al MC3
     private double calcularDescuentoFrecuenteByIdCliente(Long idCliente) {
         double descuento = restTemplate.getForObject(
-                "http://CLIENTEDESCFRECU/api/cliente-service/cliente-reserva/porcen-desc-by-visitas-cliente/" + idCliente,
+                "http://cliente-desc-frecu-service/api/cliente-service/cliente-reserva/porcen-desc-by-visitas-cliente/" + idCliente,
                 double.class);
         // considera validacion, si visitas es negativo el descuento es 0.
         return descuento;
@@ -426,7 +426,7 @@ public class ComprobanteService {
     // Peticion al MC2
     private double calcularDescuentoGrupo(int totalPersonas) {
         double descuento = restTemplate.getForObject(
-                "http://DESCUENTOGRUPO/api/descuento-grupo-service/desc-grupo/cantidad/" + totalPersonas,
+                "http://descuento-grupo-service/api/descuento-grupo-service/desc-grupo/cantidad/" + totalPersonas,
                 double.class);
         return descuento;
     }
@@ -436,7 +436,7 @@ public class ComprobanteService {
     // 50% de descuento para cumpleaniero
     private double calcularDescuentoCumpleanios(Long idCliente, LocalDate fecha) {
         boolean esCumpleaniero = restTemplate.getForObject(
-                "http://DIASESPECIALES/api/dias-especiales-service/cliente-cumpleanios/cliente/" + idCliente +
+                "http://dias-especiales-service/api/dias-especiales-service/cliente-cumpleanios/cliente/" + idCliente +
                         "/esCumpleaniero?fecha=" + fecha,
                 boolean.class);
         if (esCumpleaniero) {
@@ -452,11 +452,11 @@ public class ComprobanteService {
         // Analisis si es fin de semana o no
         boolean esFinDeSemana = fecha.getDayOfWeek().getValue() >= 6;
         boolean esFeriado = restTemplate.getForObject(
-                "http://DIASESPECIALES/api/dias-especiales-service/dias-feriados/esFeriado?fecha=" + fecha,
+                "http://dias-especiales-service/api/dias-especiales-service/dias-feriados/esFeriado?fecha=" + fecha,
                 boolean.class);
 
         // Obtener Plan, validacion de plan?
-        PlanDTO plan = restTemplate.getForObject("http://PLAN/api/plan/planes/" + idPlan, PlanDTO.class);
+        PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + idPlan, PlanDTO.class);
 
         // Condicionales, retorno segun tipo de dia
         if (esFeriado) return plan.getPrecioFeriado();
@@ -468,7 +468,7 @@ public class ComprobanteService {
     // Obtiene booleano si es cumpleaniero el cliente
     private boolean esCumpleaniero(Long idCliente, LocalDate fecha) {
         boolean esCumpleaniero = restTemplate.getForObject(
-                "http://DIASESPECIALES/api/dias-especiales-service/cliente-cumpleanios/cliente/" + idCliente +
+                "http://dias-especiales-service/api/dias-especiales-service/cliente-cumpleanios/cliente/" + idCliente +
                         "/esCumpleaniero?fecha=" + fecha,
                 boolean.class);
         return esCumpleaniero;
@@ -493,7 +493,7 @@ public class ComprobanteService {
 
     // Realizacion de peticion POST para crear o actualizar la tabla de reportes segun grupo en el micro servicio 7
     private void notificarReporteIngresosCantidadIntegrantesPeticionPOST(String rangoPersonas, LocalDate fecha, Double monto, boolean esSuma) {
-        String url = "http://REPORTES/api/reportes-service/segun-rango-personas/actualizar" +
+        String url = "http://reportes-service/api/reportes-service/segun-rango-personas/actualizar" +
                 "?rangoPersonas=" + rangoPersonas +
                 "&fechaReserva=" + fecha.toString() +
                 "&monto=" + monto +
@@ -513,7 +513,7 @@ public class ComprobanteService {
 
     // Realizacion de peticion POST para poblar tabla de reportes segun plan en el microservicio 7
     private void notificarReporteIngresosPlan(Long idPlan, String descripcionPlan, LocalDate fecha, Double monto, boolean esSuma) {
-        String url = "http://REPORTES/api/reportes-service/segun-plan/actualizar" +
+        String url = "http://reportes-service/api/reportes-service/segun-plan/actualizar" +
                 "?idPlan=" + idPlan +
                 "&descripcionPlan=" + descripcionPlan +
                 "&fechaReserva=" + fecha.toString() +

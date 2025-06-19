@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: reservas-comprobantes-service
+  cloud:
+    config:
+      enabled: true
+      uri: http://localhost:8081
+  datasource:
+    url: jdbc:mysql://localhost:3306/reserva_db
+    username: root
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_NAME}
+    password: ${PASSWORD_NAME}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
+        transport:
+          protocol: smtp

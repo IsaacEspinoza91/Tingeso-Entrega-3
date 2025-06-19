@@ -6,9 +6,7 @@ const httpClient = axios.create({
   baseURL: API_URL,
   headers: {
     "Content-Type": "application/json"
-  },
-  withCredentials: false // Importante para CORS
+  }
 });
-
 
 export default httpClient;

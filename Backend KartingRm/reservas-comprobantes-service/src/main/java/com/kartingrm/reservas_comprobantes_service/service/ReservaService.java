@@ -38,9 +38,9 @@ public class ReservaService {
         for (Reserva reservaActual : reservas) {
 
             // Obtener Cliente
-            ClienteDTO cliente = restTemplate.getForObject("http://CLIENTEDESCFRECU/api/cliente-service/cliente/" + reservaActual.getIdReservante(), ClienteDTO.class);
+            ClienteDTO cliente = restTemplate.getForObject("http://cliente-desc-frecu-service/api/cliente-service/cliente/" + reservaActual.getIdReservante(), ClienteDTO.class);
             // Obtener Plan
-            PlanDTO plan = restTemplate.getForObject("http://PLAN/api/plan/planes/" + reservaActual.getIdPlan(), PlanDTO.class);
+            PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reservaActual.getIdPlan(), PlanDTO.class);
 
             // Crear DTO de respuesta. Patron Builder
             ReservaDTO reservaDTO = new ReservaDTO();
@@ -71,9 +71,9 @@ public class ReservaService {
         if (reserva.isEmpty()) throw new EntityNotFoundException("Reserva de ID " + id + " no encontrada");
 
         // Obtener Cliente
-        ClienteDTO cliente = restTemplate.getForObject("http://CLIENTEDESCFRECU/api/cliente-service/cliente/" + reserva.get().getIdReservante(), ClienteDTO.class);
+        ClienteDTO cliente = restTemplate.getForObject("http://cliente-desc-frecu-service/api/cliente-service/cliente/" + reserva.get().getIdReservante(), ClienteDTO.class);
         // Obtener Plan
-        PlanDTO plan = restTemplate.getForObject("http://PLAN/api/plan/planes/" + reserva.get().getIdPlan(), PlanDTO.class);
+        PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reserva.get().getIdPlan(), PlanDTO.class);
 
         // Crear DTO de respuesta. Patron Builder
         ReservaDTO reservaDTO = new ReservaDTO();
@@ -102,9 +102,9 @@ public class ReservaService {
         for (Reserva reservaActual : reservas) {
 
             // Obtener Cliente
-            ClienteDTO cliente = restTemplate.getForObject("http://CLIENTEDESCFRECU/api/cliente-service/cliente/" + reservaActual.getIdReservante(), ClienteDTO.class);
+            ClienteDTO cliente = restTemplate.getForObject("http://cliente-desc-frecu-service/api/cliente-service/cliente/" + reservaActual.getIdReservante(), ClienteDTO.class);
             // Obtener Plan
-            PlanDTO plan = restTemplate.getForObject("http://PLAN/api/plan/planes/" + reservaActual.getIdPlan(), PlanDTO.class);
+            PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reservaActual.getIdPlan(), PlanDTO.class);
 
             // Crear DTO de respuesta. Patron Builder
             ReservaDTO reservaDTO = new ReservaDTO();
@@ -129,9 +129,9 @@ public class ReservaService {
     // El cuerpo ya tiene id cliente reservante e id plan
     public Reserva createReserva(Reserva reserva) {
         // Obtener Cliente
-        ClienteDTO cliente = restTemplate.getForObject("http://CLIENTEDESCFRECU/api/cliente-service/cliente/" + reserva.getIdReservante(), ClienteDTO.class);
+        ClienteDTO cliente = restTemplate.getForObject("http://cliente-desc-frecu-service/api/cliente-service/cliente/" + reserva.getIdReservante(), ClienteDTO.class);
         // Obtener Plan
-        PlanDTO plan = restTemplate.getForObject("http://PLAN/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
+        PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
 
         // Verificar parametros validos
         if (reserva.getHoraInicio() != null && cliente != null && plan != null) {
@@ -153,7 +153,7 @@ public class ReservaService {
             boolean esFinDeSemana = reserva.getFecha().getDayOfWeek().getValue() >= 6;// Determina fin de semana o no
 
             // Obtener bool si es feriado
-            boolean esFeriado = restTemplate.getForObject("http://DIASESPECIALES/api/dias-especiales-service/dias-feriados/esFeriado?fecha=" + reserva.getFecha(),Boolean.class);
+            boolean esFeriado = restTemplate.getForObject("http://dias-especiales-service/api/dias-especiales-service/dias-feriados/esFeriado?fecha=" + reserva.getFecha(),Boolean.class);
             if (esFeriado || esFinDeSemana){// Horario fin de semana o feriado
                 // Horario antes o despues del horario de servicio
                 if (horaInicio.isBefore(LocalTime.of(10,00,00)) || horaFinalCalculada.isAfter(LocalTime.of(22,00,00))) {
@@ -184,7 +184,7 @@ public class ReservaService {
                 HttpEntity<RackReservaRequest> rackReservaBody = new HttpEntity<>(rackReservaRequest);
 
                 RackReservaRequest respuesta = restTemplate.postForObject(
-                        "http://RACKSEMANAL/api/rack-semanal-service/rack-reserva/",
+                        "http://rack-semanal-service/api/rack-semanal-service/rack-reserva/",
                         rackReservaBody,
                         RackReservaRequest.class
                 );
@@ -208,9 +208,9 @@ public class ReservaService {
 
         // Calculo de hora final segun nueva hora o plan
         // Obtener Plan
-        PlanDTO plan = restTemplate.getForObject("http://PLAN/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
+        PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
         // Obtener Cliente
-        ClienteDTO cliente = restTemplate.getForObject("http://CLIENTEDESCFRECU/api/cliente-service/cliente/" + reserva.getIdReservante(), ClienteDTO.class);
+        ClienteDTO cliente = restTemplate.getForObject("http://cliente-desc-frecu-service/api/cliente-service/cliente/" + reserva.getIdReservante(), ClienteDTO.class);
 
         // Solo permite actualizar la hora inicial
         // Determinar hora de fin sumando minutos del plan a la hora inicial
@@ -221,7 +221,7 @@ public class ReservaService {
 
         // Verificar horario valido de atencion
         boolean esFinDeSemana = reserva.getFecha().getDayOfWeek().getValue() >= 6;// Determina fin de semana o no
-        boolean esFeriado = restTemplate.getForObject("http://DIASESPECIALES/api/dias-especiales-service/dias-feriados/esFeriado?fecha=" + reserva.getFecha(),Boolean.class);
+        boolean esFeriado = restTemplate.getForObject("http://dias-especiales-service/api/dias-especiales-service/dias-feriados/esFeriado?fecha=" + reserva.getFecha(),Boolean.class);
         if (esFeriado || esFinDeSemana){// Horario fin de semana o feriado
             // Horario antes o despues del horario de servicio
             if (horaInicio.isBefore(LocalTime.of(10,00,00)) || horaFinalCalculada.isAfter(LocalTime.of(22,00,00))) {
@@ -254,7 +254,7 @@ public class ReservaService {
                 HttpEntity<RackReservaRequest> rackReservaBody = new HttpEntity<>(rackReservaRequest);
 
                 RackReservaRequest respuesta = restTemplate.postForObject(
-                        "http://RACKSEMANAL/api/rack-semanal-service/rack-reserva/",
+                        "http://rack-semanal-service/api/rack-semanal-service/rack-reserva/",
                         rackReservaBody,
                         RackReservaRequest.class
                 );
@@ -264,7 +264,7 @@ public class ReservaService {
         } else {// Estado nuevo es cancelada
             // Caso estado anterior era completada o confirmada
             if (estadoAnterior.equals("completada") || estadoAnterior.equals("confirmada")) {
-                restTemplate.delete("http://RACKSEMANAL/api/rack-semanal-service/rack-reserva/" + reserva.getId());
+                restTemplate.delete("http://rack-semanal-service/api/rack-semanal-service/rack-reserva/" + reserva.getId());
             }
             // Else, Caso mantiene estado cancelada. No hace peticion http
         }
@@ -278,7 +278,7 @@ public class ReservaService {
         if (reservaOriginalOptional.isEmpty()) throw new EntityNotFoundException("Reserva id " + id + " no encontrado");
 
         reservaRepository.deleteById(id);
-        restTemplate.delete("http://RACKSEMANAL/api/rack-semanal-service/rack-reserva/" + id);
+        restTemplate.delete("http://rack-semanal-service/api/rack-semanal-service/rack-reserva/" + id);
         return true;
     }
 

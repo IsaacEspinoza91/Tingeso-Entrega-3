@@ -1,5 +1,4 @@
 package com.kartingrm.reservas_comprobantes_service.controller;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -15,9 +14,7 @@ import java.io.IOException;
 public class EmailController {
 
     private final JavaMailSender mailSender;
-
-    @Value("${spring.mail.username}")
-    private String fromEmail;
+    private final String fromEmail = "tingeso.karting.rm@gmail.com";
 
     public EmailController(JavaMailSender mailSender) {
         this.mailSender = mailSender;

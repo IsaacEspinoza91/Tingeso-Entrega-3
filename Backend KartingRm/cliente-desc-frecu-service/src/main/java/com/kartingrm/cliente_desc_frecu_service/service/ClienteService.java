@@ -63,7 +63,7 @@ public class ClienteService {
         HttpEntity<ClienteCumpleaniosRequest> cumpleaniosRequestBody = new HttpEntity<>(cumpleaniosRequest);
 
         ClienteCumpleaniosRequest respuesta = restTemplate.postForObject(
-                "http://DIASESPECIALES/api/dias-especiales-service/cliente-cumpleanios/",
+                "http://dias-especiales-service/api/dias-especiales-service/cliente-cumpleanios/",
                 cumpleaniosRequestBody,
                 ClienteCumpleaniosRequest.class);
 
@@ -83,7 +83,7 @@ public class ClienteService {
                     new ClienteCumpleaniosRequest(null, cliente.getFechaNacimiento())
             );
             restTemplate.put(
-                    "http://DIASESPECIALES/api/dias-especiales-service/cliente-cumpleanios/" + id,
+                    "http://dias-especiales-service/api/dias-especiales-service/cliente-cumpleanios/" + id,
                     cumpleaniosRequestPutBody,
                     ClienteCumpleaniosRequest.class);
         }
@@ -99,7 +99,7 @@ public class ClienteService {
         clienteRepository.deleteById(id);
 
         // Eliminar relacion de tabla cliente_cumpleanios MC4
-        restTemplate.delete("http://DIASESPECIALES/api/dias-especiales-service/cliente-cumpleanios/" + id);
+        restTemplate.delete("http://dias-especiales-service/api/dias-especiales-service/cliente-cumpleanios/" + id);
         return true;
     }
 

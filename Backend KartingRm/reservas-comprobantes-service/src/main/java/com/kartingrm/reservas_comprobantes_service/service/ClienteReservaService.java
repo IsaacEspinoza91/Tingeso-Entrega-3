@@ -36,7 +36,7 @@ public class ClienteReservaService {
         for(ClienteReserva idCliente : idsClientesDeReserva) {
 
             // Obtener Cliente
-            ClienteDTO cliente = restTemplate.getForObject("http://CLIENTEDESCFRECU/api/cliente-service/cliente/"
+            ClienteDTO cliente = restTemplate.getForObject("http://cliente-desc-frecu-service/api/cliente-service/cliente/"
                     + idCliente.getIdCliente(), ClienteDTO.class);
 
             clientes.add(cliente);
@@ -76,7 +76,7 @@ public class ClienteReservaService {
         HttpEntity<ClienteReservaRequest> requestBodyClienteReserva = new HttpEntity<ClienteReservaRequest>(relacionRequest);
 
         ClienteReservaRequest clienteReservaRequestObtenida = restTemplate.postForObject(
-                "http://CLIENTEDESCFRECU/api/cliente-service/cliente-reserva/",
+                "http://cliente-desc-frecu-service/api/cliente-service/cliente-reserva/",
                 requestBodyClienteReserva,
                 ClienteReservaRequest.class);
 
@@ -90,7 +90,7 @@ public class ClienteReservaService {
         }
 
         // Eliminamos la relacion de la tabla Cliente_reserva de MC3   reserva/1/cliente/2
-        restTemplate.delete("http://CLIENTEDESCFRECU/api/cliente-service/cliente-reserva/reserva/{idReserva}/cliente/{idCliente}", idReserva, idCliente);
+        restTemplate.delete("http://cliente-desc-frecu-service/api/cliente-service/cliente-reserva/reserva/{idReserva}/cliente/{idCliente}", idReserva, idCliente);
 
 
         clienteReservaRepository.deleteById(id);

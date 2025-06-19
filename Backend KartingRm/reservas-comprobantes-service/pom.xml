@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.kartingrm</groupId>
 	<artifactId>reservas-comprobantes-service</artifactId>
-	<version>1</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<name>reservas-comprobantes-service</name>
 	<description>Reservas Comprobantes Service para KartingRm Microservicios</description>
 	<properties>
@@ -80,10 +80,26 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

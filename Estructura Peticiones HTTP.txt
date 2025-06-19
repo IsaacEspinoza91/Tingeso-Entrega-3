@@ -1,0 +1,723 @@
+MC1: plan-service
+	--- Plan ---   CRUD
+- GET, obtener todas los planes: http://localhost:8080/api/plan/planes/
+- GET, obtener plan por id: http://localhost:8080/api/plan/planes/2
+- POST, crear plan: http://localhost:8080/api/plan/planes/
+body
+{
+    "descripcion": "10 vueltas o max 10 min",
+    "duracionTotal": 20,
+    "precioRegular": 20000,
+    "precioFeriado": 18000,
+    "precioFinSemana": 17000
+}
+
+- PUT, update plan: http://localhost:8080/api/plan/planes/2
+body
+{
+    "descripcion": "10 vueltas o max 10 min",
+    "duracionTotal": 25,
+    "precioRegular": 20000,
+    "precioFeriado": 18000,
+    "precioFinSemana": 17000
+}
+
+
+- DELETE, eliminar plan: http://localhost:8080/api/plan/planes/2
+
+
+
+MC2: descuento-grupo-service
+	--- Descuento_grupo ---  CRUD
+- GET, obtener todos los descuentosGrupo: http://localhost:8080/api/descuento-grupo-service/desc-grupo/
+- GET, obtener descuentoGrupo by ID: http://localhost:8080/api/descuento-grupo-service/desc-grupo/1
+- POST, crear:   http://localhost:8080/api/descuento-grupo-service/desc-grupo/
+{
+    "minPersonas": 3,
+    "maxPersonas": 5,
+    "porcentajeDescuento": 0.1
+}
+
+- PUT, update descuentoGrupo: http://localhost:8080/api/descuento-grupo-service/desc-grupo/1
+{
+    "minPersonas": 3,
+    "maxPersonas": 5,
+    "porcentajeDescuento": 0.4
+}
+
+- DELETE, eliminar: http://localhost:8080/api/descuento-grupo-service/desc-grupo/1
+
+
+- GET, obtener porcentaje de descuento segun cantidad de grupo:   http://localhost:8080/api/descuento-grupo-service/desc-grupo/cantidad/4
+resultado: double
+(se usan INDEXs en la base de datos para eficiencia en la búsqueda)
+
+
+
+MC3: cliente-desc-frecu-service
+	--- Cliente ---    CRUD
+- GET, obtener todos los clientes: http://localhost:8080/api/cliente-service/cliente/
+- GET, obtener todos clientes activos: http://localhost:8080/api/cliente-service/cliente/activos
+- GET, obtener todos los clientes inactivos: http://localhost:8080/api/cliente-service/cliente/inactivos
+- GET, obtener cliente según id: http://localhost:8080/api/cliente-service/cliente/2
+- GET, obtener cliente según rut: http://localhost:8080/api/cliente-service/cliente/rut/{rut}
+- GET, obtener clientes según nombre y apellido: http://localhost:8080/api/cliente-service/cliente/nombre/{nombre}/apellido/{apellido}
+- POST, crear cliente (activo true default): http://localhost:8080/api/cliente-service/cliente/
+{
+    "rut": "21274232-2",
+    "nombre": "Isaac",
+    "apellido": "Espinoza",
+    "correo": "isaac@usach.cl",
+    "telefono": "+56998877665",
+    "fechaNacimiento": "1991-05-06"
+}
+
+- PUT, update cliente: http://localhost:8080/api/cliente-service/cliente/1
+{
+    "rut": "21174222-2",
+    "nombre": "Isaac1",
+    "apellido": "Espinoza1",
+    "correo": "isaac@usach.cl",
+    "telefono": "+56998877665",
+    "fechaNacimiento": "1995-05-06",
+    "activo": true
+}
+
+- DELETE, eliminar: http://localhost:8080/api/cliente-service/cliente/2
+- PUT, actualizar a inactivo: http://localhost:8080/api/cliente-service/cliente/inactivate/1
+- PUT, actualizar a activo: http://localhost:8080/api/cliente-service/cliente/activate/5
+
+- GET, nombre completo de cliente: http://localhost:8080/api/cliente-service/cliente/
+(retorna un string, no json)
+
+
+
+	--- Descuento_cliente_frecuente --- CRUD
+- GET, obtener regla de descuento: http://localhost:8080/api/cliente-service/descuento-frecuente/
+- GET, obtener regla de descuento según id: http://localhost:8080/api/cliente-service/descuento-frecuente/1
+- POST, crear regla de descuento:  http://localhost:8080/api/cliente-service/descuento-frecuente/
+{
+    "minReservas": 7,
+    "maxReservas": 99, 
+    "porcentajeDescuento": 0.1
+}
+(OJO, considerar caso para mas de 7 visitas, entoces min es 7 el max es un valor alto como 99)
+
+- PUT, update regla de descuento: http://localhost:8080/api/cliente-service/descuento-frecuente/1
+{
+    "minReservas": 7,
+    "maxReservas": 99, 
+    "porcentajeDescuento": 0.3
+}
+
+- DELETE, eliminar regla de descuento: http://localhost:8080/api/cliente-service/descuento-frecuente/1
+- GET, descuento según cantidad de visitas (regla negocio): http://localhost:8080/api/cliente-service/descuento-frecuente/visitas/6
+resultado: double
+
+
+
+	--- Cliente_reserva ---   CRUD
+- GET, obtener todos: http://localhost:8080/api/cliente-service/cliente-reserva/
+- GET, obtener según id compuesta: http://localhost:8080/api/cliente-service/cliente-reserva/reserva/{idReserva}/cliente/{idCliente}
+- GET, obtner clienteReservas by id Cliente: http://localhost:8080/api/cliente-service/cliente-reserva/cliente/{idCliente}
+- POST, crear: http://localhost:8080/api/cliente-service/cliente-reserva/
+{
+    "id": {
+        "idReserva": 1,
+        "idCliente": 2
+    },
+    "fecha": "2024-04-03",
+    "estado": "completada"
+}
+
+- PUT, update: http://localhost:8080/api/cliente-service/cliente-reserva/reserva/1/cliente/2
+{
+    "fecha": "2024-04-03",
+    "estado": "pendiente"
+}
+(Se omite indicar id en el json)
+
+- DELETE, eliminar: http://localhost:8080/api/cliente-service/cliente-reserva/reserva/1/cliente/2
+- GET, descuento cliente frecuente segun la id del cliente:  http://localhost:8080/api/cliente-service/cliente-reserva/porcen-desc-by-visitas-cliente/{idCliente}
+resultado: double
+
+
+
+MC4: días-especiales-service
+	--- Dia_feriado ---   CRUD
+- GET, obtener todos los días feriados:  http://localhost:8080/api/dias-especiales-service/dias-feriados/
+- GET, obtener dia feriado según id: http://localhost:8080/api/dias-especiales-service/dias-feriados/1
+- POST, crear dia: http://localhost:8080/api/dias-especiales-service/dias-feriados/
+{
+    "nombre": "Dia del platano",
+    "fecha": "2025-05-22"
+}
+
+- PUT, update dia: http://localhost:8080/api/dias-especiales-service/dias-feriados/54
+{
+    "nombre": "Marcianeke",
+    "fecha": "2025-07-22"
+}
+
+- DELETE, eliminar dia:  http://localhost:8080/api/dias-especiales-service/dias-feriados/1
+- GET, obtiene bool sobre si el dia es feriado o no: http://localhost:8080/api/dias-especiales-service/dias-feriados/esFeriado?fecha=2025-01-01
+resultado: booleano
+- GET, obtener los días feriados según anio: http://localhost:8080/api/dias-especiales-service/dias-feriados/anio/2026
+
+
+	--- cliente_cumpleanios ---   CRUD
+- GET, obtener todos: http://localhost:8080/api/dias-especiales-service/cliente-cumpleanios/
+- GET,	obtener según id cliente: http://localhost:8080/api/dias-especiales-service/cliente-cumpleanios/{idCliente}
+- POST, crear registro:   http://localhost:8080/api/dias-especiales-service/cliente-cumpleanios/
+{
+    "idCliente": 1,
+    "fecha": "2003-04-09"
+}
+
+- PUT, update de fecha: http://localhost:8080/api/dias-especiales-service/cliente-cumpleanios/{idCliente}
+{
+    "fecha": "2005-04-09"
+}
+
+- DELETE, eliminar: http://localhost:8080/api/dias-especiales-service/cliente-cumpleanios/{idCliente}
+- GET, obtener bool si cliente según id esta de cumpleanios en un dia: http://localhost:8080/api/dias-especiales-service/cliente-cumpleanios/cliente/1/esCumpleaniero?fecha=2025-04-09
+resultado: booleano
+
+
+
+
+
+MC5:  reserva-comprobante-service
+	--- Reserva ---   CRUD
+- GET, obtener todas las reservas: http://localhost:8080/api/reservas-comprobantes-service/reservas/
+- GET, obtener reserva según id: http://localhost:8080/api/reservas-comprobantes-service/reservas/1
+- GET, obtener todas las reservas de un cliente:  http://localhost:8080/api/reservas-comprobantes-service/reservas/reservante/{idCliente}
+Resultado:	(Los 3 métodos anteriores obtienen la estructura básica de la reserva)
+{
+    "id": 4,
+    "fecha": "2025-05-24",
+    "horaInicio": "12:10:00",
+    "horaFin": "12:50:00",
+    "estado": "confirmada",
+    "totalPersonas": 5,
+    "idPlan": 1,
+    "idReservante": 1
+}
+
+- GET, todas las reservas DTO: http://localhost:8080/api/reservas-comprobantes-service/reservas/DTO/
+- GET, reserva DTO según id: http://localhost:8080/api/reservas-comprobantes-service/reservas/DTO/3
+Resultado ejemplo:
+{
+    "id": 3,
+    "fecha": "2025-05-22",
+    "horaInicio": "12:10:00",
+    "horaFin": "12:50:00",
+    "estado": "confirmada",
+    "totalPersonas": 5,
+    "plan": {
+        "id": 1,
+        "descripcion": "10 vueltas o máx 10 min",
+        "duracionTotal": 30,
+        "precioRegular": 15000.0,
+        "precioFinSemana": 14000.0,
+        "precioFeriado": 13000.0
+    },
+    "reservante": {
+        "id": 8,
+        "rut": "20202202-2",
+        "nombre": "Ismael",
+        "apellido": "Arroyo",
+        "correo": "isma@usach.cl",
+        "telefono": "+56998177665",
+        "fechaNacimiento": "2008-05-01",
+        "activo": true
+    }
+}
+- GET, reservas DTO de un cliente según id: http://localhost:8080/api/reservas-comprobantes-service/reservas/DTO/reservante/4
+
+
+- POST, crear entidad, se indica id reservante, id plan: http://localhost:8080/api/reservas-comprobantes-service/reservas/
+{
+    "fecha": "2025-05-22",
+    "horaInicio": "12:10",
+    "horafin": "12:40",
+    "estado": "confirmada",
+    "totalPersonas": 5,
+    "idPlan": 1,
+    "idReservante": 1
+}
+( NO SE INDICA idComprobante )
+
+- PUT, update de reserva, no permite cambiar id de comprobante: http://localhost:8080/api/reservas-comprobantes-service/reservas/{id}
+{
+    "fecha": "2025-05-21",
+    "horaInicio": "15:00",
+    "estado": "confirmada",
+    "totalPersonas": 5,
+    "idPlan": 1,
+    "idReservante": 1
+}
+
+- DELETE, eliminar reserva no elimina comprobante: http://localhost:8080/api/reservas-comprobantes-service/reservas/{id}
+
+
+
+	--- Cliente_Reserva --- CRUD
+- GET, obtiene todos los clientes de una reserva según id reserva: http://localhost:8080/api/reservas-comprobantes-service/cliente-reserva/ClienteDTO/reserva/2
+Resultado:
+[
+    {
+        "id": 11,
+        "rut": "12432432-2",
+        "nombre": "Camila",
+        "apellido": "Pizarro",
+        "correo": "nombre1@usach.cl",
+        "telefono": "+56928177665",
+        "fechaNacimiento": "2013-05-24",
+        "activo": true
+    },
+    {
+        "id": 12,
+        "rut": "2",
+        "nombre": "nombre2",
+        "apellido": "apellido2",
+        "correo": "nombre2@usach.cl",
+        "telefono": "+56928177665",
+        "fechaNacimiento": "2003-05-24",
+        "activo": true
+    },
+    {
+        "id": 13,
+        "rut": "3",
+        "nombre": "nombre3",
+        "apellido": "apellido3",
+        "correo": "nombre3@usach.cl",
+        "telefono": "+56928177665",
+        "fechaNacimiento": "2003-05-01",
+        "activo": true
+    },
+    {
+        "id": 14,
+        "rut": "4543",
+        "nombre": "nombre4",
+        "apellido": "apellido4",
+        "correo": "nombre4@usach.cl",
+        "telefono": "+56928177665",
+        "fechaNacimiento": "2004-05-12",
+        "activo": true
+    },
+    {
+        "id": 15,
+        "rut": "5534234-3",
+        "nombre": "Gonzalo",
+        "apellido": "Fierro",
+        "correo": "jovenpistolero@gmail.com",
+        "telefono": "+56928177662",
+        "fechaNacimiento": "1994-06-09",
+        "activo": true
+    }
+]
+
+- GET, Obtener registros segun id reserva: http://localhost:8080/api/reservas-comprobantes-service/cliente-reserva/reserva/2
+- POST, agregar cliente a reserva (considera limite reserva): http://localhost:8080/api/reservas-comprobantes-service/cliente-reserva/agregar/cliente/1/reserva/2
+- DELETE, quitar cliente de reserva: http://localhost:8080/api/reservas-comprobantes-service/cliente-reserva/quitar/cliente/1/reserva/2
+(Estas funciones crean registros en cliente_reserva de MC3. Relación unidireccional)
+
+
+
+
+	--- Comprobante y Detalles_Comprobantes --- CRUD (Los registros Detalle_Comprobantes son entidad débil. Por lo que se maneja desde Comprobante)
+- GET, obtener comprobante según id: http://localhost:8080/api/reservas-comprobantes-service/comprobantes/6
+resultado: mismo DTO de post
+
+- GET, obtener comprobante según id reserva: http://localhost:8080/api/reservas-comprobantes-service/comprobantes/reserva/6
+resultado: mismo DTO de post
+
+- PUT, actualizar estado pagado (bool) de comprobante: http://localhost:8080/api/reservas-comprobantes-service/comprobantes/{id_comprobante}/estado/false
+ 
+- POST, crear comprobante con detalles: http://localhost:8080/api/reservas-comprobantes-service/comprobantes/reserva/{id_comprobante}/descuento-extra/{desc_extra}
+Sin body
+resultado DTO:
+{
+    "id": 9,
+    "total": 24633.0,
+    "pagado": true,
+    "reserva": {
+        "id": 4,
+        "fecha": "2025-05-25",
+        "horaInicio": "12:10:00",
+        "horaFin": "12:50:00",
+        "estado": "confirmada",
+        "totalPersonas": 5,
+        "plan": {
+            "id": 1,
+            "descripcion": "20 vueltas o max 20 min",
+            "duracionTotal": 40,
+            "precioRegular": 25000.0,
+            "precioFinSemana": 23000.0,
+            "precioFeriado": 22000.0
+        },
+        "reservante": {
+            "id": 1,
+            "rut": "21274232-2",
+            "nombre": "Isaac",
+            "apellido": "Espinoza",
+            "correo": "isaac@usach.cl",
+            "telefono": "+56998877665",
+            "fechaNacimiento": "1991-05-06",
+            "activo": true
+        }
+    },
+    "detalles": [
+        {
+            "id": 16,
+            "tarifa": 4600.0,
+            "descuentoGrupo": 460.0,
+            "porcentajeDescuentoGrupo": 10.0,
+            "descuentoEspecial": 0.0,
+            "porcentajeDescuentoEspecial": 0.0,
+            "descuentoExtra": 0.0,
+            "montoFinal": 4140.0,
+            "montoIva": 786.6,
+            "montoTotal": 4926.6,
+            "tieneDescuentoCumpleanios": false,
+            "tieneDescuentoClienteFrecuente": false,
+            "cliente": {
+                "id": 11,
+                "rut": "1",
+                "nombre": "nombre1",
+                "apellido": "apellido1",
+                "correo": "nombre1@usach.cl",
+                "telefono": "+56928177665",
+                "fechaNacimiento": "2008-05-24",
+                "activo": true
+            }
+        },
+        {
+            "id": 17,
+            "tarifa": 4600.0,
+            "descuentoGrupo": 460.0,
+            "porcentajeDescuentoGrupo": 10.0,
+            "descuentoEspecial": 0.0,
+            "porcentajeDescuentoEspecial": 0.0,
+            "descuentoExtra": 0.0,
+            "montoFinal": 4140.0,
+            "montoIva": 786.6,
+            "montoTotal": 4926.6,
+            "tieneDescuentoCumpleanios": false,
+            "tieneDescuentoClienteFrecuente": false,
+            "cliente": {
+                "id": 12,
+                "rut": "2",
+                "nombre": "nombre2",
+                "apellido": "apellido2",
+                "correo": "nombre2@usach.cl",
+                "telefono": "+56928177665",
+                "fechaNacimiento": "2003-05-24",
+                "activo": true
+            }
+        },
+        {
+            "id": 18,
+            "tarifa": 4600.0,
+            "descuentoGrupo": 460.0,
+            "porcentajeDescuentoGrupo": 10.0,
+            "descuentoEspecial": 0.0,
+            "porcentajeDescuentoEspecial": 0.0,
+            "descuentoExtra": 0.0,
+            "montoFinal": 4140.0,
+            "montoIva": 786.6,
+            "montoTotal": 4926.6,
+            "tieneDescuentoCumpleanios": false,
+            "tieneDescuentoClienteFrecuente": false,
+            "cliente": {
+                "id": 13,
+                "rut": "3",
+                "nombre": "nombre3",
+                "apellido": "apellido3",
+                "correo": "nombre3@usach.cl",
+                "telefono": "+56928177665",
+                "fechaNacimiento": "2003-05-01",
+                "activo": true
+            }
+        },
+        {
+            "id": 19,
+            "tarifa": 4600.0,
+            "descuentoGrupo": 460.0,
+            "porcentajeDescuentoGrupo": 10.0,
+            "descuentoEspecial": 0.0,
+            "porcentajeDescuentoEspecial": 0.0,
+            "descuentoExtra": 0.0,
+            "montoFinal": 4140.0,
+            "montoIva": 786.6,
+            "montoTotal": 4926.6,
+            "tieneDescuentoCumpleanios": false,
+            "tieneDescuentoClienteFrecuente": false,
+            "cliente": {
+                "id": 14,
+                "rut": "4",
+                "nombre": "nombre4",
+                "apellido": "apellido4",
+                "correo": "nombre4@usach.cl",
+                "telefono": "+56928177665",
+                "fechaNacimiento": "2004-05-01",
+                "activo": true
+            }
+        },
+        {
+            "id": 20,
+            "tarifa": 4600.0,
+            "descuentoGrupo": 460.0,
+            "porcentajeDescuentoGrupo": 10.0,
+            "descuentoEspecial": 0.0,
+            "porcentajeDescuentoEspecial": 0.0,
+            "descuentoExtra": 0.0,
+            "montoFinal": 4140.0,
+            "montoIva": 786.6,
+            "montoTotal": 4926.6,
+            "tieneDescuentoCumpleanios": false,
+            "tieneDescuentoClienteFrecuente": false,
+            "cliente": {
+                "id": 15,
+                "rut": "5",
+                "nombre": "nombre5",
+                "apellido": "apellido5",
+                "correo": "nombre5@usach.cl",
+                "telefono": "+56928177665",
+                "fechaNacimiento": "2005-05-01",
+                "activo": true
+            }
+        }
+    ]
+}
+
+
+
+
+
+
+MC6: rack-semanal-service
+	--- Rack semana --- CRUD
+- GET, obtener todos los registros:  http://localhost:8080/api/rack-semanal-service/rack-reserva/
+- GET, obtener registro según id reserva:  http://localhost:8080/api/rack-semanal-service/rack-reserva/1
+- POST, generar registro:  http://localhost:8080/api/rack-semanal-service/rack-reserva/
+{
+    "idReserva": 3,
+    "idCliente": 2,
+    "nombreReservante": "Isaac",
+    "fecha": "2025-05-25",
+    "horaInicio": "12:20:00",
+    "horaFin": "13:00:00"
+}
+
+- PUT, update:   http://localhost:8080/api/rack-semanal-service/rack-reserva/3
+{
+    "idCliente": 2,
+    "nombreReservante": "Isaac",
+    "fecha": "2025-05-22",
+    "horaInicio": "12:20:00",
+    "horaFin": "13:00:00"
+}
+
+- DELETE, eliminar: http://localhost:8080/api/rack-semanal-service/rack-reserva/1
+
+
+GET, obtener rack semanal:  http://localhost:8080/api/rack-semanal-service/get-rack/0
+resultado:
+{
+    "fechaInicioSemana": "2025-04-28",
+    "fechaFinSemana": "2025-05-04",
+    "reservasPorDia": {
+        "lunes": [],
+        "martes": [
+            {
+                "codigoReserva": "16",
+                "nombreReservante": "Lionel Messi",
+                "horaInicio": "16:00:00",
+                "horaFin": "16:40:00"
+            },
+            {
+                "codigoReserva": "17",
+                "nombreReservante": "Isaac Espinoza",
+                "horaInicio": "18:10:00",
+                "horaFin": "18:40:00"
+            }
+        ],
+        "miércoles": [],
+        "jueves": [
+            {
+                "codigoReserva": "20",
+                "nombreReservante": "Nicolas Fernandez",
+                "horaInicio": "10:00:00",
+                "horaFin": "10:40:00"
+            },
+            {
+                "codigoReserva": "21",
+                "nombreReservante": "Lionel Messi",
+                "horaInicio": "16:00:00",
+                "horaFin": "16:30:00"
+            },
+            {
+                "codigoReserva": "22",
+                "nombreReservante": "Lionel Messi",
+                "horaInicio": "17:00:00",
+                "horaFin": "17:35:00"
+            }
+        ],
+        "viernes": [
+            {
+                "codigoReserva": "23",
+                "nombreReservante": "Lionel Messi",
+                "horaInicio": "14:00:00",
+                "horaFin": "14:40:00"
+            }
+        ],
+        "sábado": [
+            {
+                "codigoReserva": "8",
+                "nombreReservante": "Isaac Espinoza",
+                "horaInicio": "17:40:00",
+                "horaFin": "18:15:00"
+            }
+        ],
+        "domingo": [
+            {
+                "codigoReserva": "24",
+                "nombreReservante": "Lionel Messi",
+                "horaInicio": "17:30:00",
+                "horaFin": "18:10:00"
+            }
+        ]
+    }
+}
+
+
+
+
+MC7: reportes-service
+	--- Reportes_ingresos_personas ---
+GET, reporte:  http://localhost:8080/api/reportes-service/segun-rango-personas?mes_inicio=4&anio_inicio=2025&mes_fin=8&anio_fin=2025
+resultado:
+[
+    {
+        "rangoPersonas": "1-2 personas",
+        "ingresosPorMes": {
+            "Abril-2025": 0.0,
+            "Mayo-2025": 88298.0,
+            "Junio-2025": 0.0,
+            "Julio-2025": 0.0,
+            "Agosto-2025": 0.0
+        },
+        "total": 88298.0,
+        "esTotalGeneral": false
+    },
+    {
+        "rangoPersonas": "3-5 personas",
+        "ingresosPorMes": {
+            "Abril-2025": 0.0,
+            "Mayo-2025": 0.0,
+            "Junio-2025": 0.0,
+            "Julio-2025": 0.0,
+            "Agosto-2025": 0.0
+        },
+        "total": 0.0,
+        "esTotalGeneral": false
+    },
+    {
+        "rangoPersonas": "6-10 personas",
+        "ingresosPorMes": {
+            "Abril-2025": 68800.0,
+            "Mayo-2025": 0.0,
+            "Junio-2025": 0.0,
+            "Julio-2025": 0.0,
+            "Agosto-2025": 0.0
+        },
+        "total": 68800.0,
+        "esTotalGeneral": false
+    },
+    {
+        "rangoPersonas": "11-15 personas",
+        "ingresosPorMes": {
+            "Abril-2025": 0.0,
+            "Mayo-2025": 16326.8,
+            "Junio-2025": 0.0,
+            "Julio-2025": 0.0,
+            "Agosto-2025": 0.0
+        },
+        "total": 16326.8,
+        "esTotalGeneral": false
+    },
+    {
+        "rangoPersonas": "TOTAL GENERAL",
+        "ingresosPorMes": {
+            "Abril-2025": 68800.0,
+            "Mayo-2025": 104624.8,
+            "Junio-2025": 0.0,
+            "Julio-2025": 0.0,
+            "Agosto-2025": 0.0
+        },
+        "total": 173424.8,
+        "esTotalGeneral": true
+    }
+]
+
+- POST, crear reporte: /api/reportes-service/segun-rango-personas?rangoPersonas=1-2 personas&fechaReserva=2025-02-01&monto=24900&esSuma=true
+
+
+
+	--- Reportes_ingresos_plan ---
+- GET, reportes según plan: http://localhost:8080/api/reportes-service/segun-plan?mes_inicio=4&anio_inicio=2025&mes_fin=8&anio_fin=2025
+resultado:
+[
+    {
+        "descripcionPlan": "20 vueltas o max 20 min",
+        "ingresosPorMes": {
+            "Abril-2025": 68800.0,
+            "Mayo-2025": 67734.8,
+            "Junio-2025": 0.0,
+            "Julio-2025": 0.0,
+            "Agosto-2025": 0.0
+        },
+        "total": 136534.8,
+        "esTotalGeneral": false
+    },
+    {
+        "descripcionPlan": "15 vueltas o max 15 min",
+        "ingresosPorMes": {
+            "Abril-2025": 0.0,
+            "Mayo-2025": 21420.0,
+            "Junio-2025": 0.0,
+            "Julio-2025": 0.0,
+            "Agosto-2025": 0.0
+        },
+        "total": 21420.0,
+        "esTotalGeneral": false
+    },
+    {
+        "descripcionPlan": "10 vueltas o max 10 min",
+        "ingresosPorMes": {
+            "Abril-2025": 0.0,
+            "Mayo-2025": 15470.0,
+            "Junio-2025": 0.0,
+            "Julio-2025": 0.0,
+            "Agosto-2025": 0.0
+        },
+        "total": 15470.0,
+        "esTotalGeneral": false
+    },
+    {
+        "descripcionPlan": "TOTAL GENERAL",
+        "ingresosPorMes": {
+            "Abril-2025": 68800.0,
+            "Mayo-2025": 104624.8,
+            "Junio-2025": 0.0,
+            "Julio-2025": 0.0,
+            "Agosto-2025": 0.0
+        },
+        "total": 173424.8,
+        "esTotalGeneral": true
+    }
+]
+
+- POST, crear reporte: /api/reportes-service/segun-plan?rangoPersonas=1-2 personas&fechaReserva=2025-02-01&monto=24900&esSuma=true
