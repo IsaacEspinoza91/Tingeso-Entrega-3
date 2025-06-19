@@ -1,7 +1,8 @@
-package com.kartingrm.dias_especiales_service.service;
+package com.kartingrm.diasespecialesservice.service;
 
-import com.kartingrm.dias_especiales_service.entity.ClienteCumpleanios;
-import com.kartingrm.dias_especiales_service.repository.ClienteCumpleaniosRepository;
+import com.kartingrm.diasespecialesservice.dto.ClienteCumpleaniosDTO;
+import com.kartingrm.diasespecialesservice.entity.ClienteCumpleanios;
+import com.kartingrm.diasespecialesservice.repository.ClienteCumpleaniosRepository;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -28,16 +29,23 @@ public class ClienteCumpleaniosService {
         return clienteCumpleanios.get();
     }
 
-    public ClienteCumpleanios createClienteCumpleanios(ClienteCumpleanios clienteCumpleanios) {
+    public ClienteCumpleanios createClienteCumpleanios(ClienteCumpleaniosDTO clienteCumpleaniosDTO) {
+        if (clienteCumpleaniosDTO == null) throw new EntityNotFoundException("ClienteCumpleanios no puede ser nulo");
+
+        ClienteCumpleanios clienteCumpleanios = new ClienteCumpleanios();
+        clienteCumpleanios.setIdCliente(clienteCumpleaniosDTO.getIdCliente());
+        clienteCumpleanios.setFecha(clienteCumpleaniosDTO.getFecha());
+
         return clienteCumpleaniosRepository.save(clienteCumpleanios);
     }
 
-    public ClienteCumpleanios updateClienteCumpleaniosByIdCliente(Long idCliente, ClienteCumpleanios clienteCumpleanios) {
-        Optional<ClienteCumpleanios> clienteCumpleaniosActualizado = clienteCumpleaniosRepository.findById(idCliente);
-        if (clienteCumpleaniosActualizado.isEmpty()) throw new EntityNotFoundException("Registro clienteCumpleanios no encontrado");
+    public ClienteCumpleanios updateClienteCumpleaniosByIdCliente(Long idCliente, ClienteCumpleaniosDTO clienteCumpleanios) {
+        ClienteCumpleanios clienteCumpleaniosExistente = clienteCumpleaniosRepository.findById(idCliente).orElseThrow(() -> new  EntityNotFoundException("ClienteCumpleanios no encontrado"));
 
-        clienteCumpleanios.setIdCliente(idCliente);
-        return clienteCumpleaniosRepository.save(clienteCumpleanios);
+        clienteCumpleaniosExistente.setIdCliente(clienteCumpleanios.getIdCliente());
+        clienteCumpleaniosExistente.setFecha(clienteCumpleanios.getFecha());
+
+        return clienteCumpleaniosRepository.save(clienteCumpleaniosExistente);
     }
 
     public Boolean deleteClienteCumpleaniosByIdCliente(Long idCliente) {

@@ -1,7 +1,8 @@
-package com.kartingrm.dias_especiales_service.service;
+package com.kartingrm.diasespecialesservice.service;
 
-import com.kartingrm.dias_especiales_service.entity.DiaFeriado;
-import com.kartingrm.dias_especiales_service.repository.DiaFeriadoRepository;
+import com.kartingrm.diasespecialesservice.dto.DiaFeriadoDTO;
+import com.kartingrm.diasespecialesservice.entity.DiaFeriado;
+import com.kartingrm.diasespecialesservice.repository.DiaFeriadoRepository;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -28,16 +29,23 @@ public class DiaFeriadoService {
         return dia.get();
     }
 
-    public DiaFeriado createDiaFeriado(DiaFeriado diaFeriado) {
+    public DiaFeriado createDiaFeriado(DiaFeriadoDTO diaFeriadoDTO) {
+        if (diaFeriadoDTO == null) throw new EntityNotFoundException("Dia Feriado no puede ser nulo");
+
+        DiaFeriado diaFeriado = new DiaFeriado();
+        diaFeriado.setNombre(diaFeriadoDTO.getNombre());
+        diaFeriado.setFecha(diaFeriadoDTO.getFecha());
+
         return diaFeriadoRepository.save(diaFeriado);
     }
 
-    public DiaFeriado updateDiaFeriado(Long id, DiaFeriado diaFeriado) {
-        Optional<DiaFeriado> dia = diaFeriadoRepository.findById(id);
-        if (dia.isEmpty()) throw new EntityNotFoundException("Dia Feriado con id " + id + " no encontrado");
+    public DiaFeriado updateDiaFeriado(Long id, DiaFeriadoDTO diaFeriadoDTO) {
+        DiaFeriado diaFeriadoExistente = diaFeriadoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Dia feriado no encontrado"));
 
-        diaFeriado.setId(id);
-        return diaFeriadoRepository.save(diaFeriado);
+        diaFeriadoExistente.setNombre(diaFeriadoDTO.getNombre());
+        diaFeriadoExistente.setFecha(diaFeriadoDTO.getFecha());
+
+        return diaFeriadoRepository.save(diaFeriadoExistente);
     }
 
     public Boolean deleteDiaFeriado(Long id) {

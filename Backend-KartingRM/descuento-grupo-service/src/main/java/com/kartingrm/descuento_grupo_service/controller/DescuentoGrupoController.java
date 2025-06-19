@@ -1,8 +1,8 @@
 package com.kartingrm.descuento_grupo_service.controller;
 
+import com.kartingrm.descuento_grupo_service.dto.DescuentoGrupoDTO;
 import com.kartingrm.descuento_grupo_service.entity.DescuentoGrupo;
 import com.kartingrm.descuento_grupo_service.service.DescuentoGrupoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,9 +12,10 @@ import java.util.List;
 @RequestMapping("/api/descuento-grupo-service/desc-grupo")
 public class DescuentoGrupoController {
 
-    @Autowired
     private DescuentoGrupoService descuentoGrupoService;
-
+    public DescuentoGrupoController(DescuentoGrupoService descuentoGrupoService) {
+        this.descuentoGrupoService = descuentoGrupoService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<DescuentoGrupo>> getDescuentosGrupos(){
@@ -22,27 +23,27 @@ public class DescuentoGrupoController {
         return ResponseEntity.ok(descuentoGrupo);
     }
 
-    @GetMapping("/{id_desc}")
-    public ResponseEntity<DescuentoGrupo> getDescuentoGrupoById(@PathVariable Long id_desc){
-        DescuentoGrupo descuentoGrupo = descuentoGrupoService.getDescuentoGrupoById(id_desc);
+    @GetMapping("/{idDesc}")
+    public ResponseEntity<DescuentoGrupo> getDescuentoGrupoById(@PathVariable Long idDesc){
+        DescuentoGrupo descuentoGrupo = descuentoGrupoService.getDescuentoGrupoById(idDesc);
         return ResponseEntity.ok(descuentoGrupo);
     }
 
     @PostMapping("/")
-    public ResponseEntity<DescuentoGrupo> createDescuentoGrupo(@RequestBody DescuentoGrupo descuentoGrupo){
+    public ResponseEntity<DescuentoGrupo> createDescuentoGrupo(@RequestBody DescuentoGrupoDTO descuentoGrupo){
         DescuentoGrupo planNuevo = descuentoGrupoService.createDescuentoGrupo(descuentoGrupo);
         return ResponseEntity.ok(planNuevo);
     }
 
-    @PutMapping("/{id_desc}")
-    public ResponseEntity<DescuentoGrupo> updateDescuentoGrupo(@PathVariable Long id_desc, @RequestBody DescuentoGrupo descuentoGrupo){
-        DescuentoGrupo descuentoActualizado = descuentoGrupoService.updateDescuentoGrupo(id_desc, descuentoGrupo);
+    @PutMapping("/{idDesc}")
+    public ResponseEntity<DescuentoGrupo> updateDescuentoGrupo(@PathVariable Long idDesc, @RequestBody DescuentoGrupoDTO descuentoGrupo){
+        DescuentoGrupo descuentoActualizado = descuentoGrupoService.updateDescuentoGrupo(idDesc, descuentoGrupo);
         return ResponseEntity.ok(descuentoActualizado);
     }
 
-    @DeleteMapping("/{id_desc}")
-    public ResponseEntity<Boolean> deleteDescuentoGrupo(@PathVariable Long id_desc) {
-        descuentoGrupoService.deleteDescuentoGrupo(id_desc);
+    @DeleteMapping("/{idDesc}")
+    public ResponseEntity<Boolean> deleteDescuentoGrupo(@PathVariable Long idDesc) {
+        descuentoGrupoService.deleteDescuentoGrupo(idDesc);
         return ResponseEntity.noContent().build();
     }
 

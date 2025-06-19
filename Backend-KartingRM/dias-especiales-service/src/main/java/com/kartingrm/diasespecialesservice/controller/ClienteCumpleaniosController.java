@@ -1,7 +1,8 @@
-package com.kartingrm.dias_especiales_service.controller;
+package com.kartingrm.diasespecialesservice.controller;
 
-import com.kartingrm.dias_especiales_service.entity.ClienteCumpleanios;
-import com.kartingrm.dias_especiales_service.service.ClienteCumpleaniosService;
+import com.kartingrm.diasespecialesservice.dto.ClienteCumpleaniosDTO;
+import com.kartingrm.diasespecialesservice.entity.ClienteCumpleanios;
+import com.kartingrm.diasespecialesservice.service.ClienteCumpleaniosService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,14 +32,14 @@ public class ClienteCumpleaniosController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<ClienteCumpleanios> createClienteCumpleanios(@RequestBody ClienteCumpleanios clienteCumpleanios) {
+    public ResponseEntity<ClienteCumpleanios> createClienteCumpleanios(@RequestBody ClienteCumpleaniosDTO clienteCumpleanios) {
         ClienteCumpleanios clienteCumpleaniosNuevo = clienteCumpleaniosService.createClienteCumpleanios(clienteCumpleanios);
         return ResponseEntity.ok(clienteCumpleaniosNuevo);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ClienteCumpleanios> updateClienteCumpleaniosByIdCliente(@PathVariable Long id,
-                                                                                  @RequestBody ClienteCumpleanios clienteCumpleanios) {
+                                                                                  @RequestBody ClienteCumpleaniosDTO clienteCumpleanios) {
         ClienteCumpleanios clienteCumpleaniosActualizado = clienteCumpleaniosService.updateClienteCumpleaniosByIdCliente(id, clienteCumpleanios);
         return ResponseEntity.ok(clienteCumpleaniosActualizado);
     }

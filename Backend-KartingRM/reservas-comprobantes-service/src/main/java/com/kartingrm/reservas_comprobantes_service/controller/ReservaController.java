@@ -13,8 +13,10 @@ import java.util.List;
 @RequestMapping("/api/reservas-comprobantes-service/reservas")
 public class ReservaController {
 
-    @Autowired
     private ReservaService reservaService;
+    public ReservaController(ReservaService reservaService) {
+        this.reservaService = reservaService;
+    }
 
 
     @GetMapping("/")

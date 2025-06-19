@@ -1,4 +1,6 @@
-package com.kartingrm.dias_especiales_service.entity;
+package com.kartingrm.diasespecialesservice.entity;
+
+import com.kartingrm.diasespecialesservice.modelbase.IClienteCumpleanios;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,7 +10,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "cliente_cumpleanios")
-public class ClienteCumpleanios {
+public class ClienteCumpleanios implements IClienteCumpleanios {
 
     @Id
     @Column(name = "id_cliente", nullable = false)

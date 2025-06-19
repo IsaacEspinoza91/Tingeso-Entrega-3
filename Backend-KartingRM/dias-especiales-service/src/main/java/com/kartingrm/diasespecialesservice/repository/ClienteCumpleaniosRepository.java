@@ -1,6 +1,6 @@
-package com.kartingrm.dias_especiales_service.repository;
+package com.kartingrm.diasespecialesservice.repository;
 
-import com.kartingrm.dias_especiales_service.entity.ClienteCumpleanios;
+import com.kartingrm.diasespecialesservice.entity.ClienteCumpleanios;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

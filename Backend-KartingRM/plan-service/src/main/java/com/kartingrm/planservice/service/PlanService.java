@@ -29,7 +29,7 @@ public class PlanService {
     }
 
     public Plan createPlan(PlanDTO planDTO){
-        if (planDTO == null) throw new IllegalArgumentException("Plan no puede ser nulo");
+        if (planDTO == null) throw new EntityNotFoundException("Plan no puede ser nulo");
 
         Plan plan = new Plan();
         plan.setDescripcion(planDTO.getDescripcion());
@@ -42,7 +42,6 @@ public class PlanService {
     }
 
     public Plan updatePlan(Long id, PlanDTO planDTO){
-
         Plan planExistente = planRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Plan no encontrado"));
 
         planExistente.setDescripcion(planDTO.getDescripcion());
@@ -50,7 +49,6 @@ public class PlanService {
         planExistente.setPrecioRegular(planDTO.getPrecioRegular());
         planExistente.setPrecioFinSemana(planDTO.getPrecioFinSemana());
         planExistente.setPrecioFeriado(planDTO.getPrecioFeriado());
-
 
         return planRepository.save(planExistente);
     }

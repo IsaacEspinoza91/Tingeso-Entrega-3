@@ -1,4 +1,4 @@
-package com.kartingrm.dias_especiales_service;
+package com.kartingrm.diasespecialesservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

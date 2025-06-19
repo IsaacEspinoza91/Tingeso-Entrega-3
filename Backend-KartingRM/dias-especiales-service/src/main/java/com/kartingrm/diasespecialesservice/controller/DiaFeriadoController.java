@@ -1,7 +1,8 @@
-package com.kartingrm.dias_especiales_service.controller;
+package com.kartingrm.diasespecialesservice.controller;
 
-import com.kartingrm.dias_especiales_service.entity.DiaFeriado;
-import com.kartingrm.dias_especiales_service.service.DiaFeriadoService;
+import com.kartingrm.diasespecialesservice.dto.DiaFeriadoDTO;
+import com.kartingrm.diasespecialesservice.entity.DiaFeriado;
+import com.kartingrm.diasespecialesservice.service.DiaFeriadoService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,13 +32,13 @@ public class DiaFeriadoController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<DiaFeriado> createDiaFeriado(@RequestBody DiaFeriado diaFeriado) {
+    public ResponseEntity<DiaFeriado> createDiaFeriado(@RequestBody DiaFeriadoDTO diaFeriado) {
         DiaFeriado diaFeriadoNuevo = diaFeriadoService.createDiaFeriado(diaFeriado);
         return ResponseEntity.ok(diaFeriadoNuevo);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DiaFeriado> updateDiaFeriado(@PathVariable Long id, @RequestBody DiaFeriado diaFeriado) {
+    public ResponseEntity<DiaFeriado> updateDiaFeriado(@PathVariable Long id, @RequestBody DiaFeriadoDTO diaFeriado) {
         DiaFeriado diaActualizado = diaFeriadoService.updateDiaFeriado(id, diaFeriado);
         return ResponseEntity.ok(diaActualizado);
     }
