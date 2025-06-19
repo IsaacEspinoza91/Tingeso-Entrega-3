@@ -21,6 +21,11 @@ public class ClienteService {
     @Autowired
     private RestTemplate restTemplate;
 
+    // Constantes
+    static final String URL_DIAS_ESPECIALES_MS = "http://dias-especiales-service";
+    static final String DIAS_ESPECIALES_BASE = "/api/dias-especiales-service";
+    static final String CLIENTE_CUMPLEANIOS_ENDPOINT = DIAS_ESPECIALES_BASE + "/cliente-cumpleanios/";
+
 
     public List<Cliente> getClientes() {
         return clienteRepository.findAll();
@@ -58,12 +63,11 @@ public class ClienteService {
     public Cliente createCliente(Cliente cliente) {
         Cliente clienteCreado =  clienteRepository.save(cliente);
 
-        // Se guarda relacion cliente cumpleanios en la tabla correspondiente en MC4
+        // Se guarda relacion cliente cumpleanios en la tabla correspondiente en MS44
         ClienteCumpleaniosRequest cumpleaniosRequest = new ClienteCumpleaniosRequest(clienteCreado.getId(), clienteCreado.getFechaNacimiento());
         HttpEntity<ClienteCumpleaniosRequest> cumpleaniosRequestBody = new HttpEntity<>(cumpleaniosRequest);
 
-        ClienteCumpleaniosRequest respuesta = restTemplate.postForObject(
-                "http://dias-especiales-service/api/dias-especiales-service/cliente-cumpleanios/",
+        ClienteCumpleaniosRequest respuesta = restTemplate.postForObject(URL_DIAS_ESPECIALES_MS + CLIENTE_CUMPLEANIOS_ENDPOINT,
                 cumpleaniosRequestBody,
                 ClienteCumpleaniosRequest.class);
 
@@ -76,14 +80,12 @@ public class ClienteService {
 
         cliente.setId(id);
 
-        // Se actualiza la el cumpleanios en la tabla cliente_cumpleanios MC4
-        // Solo en caso de actualizacion de cumpleanios se hace la peticion http a MC4
+        // Se actualizacion de cumpleanios en tabla cliente_cumpleanios MS4
         if (cliente.getFechaNacimiento() != clienteOptional.get().getFechaNacimiento()) {
             HttpEntity<ClienteCumpleaniosRequest> cumpleaniosRequestPutBody = new HttpEntity<>(
                     new ClienteCumpleaniosRequest(null, cliente.getFechaNacimiento())
             );
-            restTemplate.put(
-                    "http://dias-especiales-service/api/dias-especiales-service/cliente-cumpleanios/" + id,
+            restTemplate.put(URL_DIAS_ESPECIALES_MS + CLIENTE_CUMPLEANIOS_ENDPOINT + id,
                     cumpleaniosRequestPutBody,
                     ClienteCumpleaniosRequest.class);
         }
@@ -98,8 +100,8 @@ public class ClienteService {
 
         clienteRepository.deleteById(id);
 
-        // Eliminar relacion de tabla cliente_cumpleanios MC4
-        restTemplate.delete("http://dias-especiales-service/api/dias-especiales-service/cliente-cumpleanios/" + id);
+        // Eliminar relacion de tabla cliente_cumpleanios MS4
+        restTemplate.delete(URL_DIAS_ESPECIALES_MS + CLIENTE_CUMPLEANIOS_ENDPOINT + id);
         return true;
     }
 

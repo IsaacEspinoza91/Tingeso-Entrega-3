@@ -66,22 +66,16 @@ public class ClienteReservaService {
     }
 
     // Obtiene la cantidad de veces que un cliente segun id ha participado en una reserva, sea comprador o integrante
-    // Probada.
     private int getReservasCompletadasUltimoMes(Long idCliente) {
-        // Obtener fecha de hace 30 dias atras
+        // fecha de hace 30 dias atras
         LocalDate fechaInicio = LocalDate.now().minusDays(30);
         return clienteReservaRepository.countReservasCompletadasDespuesDeFecha(idCliente, fechaInicio);
     }
 
     // Obtiene el descuento segun reglas de cliente frecuente segun la id del cliente
-    // Utiliza la funcion getReservasCompletadasUltimoMes para obtener la cantidad de visitas del cliente y usa
-    //   el metodo getPorcentajeDescuentoClienteFrecuenteByCantidadVisitas del servicio de descunetoClienteFrecuente
-    //   para obtener el valor porcentual
-    // Probada
     public double getDescuentoClienteFrecuenteSegunIdCliente(Long idCliente) {
-        int cantidadVisitas = getReservasCompletadasUltimoMes(idCliente);
-        return descuentoClienteFrecuenteService.getPorcentajeDescuentoClienteFrecuenteByCantidadVisitas(cantidadVisitas);
+        int cantidadVisitasUltimoMes = getReservasCompletadasUltimoMes(idCliente);
+        return descuentoClienteFrecuenteService.getPorcentajeDescuentoClienteFrecuenteByCantidadVisitas(cantidadVisitasUltimoMes);
     }
-
 
 }

@@ -15,8 +15,6 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
-
-
     @GetMapping("/")
     public ResponseEntity<List<Cliente>> getClientes() {
         List<Cliente> clientes = clienteService.getClientes();

@@ -1,6 +1,6 @@
-package com.kartingrm.plan_service.repository;
+package com.kartingrm.planservice.repository;
 
-import com.kartingrm.plan_service.entity.Plan;
+import com.kartingrm.planservice.entity.Plan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

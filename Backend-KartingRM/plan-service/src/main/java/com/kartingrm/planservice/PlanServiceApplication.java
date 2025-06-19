@@ -1,4 +1,4 @@
-package com.kartingrm.plan_service;
+package com.kartingrm.planservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

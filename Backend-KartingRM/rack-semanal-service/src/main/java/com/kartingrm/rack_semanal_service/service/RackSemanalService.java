@@ -26,14 +26,11 @@ public class RackSemanalService {
     }
 
     public ReservaSemanalResponse obtenerReservasSemana(int semanaOffset) {
-        // Determinar fecha actual
         LocalDate hoy = LocalDate.now();
-        // Determinar lunes inicio de semana
         LocalDate inicioSemana = hoy.with(DayOfWeek.MONDAY).plusWeeks(semanaOffset);
-        // Deteminar domingo fin de semana
         LocalDate finSemana = inicioSemana.plusDays(6);
 
-        // Obtener reservas (tabla rack_semana) entre el inicio y fin de semana
+        // reservas en la semana
         List<RackReserva> reservas = reservaRepository.findByFechaBetween(inicioSemana, finSemana);
 
         // Creacion de diccionario agrupado segun la fecha. Key (fecha), Value (lista reservas)
@@ -62,7 +59,6 @@ public class RackSemanalService {
 
 
     private List<ReservaInfo> convertirReservas(List<RackReserva> reservas) {
-        // Condicion no hay reservas para el dia
         if (reservas == null) return Collections.emptyList();
 
         // Retorno lista con los elementos reservaInfo del dia

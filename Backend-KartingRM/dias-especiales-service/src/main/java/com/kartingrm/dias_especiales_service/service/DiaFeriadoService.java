@@ -2,7 +2,6 @@ package com.kartingrm.dias_especiales_service.service;
 
 import com.kartingrm.dias_especiales_service.entity.DiaFeriado;
 import com.kartingrm.dias_especiales_service.repository.DiaFeriadoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -13,9 +12,10 @@ import java.util.Optional;
 @Service
 public class DiaFeriadoService {
 
-    @Autowired
     private DiaFeriadoRepository diaFeriadoRepository;
-
+    public DiaFeriadoService(DiaFeriadoRepository diaFeriadoRepository) {
+        this.diaFeriadoRepository = diaFeriadoRepository;
+    }
 
     public List<DiaFeriado> getDiasFeriados() {
         return diaFeriadoRepository.findAll();

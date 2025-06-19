@@ -2,22 +2,21 @@ package com.kartingrm.dias_especiales_service.controller;
 
 import com.kartingrm.dias_especiales_service.entity.DiaFeriado;
 import com.kartingrm.dias_especiales_service.service.DiaFeriadoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/dias-especiales-service/dias-feriados")
 public class DiaFeriadoController {
 
-    @Autowired
     private DiaFeriadoService diaFeriadoService;
-
+    public DiaFeriadoController(DiaFeriadoService diaFeriadoService) {
+        this.diaFeriadoService = diaFeriadoService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<DiaFeriado>> getDiasFeriados() {
@@ -59,9 +58,9 @@ public class DiaFeriadoController {
     }
 
     // Obtiene dias feriados segun anio
-    @GetMapping("/anio/{numero_anio}")
-    public ResponseEntity<List<DiaFeriado>> getDiasFeriadosByAnio(@PathVariable Integer numero_anio) {
-        List<DiaFeriado> diasFeriadosEnAnio = diaFeriadoService.getDiasFeriadosByAnio(numero_anio);
+    @GetMapping("/anio/{numeroAnio}")
+    public ResponseEntity<List<DiaFeriado>> getDiasFeriadosByAnio(@PathVariable Integer numeroAnio) {
+        List<DiaFeriado> diasFeriadosEnAnio = diaFeriadoService.getDiasFeriadosByAnio(numeroAnio);
         return ResponseEntity.ok(diasFeriadosEnAnio);
     }
 }

@@ -2,7 +2,6 @@ package com.kartingrm.dias_especiales_service.service;
 
 import com.kartingrm.dias_especiales_service.entity.ClienteCumpleanios;
 import com.kartingrm.dias_especiales_service.repository.ClienteCumpleaniosRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -13,9 +12,10 @@ import java.util.Optional;
 @Service
 public class ClienteCumpleaniosService {
 
-    @Autowired
     private ClienteCumpleaniosRepository clienteCumpleaniosRepository;
-
+    public ClienteCumpleaniosService(ClienteCumpleaniosRepository clienteCumpleaniosRepository) {
+        this.clienteCumpleaniosRepository = clienteCumpleaniosRepository;
+    }
 
     public List<ClienteCumpleanios> getClientesCumpleanios() {
         return clienteCumpleaniosRepository.findAll();

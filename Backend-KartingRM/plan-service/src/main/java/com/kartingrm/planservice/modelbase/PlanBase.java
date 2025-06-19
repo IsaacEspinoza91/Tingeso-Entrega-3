@@ -1,59 +1,28 @@
-package com.kartingrm.plan_service.entity;
+package com.kartingrm.planservice.modelbase;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 
-@Entity
-@Table(name = "plan")
-public class Plan {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+// No es entidad, pero sus atributos son mapeados a la clase hija entidad
+@MappedSuperclass
+public abstract class PlanBase {
 
     @Column(nullable = false, length = 100)
-    private String descripcion;
+    protected String descripcion;
 
     @Column(name = "duracion_total", nullable = false)
-    private int duracionTotal;
+    protected int duracionTotal;
 
     @Column(name = "precio_regular", nullable = false, precision = 10, scale = 2)
-    private Double precioRegular;
+    protected Double precioRegular;
 
     @Column(name = "precio_fin_semana", nullable = false, precision = 10, scale = 2)
-    private Double precioFinSemana;
+    protected Double precioFinSemana;
 
     @Column(name = "precio_feriado", nullable = false, precision = 10, scale = 2)
-    private Double precioFeriado;
+    protected Double precioFeriado;
 
-    public Plan() {
-    }
-
-    public Plan(Long id, String descripcion, int duracionTotal, Double precioRegular, Double precioFinSemana, Double precioFeriado) {
-        this.id = id;
-        this.descripcion = descripcion;
-        this.duracionTotal = duracionTotal;
-        this.precioRegular = precioRegular;
-        this.precioFinSemana = precioFinSemana;
-        this.precioFeriado = precioFeriado;
-    }
-
-    public Plan(String descripcion, int duracionTotal, Double precioRegular, Double precioFinSemana, Double precioFeriado) {
-        this.descripcion = descripcion;
-        this.duracionTotal = duracionTotal;
-        this.precioRegular = precioRegular;
-        this.precioFinSemana = precioFinSemana;
-        this.precioFeriado = precioFeriado;
-    }
-
-    // Metodos
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    // Getters y setters
     public String getDescripcion() {
         return descripcion;
     }

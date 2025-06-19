@@ -2,7 +2,6 @@ package com.kartingrm.dias_especiales_service.controller;
 
 import com.kartingrm.dias_especiales_service.entity.ClienteCumpleanios;
 import com.kartingrm.dias_especiales_service.service.ClienteCumpleaniosService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +13,10 @@ import java.util.List;
 @RequestMapping("/api/dias-especiales-service/cliente-cumpleanios")
 public class ClienteCumpleaniosController {
 
-    @Autowired
     private ClienteCumpleaniosService clienteCumpleaniosService;
+    public ClienteCumpleaniosController(ClienteCumpleaniosService clienteCumpleaniosService) {
+        this.clienteCumpleaniosService = clienteCumpleaniosService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<ClienteCumpleanios>> getClientesCumpleanios() {
