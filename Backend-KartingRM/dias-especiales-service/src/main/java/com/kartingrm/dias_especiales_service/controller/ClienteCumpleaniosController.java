@@ -36,7 +36,8 @@ public class ClienteCumpleaniosController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ClienteCumpleanios> updateClienteCumpleaniosByIdCliente(@PathVariable Long id, @RequestBody ClienteCumpleanios clienteCumpleanios) {
+    public ResponseEntity<ClienteCumpleanios> updateClienteCumpleaniosByIdCliente(@PathVariable Long id,
+                                                                                  @RequestBody ClienteCumpleanios clienteCumpleanios) {
         ClienteCumpleanios clienteCumpleaniosActualizado = clienteCumpleaniosService.updateClienteCumpleaniosByIdCliente(id, clienteCumpleanios);
         return ResponseEntity.ok(clienteCumpleaniosActualizado);
     }
@@ -48,9 +49,8 @@ public class ClienteCumpleaniosController {
     }
 
     @GetMapping("/cliente/{idCliente}/esCumpleaniero")
-    public ResponseEntity<Boolean> verificarCumpleanios(
-            @PathVariable Long idCliente,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+    public ResponseEntity<Boolean> verificarCumpleanios(@PathVariable Long idCliente,
+                                                        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
 
         boolean esCumpleanios = clienteCumpleaniosService.estaDeCumpleanios(idCliente, fecha);
         return ResponseEntity.ok(esCumpleanios);

@@ -37,9 +37,7 @@ public class ReservaService {
         List<ReservaDTO> reservasDTO = new ArrayList<>();
         for (Reserva reservaActual : reservas) {
 
-            // Obtener Cliente
             ClienteDTO cliente = restTemplate.getForObject("http://cliente-desc-frecu-service/api/cliente-service/cliente/" + reservaActual.getIdReservante(), ClienteDTO.class);
-            // Obtener Plan
             PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reservaActual.getIdPlan(), PlanDTO.class);
 
             // Crear DTO de respuesta. Patron Builder
@@ -70,9 +68,7 @@ public class ReservaService {
         Optional<Reserva> reserva = reservaRepository.findById(id);
         if (reserva.isEmpty()) throw new EntityNotFoundException("Reserva de ID " + id + " no encontrada");
 
-        // Obtener Cliente
         ClienteDTO cliente = restTemplate.getForObject("http://cliente-desc-frecu-service/api/cliente-service/cliente/" + reserva.get().getIdReservante(), ClienteDTO.class);
-        // Obtener Plan
         PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reserva.get().getIdPlan(), PlanDTO.class);
 
         // Crear DTO de respuesta. Patron Builder
@@ -101,9 +97,7 @@ public class ReservaService {
         List<ReservaDTO> reservasDTO = new ArrayList<>();
         for (Reserva reservaActual : reservas) {
 
-            // Obtener Cliente
             ClienteDTO cliente = restTemplate.getForObject("http://cliente-desc-frecu-service/api/cliente-service/cliente/" + reservaActual.getIdReservante(), ClienteDTO.class);
-            // Obtener Plan
             PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reservaActual.getIdPlan(), PlanDTO.class);
 
             // Crear DTO de respuesta. Patron Builder
@@ -128,9 +122,7 @@ public class ReservaService {
     // Considera que no existan reservas previas en el horario, ademas ingresa automaticamente la hora de fin segun el plan
     // El cuerpo ya tiene id cliente reservante e id plan
     public Reserva createReserva(Reserva reserva) {
-        // Obtener Cliente
         ClienteDTO cliente = restTemplate.getForObject("http://cliente-desc-frecu-service/api/cliente-service/cliente/" + reserva.getIdReservante(), ClienteDTO.class);
-        // Obtener Plan
         PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
 
         // Verificar parametros validos
@@ -145,25 +137,10 @@ public class ReservaService {
             if (existeReservaEntreDosHoras(reserva.getFecha(), horaInicio, horaFinalCalculada))
                 throw new IllegalStateException("Ya existe una reserva con ese horario");
 
-
-
-            // Verificar Horario de inicio y fin validos.
-            //  Lunes a Viernes: 14:00 a 22:00
-            //  Sabados, Domingos, Feriados: 10:00 a 22:00
-            boolean esFinDeSemana = reserva.getFecha().getDayOfWeek().getValue() >= 6;// Determina fin de semana o no
-
-            // Obtener bool si es feriado
+            // Verificar horario valido de atencion
+            boolean esFinDeSemana = reserva.getFecha().getDayOfWeek().getValue() >= 6;
             boolean esFeriado = restTemplate.getForObject("http://dias-especiales-service/api/dias-especiales-service/dias-feriados/esFeriado?fecha=" + reserva.getFecha(),Boolean.class);
-            if (esFeriado || esFinDeSemana){// Horario fin de semana o feriado
-                // Horario antes o despues del horario de servicio
-                if (horaInicio.isBefore(LocalTime.of(10,00,00)) || horaFinalCalculada.isAfter(LocalTime.of(22,00,00))) {
-                    throw new IllegalStateException("Horario incorrecto. Domingos, sábados y feriados: 10:00 a 22:00");
-                }
-            } else { // Horario semana
-                if (horaInicio.isBefore(LocalTime.of(14,00,00)) || horaFinalCalculada.isAfter(LocalTime.of(22,00,00))) {
-                    throw new IllegalStateException("Horario incorrecto. Lunes a Viernes: 14:00 a 22:00");
-                }
-            }
+            esHorarioValido(esFeriado, esFinDeSemana, reserva);
 
             // Se guarda reserva en la base de datos
             reservaRepository.save(reserva);
@@ -207,9 +184,7 @@ public class ReservaService {
         reserva.setId(id);
 
         // Calculo de hora final segun nueva hora o plan
-        // Obtener Plan
         PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
-        // Obtener Cliente
         ClienteDTO cliente = restTemplate.getForObject("http://cliente-desc-frecu-service/api/cliente-service/cliente/" + reserva.getIdReservante(), ClienteDTO.class);
 
         // Solo permite actualizar la hora inicial
@@ -222,16 +197,7 @@ public class ReservaService {
         // Verificar horario valido de atencion
         boolean esFinDeSemana = reserva.getFecha().getDayOfWeek().getValue() >= 6;// Determina fin de semana o no
         boolean esFeriado = restTemplate.getForObject("http://dias-especiales-service/api/dias-especiales-service/dias-feriados/esFeriado?fecha=" + reserva.getFecha(),Boolean.class);
-        if (esFeriado || esFinDeSemana){// Horario fin de semana o feriado
-            // Horario antes o despues del horario de servicio
-            if (horaInicio.isBefore(LocalTime.of(10,00,00)) || horaFinalCalculada.isAfter(LocalTime.of(22,00,00))) {
-                throw new IllegalStateException("Horario incorrecto. Domingos, sábados y feriados: 10:00 a 22:00");
-            }
-        } else { // Horario semana
-            if (horaInicio.isBefore(LocalTime.of(14,00,00)) || horaFinalCalculada.isAfter(LocalTime.of(22,00,00))) {
-                throw new IllegalStateException("Horario incorrecto. Lunes a Viernes: 14:00 a 22:00");
-            }
-        }
+        esHorarioValido(esFeriado, esFinDeSemana, reserva);
 
         // Se guarda reserva en base de datos
         reservaRepository.save(reserva);
@@ -286,13 +252,29 @@ public class ReservaService {
 
     //  Metodos privados. Logica interna
 
-    // Obtener reservas existentes entre dos horas de un dia
-    // Se usa en como condicion para crear reservas
+    // Obtener reservas existentes entre dos horas de un dia. Condicion para crear reservas
     private boolean existeReservaEntreDosHoras(LocalDate fecha, LocalTime horaInicio, LocalTime horaFinal) {
         return reservaRepository.existeReservaEntreDosHoras(fecha, horaInicio, horaFinal);
     }
 
+    // Validacion si reserva es en horario de trabajo
+    //  Lunes a Viernes: 14:00 a 22:00
+    //  Sabados, Domingos, Feriados: 10:00 a 22:00
+    private void esHorarioValido(Boolean diaFeriado, Boolean DiaFinDeSemana, Reserva reserva) {
+        // Horario fuera semana
+        if (diaFeriado || DiaFinDeSemana){
+            if (reserva.getHoraInicio().isBefore(LocalTime.of(10,00,00)) ||
+                    reserva.getHoraFin().isAfter(LocalTime.of(22,00,00))) {
+                throw new IllegalStateException("Horario incorrecto. Domingos, sábados y feriados: 10:00 a 22:00");
+            }
+        } else { // Horario semana
+            if (reserva.getHoraInicio().isBefore(LocalTime.of(14,00,00)) ||
+                    reserva.getHoraFin().isAfter(LocalTime.of(22,00,00))) {
+                throw new IllegalStateException("Horario incorrecto. Lunes a Viernes: 14:00 a 22:00");
+            }
+        }
+    }
 
-    // Metodos para obtener info para reportes
+
 
 }

@@ -7,7 +7,7 @@ spring:
         git:
           default-label: main
           uri: https://github.com/IsaacEspinoza91/Tingeso-Entrega-3
-          search-paths: /Backend%20KartingRM/config-data
+          search-paths: Backend-KartingRM/config-data
           clone-on-start: true
   application:
     name: config-service

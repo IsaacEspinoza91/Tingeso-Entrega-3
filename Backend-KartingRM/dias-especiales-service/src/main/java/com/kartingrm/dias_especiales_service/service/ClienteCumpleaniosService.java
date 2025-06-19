@@ -48,7 +48,6 @@ public class ClienteCumpleaniosService {
         return true;
     }
 
-
     // Obtiene valor booleana sobre si el cliente cumple anios en determinada fecha
     public boolean estaDeCumpleanios(Long idCliente, LocalDate fecha) {
         return clienteCumpleaniosRepository.estaDeCumpleanios(idCliente, fecha);

@@ -46,7 +46,6 @@ public class DescuentoClienteFrecuenteService {
         return true;
     }
 
-
     // Obtener el porcentaje de descuento segun la cantidad de visitas, uso de query SQL
     public double getPorcentajeDescuentoClienteFrecuenteByCantidadVisitas(int visitas) {
         Optional<DescuentoClienteFrecuente> descuento = descuentoClienteFrecuenteRepository.findByVisitasBetweenMinimoMaximo(visitas);

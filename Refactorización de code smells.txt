@@ -1,0 +1,12 @@
+
+1.- Plan-service: CHECK
+
+2.- Dias-especiales:
+	- ClienteCumpleanios:  CHECK
+	- DiaFeriado: CHECK
+
+3.- DescuentoGrupo: CHECK
+
+4.- Cliente-desc-frecu:
+	- DescuentoClienteFrecuente: CHECK
+	- 
