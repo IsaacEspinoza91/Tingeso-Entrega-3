@@ -1,4 +1,4 @@
-package com.kartingrm.rack_semanal_service.DTO;
+package com.kartingrm.rack_semanal_service.dto;
 
 import java.util.List;
 

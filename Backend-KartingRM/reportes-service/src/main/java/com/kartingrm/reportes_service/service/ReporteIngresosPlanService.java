@@ -1,27 +1,25 @@
 package com.kartingrm.reportes_service.service;
 
-import com.kartingrm.reportes_service.DTO.ReporteIngresosPorPlanDTO;
+import com.kartingrm.reportes_service.dto.ReporteIngresosPorPlanDTO;
 import com.kartingrm.reportes_service.entity.ReporteIngresosPlan;
+import com.kartingrm.reportes_service.modelbase.ReportesIngresosServiceBase;
 import com.kartingrm.reportes_service.repository.ReporteIngresosPlanRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class ReporteIngresosPlanService {
+public class ReporteIngresosPlanService extends ReportesIngresosServiceBase {
 
-    @Autowired
     private ReporteIngresosPlanRepository reportesPlanRepository;
-    // formato fecha:   mes-anio
-    private final DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MMMM-yyyy", new Locale("es", "ES"));
+    public ReporteIngresosPlanService(ReporteIngresosPlanRepository reportesPlanRepository) {
+        this.reportesPlanRepository = reportesPlanRepository;
+    }
 
 
     public List<ReporteIngresosPorPlanDTO> generarReporteIngresosPorPlan(int mesInicio, int anioInicio, int mesFin, int anioFin) {
-        // verificar fechas validas
         LocalDate inicio = LocalDate.of(anioInicio, mesInicio, 1);
         LocalDate fin = LocalDate.of(anioFin, mesFin, 1).plusMonths(1).minusDays(1);
 
@@ -30,7 +28,6 @@ public class ReporteIngresosPlanService {
         // Obtener reportes de la base de datos
         List<ReporteIngresosPlan> reportes = reportesPlanRepository.findReportesPlanEntreMeses(inicio, fin);
 
-        // Llamado a funcion procesas datos de reporte para generar lista de obejtos ReporteIngresos
         return procesarDatosReporte(reportes, inicio, fin);
     }
 
@@ -46,18 +43,9 @@ public class ReporteIngresosPlanService {
                 .map(ReporteIngresosPlan::getDescripcionPlan)   // Se mapea funcion para obtener descripcion del plan
                 .collect(Collectors.toSet());
 
-        // generar la lista de meses segun el rango
-        List<LocalDate> meses = new ArrayList<>();
-        LocalDate fecha = inicio;
-        while (!fecha.isAfter(fin)) {
-            meses.add(fecha.withDayOfMonth(1));     // Se agrega el primer dia del mes
-            fecha = fecha.plusMonths(1);    // se suma un mes a la fecha
-        }
+        List<LocalDate> meses = generarListaMeses(inicio, fin);
 
-        // Diccionario para acumular totales por mes
-        Map<String, Double> totalesPorMes = new LinkedHashMap<>();
-        // Se agregan valores a totalesPorMes, elementso fecha y double 0.0
-        meses.forEach(mes -> totalesPorMes.put(formatearMes(mes), 0.0));
+        Map<String, Double> totalesPorMes = inicializarTotalesPorMes(meses);
 
         // Lista para retorno, se van acumulando los elementos ReporteIngresoPorPlanDTO
         List<ReporteIngresosPorPlanDTO> resultado = new ArrayList<>();
@@ -88,50 +76,35 @@ public class ReporteIngresosPlanService {
                 totalesPorMes.put(mesKey, totalesPorMes.get(mesKey) + ingresos);
             }
 
-            resultado.add(new ReporteIngresosPorPlanDTO(
-                    plan,
-                    ingresosPorMes,
-                    totalPlan,
-                    false
-            ));
+            resultado.add(new ReporteIngresosPorPlanDTO(plan, ingresosPorMes, totalPlan, false));
         }
 
         // Ordenar los planes segun cantidad de vueltas (de mayor a menor)
         resultado.sort((a, b) -> {
             int vueltasA = extraerVueltas(a.getDescripcionPlan());
             int vueltasB = extraerVueltas(b.getDescripcionPlan());
-            return Integer.compare(vueltasB, vueltasA); // Orden descendente par mostrar desde el front
+            return Integer.compare(vueltasB, vueltasA); // Orden descendente para mostrar desde el front
         });
 
-        // Calcular total general
         double totalGeneral = totalesPorMes.values().stream().mapToDouble(Double::doubleValue).sum();
 
-        // Agregar a lista el elemeneto final de total general, este obtiene las sumas de las columnas, y de la ultima final (total general)
-        resultado.add(new ReporteIngresosPorPlanDTO(
-                "TOTAL GENERAL",
-                totalesPorMes,
-                totalGeneral,
-                true
-        ));
+        // Agregar a lista el elemeneto final de total general
+        resultado.add(new ReporteIngresosPorPlanDTO("TOTAL GENERAL", totalesPorMes, totalGeneral, true));
 
         return resultado;
     }
 
     // Permite obtener la cantidad de vueltas de un string con el formato de descripcion de plan.
     //  Ejemplo, si "20 vueltas o max 20 min" , retorna 20
-    private int extraerVueltas(String descripcionPlan) {
+    public int extraerVueltas(String descripcionPlan) {
         try {
             String[] partes = descripcionPlan.split(" ");
-            return Integer.parseInt(partes[0]);     // Retorna el primer elemento de la lista
+            return Integer.parseInt(partes[0]);     // primer elemento de la lista
         } catch (Exception e) {
-            return 0; // Otros planes sin el formato
+            return 0;
         }
     }
 
-
-    private String formatearMes(LocalDate fecha) {
-        return fecha.format(monthFormatter);
-    }
 
 
     // Actualiza los ingresos en registro segun mes en tabla reporte, considera caso cuando se marca como pagado
@@ -154,12 +127,7 @@ public class ReporteIngresosPlanService {
         if (reporteExistente.isPresent()) {
             reportesPlanRepository.sumarIngresos(idPlan, mes, monto);
         } else {
-            ReporteIngresosPlan nuevoReporte = new ReporteIngresosPlan(
-                    idPlan,
-                    descripcionPlan,
-                    mes,
-                    monto
-            );
+            ReporteIngresosPlan nuevoReporte = new ReporteIngresosPlan(idPlan, descripcionPlan, mes, monto);
             reportesPlanRepository.save(nuevoReporte);
         }
     }

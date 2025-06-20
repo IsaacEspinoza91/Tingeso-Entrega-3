@@ -2,7 +2,6 @@ package com.kartingrm.cliente_desc_frecu_service.controller;
 
 import com.kartingrm.cliente_desc_frecu_service.entity.Cliente;
 import com.kartingrm.cliente_desc_frecu_service.service.ClienteService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,8 +11,10 @@ import java.util.List;
 @RequestMapping("/api/cliente-service/cliente")
 public class ClienteController {
 
-    @Autowired
     private ClienteService clienteService;
+    public ClienteController(ClienteService clienteService) {
+        this.clienteService = clienteService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<Cliente>> getClientes() {
@@ -45,9 +46,9 @@ public class ClienteController {
         return ResponseEntity.ok(clientes);
     }
 
-    @GetMapping("/{id_cliente}")
-    public ResponseEntity<Cliente> getClienteById(@PathVariable Long id_cliente) {
-        Cliente cliente = clienteService.getClienteById(id_cliente);
+    @GetMapping("/{idCliente}")
+    public ResponseEntity<Cliente> getClienteById(@PathVariable Long idCliente) {
+        Cliente cliente = clienteService.getClienteById(idCliente);
         return ResponseEntity.ok(cliente);
     }
 
@@ -57,27 +58,27 @@ public class ClienteController {
         return ResponseEntity.ok(clienteCreated);
     }
 
-    @PutMapping("/{id_cliente}")
-    public ResponseEntity<Cliente> updateCliente(@PathVariable Long id_cliente, @RequestBody Cliente cliente) {
-        Cliente clienteUpdated = clienteService.updateCliente(id_cliente, cliente);
+    @PutMapping("/{idCliente}")
+    public ResponseEntity<Cliente> updateCliente(@PathVariable Long idCliente, @RequestBody Cliente cliente) {
+        Cliente clienteUpdated = clienteService.updateCliente(idCliente, cliente);
         return ResponseEntity.ok(clienteUpdated);
     }
 
-    @DeleteMapping("/{id_cliente}")
-    public ResponseEntity<Boolean> deleteCliente(@PathVariable Long id_cliente) {
-        clienteService.deleteCliente(id_cliente);
+    @DeleteMapping("/{idCliente}")
+    public ResponseEntity<Boolean> deleteCliente(@PathVariable Long idCliente) {
+        clienteService.deleteCliente(idCliente);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/activate/{id_cliente}")
-    public ResponseEntity<Cliente> activateCliente(@PathVariable Long id_cliente) {
-        Cliente cliente = clienteService.activateCliente(id_cliente);
+    @PutMapping("/activate/{idCliente}")
+    public ResponseEntity<Cliente> activateCliente(@PathVariable Long idCliente) {
+        Cliente cliente = clienteService.activateCliente(idCliente);
         return ResponseEntity.ok(cliente);
     }
 
-    @PutMapping("/inactivate/{id_cliente}")
-    public ResponseEntity<Cliente> inactivateCliente(@PathVariable Long id_cliente) {
-        Cliente cliente = clienteService.inactivateCliente(id_cliente);
+    @PutMapping("/inactivate/{idCliente}")
+    public ResponseEntity<Cliente> inactivateCliente(@PathVariable Long idCliente) {
+        Cliente cliente = clienteService.inactivateCliente(idCliente);
         return ResponseEntity.ok(cliente);
     }
 

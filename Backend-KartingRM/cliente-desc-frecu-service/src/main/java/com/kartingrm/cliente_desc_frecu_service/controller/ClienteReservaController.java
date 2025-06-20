@@ -3,20 +3,19 @@ package com.kartingrm.cliente_desc_frecu_service.controller;
 import com.kartingrm.cliente_desc_frecu_service.entity.ClienteReserva;
 import com.kartingrm.cliente_desc_frecu_service.entity.ClienteReservaId;
 import com.kartingrm.cliente_desc_frecu_service.service.ClienteReservaService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/cliente-service/cliente-reserva")
 public class ClienteReservaController {
 
-    @Autowired
     private ClienteReservaService clienteReservaService;
+    public ClienteReservaController(ClienteReservaService clienteReservaService) {
+        this.clienteReservaService = clienteReservaService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<ClienteReserva>> getAllClienteReserva() {
@@ -32,7 +31,7 @@ public class ClienteReservaController {
     }
 
     @GetMapping("/cliente/{idCliente}")
-    public ResponseEntity<List<ClienteReserva>> getAllClienteReservaByClienteId(@RequestParam Long idCliente) {
+    public ResponseEntity<List<ClienteReserva>> getAllClienteReservaByClienteId(@PathVariable Long idCliente) {
         List<ClienteReserva> clienteReservas = clienteReservaService.obtenerReservasPorClienteId(idCliente);
         return ResponseEntity.ok(clienteReservas);
     }

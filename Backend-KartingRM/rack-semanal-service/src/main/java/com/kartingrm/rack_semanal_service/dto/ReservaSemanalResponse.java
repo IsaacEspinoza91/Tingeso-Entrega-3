@@ -1,12 +1,12 @@
-package com.kartingrm.rack_semanal_service.DTO;
+package com.kartingrm.rack_semanal_service.dto;
 
 public class ReservaSemanalResponse {
     private String fechaInicioSemana;
     private String fechaFinSemana;
     private ReservasPorDia reservasPorDia;
 
-    // Constructores, getters y setters
     public ReservaSemanalResponse() {
+        // Constructor vacio para construccion por partes en service
     }
 
     public String getFechaInicioSemana() {

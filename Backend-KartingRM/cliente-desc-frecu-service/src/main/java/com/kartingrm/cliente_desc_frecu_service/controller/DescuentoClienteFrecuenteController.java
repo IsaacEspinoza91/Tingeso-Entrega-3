@@ -2,7 +2,6 @@ package com.kartingrm.cliente_desc_frecu_service.controller;
 
 import com.kartingrm.cliente_desc_frecu_service.entity.DescuentoClienteFrecuente;
 import com.kartingrm.cliente_desc_frecu_service.service.DescuentoClienteFrecuenteService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,8 +11,10 @@ import java.util.List;
 @RequestMapping("/api/cliente-service/descuento-frecuente")
 public class DescuentoClienteFrecuenteController {
 
-    @Autowired
     private DescuentoClienteFrecuenteService descuentoClienteFrecuenteService;
+    public DescuentoClienteFrecuenteController(DescuentoClienteFrecuenteService descuentoClienteFrecuenteService) {
+        this.descuentoClienteFrecuenteService = descuentoClienteFrecuenteService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<DescuentoClienteFrecuente>> getDescuentosClienteFrecuente() {

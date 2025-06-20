@@ -1,8 +1,7 @@
 package com.kartingrm.reportes_service.controller;
 
-import com.kartingrm.reportes_service.DTO.ReporteIngresosPorPlanDTO;
+import com.kartingrm.reportes_service.dto.ReporteIngresosPorPlanDTO;
 import com.kartingrm.reportes_service.service.ReporteIngresosPlanService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
@@ -12,8 +11,10 @@ import java.util.List;
 @RequestMapping("/api/reportes-service/segun-plan")
 public class ReporteIngresosPlanController {
 
-    @Autowired
     private ReporteIngresosPlanService reporteService;
+    public ReporteIngresosPlanController(ReporteIngresosPlanService reporteService) {
+        this.reporteService = reporteService;
+    }
 
     // Metodo para actuazliar registros de reportes. Si esSuma es true se crea o suma el monto al registro del mes.
     // si esSuma es false, se resta el valor al registro del mes

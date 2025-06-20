@@ -1,4 +1,4 @@
-package com.kartingrm.cliente_desc_frecu_service.DTO;
+package com.kartingrm.cliente_desc_frecu_service.dto;
 
 import java.time.LocalDate;
 

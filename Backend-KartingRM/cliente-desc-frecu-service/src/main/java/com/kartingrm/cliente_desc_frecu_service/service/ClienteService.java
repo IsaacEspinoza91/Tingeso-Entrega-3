@@ -1,9 +1,8 @@
 package com.kartingrm.cliente_desc_frecu_service.service;
 
-import com.kartingrm.cliente_desc_frecu_service.DTO.ClienteCumpleaniosRequest;
+import com.kartingrm.cliente_desc_frecu_service.dto.ClienteCumpleaniosRequest;
 import com.kartingrm.cliente_desc_frecu_service.entity.Cliente;
 import com.kartingrm.cliente_desc_frecu_service.repository.ClienteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -15,16 +14,17 @@ import java.util.Optional;
 @Service
 public class ClienteService {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
-
-    @Autowired
-    private RestTemplate restTemplate;
-
     // Constantes
     static final String URL_DIAS_ESPECIALES_MS = "http://dias-especiales-service";
     static final String DIAS_ESPECIALES_BASE = "/api/dias-especiales-service";
     static final String CLIENTE_CUMPLEANIOS_ENDPOINT = DIAS_ESPECIALES_BASE + "/cliente-cumpleanios/";
+
+    private ClienteRepository clienteRepository;
+    private RestTemplate restTemplate;
+    public ClienteService(ClienteRepository clienteRepository, RestTemplate restTemplate) {
+        this.clienteRepository = clienteRepository;
+        this.restTemplate = restTemplate;
+    }
 
 
     public List<Cliente> getClientes() {
@@ -66,10 +66,7 @@ public class ClienteService {
         // Se guarda relacion cliente cumpleanios en la tabla correspondiente en MS44
         ClienteCumpleaniosRequest cumpleaniosRequest = new ClienteCumpleaniosRequest(clienteCreado.getId(), clienteCreado.getFechaNacimiento());
         HttpEntity<ClienteCumpleaniosRequest> cumpleaniosRequestBody = new HttpEntity<>(cumpleaniosRequest);
-
-        ClienteCumpleaniosRequest respuesta = restTemplate.postForObject(URL_DIAS_ESPECIALES_MS + CLIENTE_CUMPLEANIOS_ENDPOINT,
-                cumpleaniosRequestBody,
-                ClienteCumpleaniosRequest.class);
+        restTemplate.postForObject(URL_DIAS_ESPECIALES_MS + CLIENTE_CUMPLEANIOS_ENDPOINT, cumpleaniosRequestBody, ClienteCumpleaniosRequest.class);
 
         return clienteCreado;
     }
@@ -90,8 +87,7 @@ public class ClienteService {
                     ClienteCumpleaniosRequest.class);
         }
 
-        Cliente clienteActualizado = clienteRepository.save(cliente);
-        return clienteActualizado;
+        return clienteRepository.save(cliente);
     }
 
     public Boolean deleteCliente(Long id) {
@@ -130,7 +126,6 @@ public class ClienteService {
         Optional<Cliente> clienteOptional = clienteRepository.findById(id);
         if (clienteOptional.isEmpty()) throw new EntityNotFoundException("Cliente id " + id + " no encontrado");
 
-        String nombreCompleto = clienteOptional.get().getNombre() + " " + clienteOptional.get().getApellido();
-        return nombreCompleto;
+        return clienteOptional.get().getNombre() + " " + clienteOptional.get().getApellido();
     }
 }

@@ -1,8 +1,8 @@
 package com.kartingrm.rack_semanal_service.controller;
 
+import com.kartingrm.rack_semanal_service.dto.RackReservaDTO;
 import com.kartingrm.rack_semanal_service.entity.RackReserva;
 import com.kartingrm.rack_semanal_service.service.RackReservaService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,8 +12,10 @@ import java.util.List;
 @RequestMapping("/api/rack-semanal-service/rack-reserva")
 public class RackReservaController {
 
-    @Autowired
     private RackReservaService rackReservaService;
+    public RackReservaController(RackReservaService rackReservaService) {
+        this.rackReservaService = rackReservaService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<RackReserva>> getRackReservas() {
@@ -28,23 +30,21 @@ public class RackReservaController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<RackReserva> createRackReserva(@RequestBody RackReserva rackReserva) {
+    public ResponseEntity<RackReserva> createRackReserva(@RequestBody RackReservaDTO rackReserva) {
         try {
             RackReserva rack = rackReservaService.createRackReserva(rackReserva);
             return ResponseEntity.ok(rack);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PutMapping("/{idReserva}")
-    public ResponseEntity<RackReserva> updateRackReserva(@PathVariable("idReserva") Long idReserva, @RequestBody RackReserva rackReserva) {
+    public ResponseEntity<RackReserva> updateRackReserva(@PathVariable("idReserva") Long idReserva, @RequestBody RackReservaDTO rackReserva) {
         try {
             RackReserva rack = rackReservaService.updateRackReserva(idReserva,rackReserva);
             return ResponseEntity.ok(rack);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }

@@ -1,34 +1,33 @@
 package com.kartingrm.reportes_service.service;
 
-import com.kartingrm.reportes_service.DTO.ReporteIngresosPorPersonasDTO;
+import com.kartingrm.reportes_service.dto.ReporteIngresosPorPersonasDTO;
 import com.kartingrm.reportes_service.entity.ReporteIngresosPersonas;
+import com.kartingrm.reportes_service.modelbase.ReportesIngresosServiceBase;
 import com.kartingrm.reportes_service.repository.ReporteIngresosPersonasRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class ReporteIngresosPersonasService {
+public class ReporteIngresosPersonasService extends ReportesIngresosServiceBase {
 
-    @Autowired
+    // Constantes
+    private static final List<String> RANGOS_PERSONAS = List.of("1-2 personas", "3-5 personas", "6-10 personas", "11-15 personas");
+
     private ReporteIngresosPersonasRepository reportesCantidadPersonasRepository;
-    // Permite crear el string para foramto de mes y anio
-    private final DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MMMM-yyyy", new Locale("es", "ES"));
+    public ReporteIngresosPersonasService(ReporteIngresosPersonasRepository reportesCantidadPersonasRepository) {
+        this.reportesCantidadPersonasRepository = reportesCantidadPersonasRepository;
+    }
 
 
 
     public List<ReporteIngresosPorPersonasDTO> generarReporteIngresosPorPersonas(int mesInicio, int anioInicio, int mesFin, int anioFin) {
-        // Validar fechas
         LocalDate inicio = LocalDate.of(anioInicio, mesInicio, 1);
         LocalDate fin = LocalDate.of(anioFin, mesFin, 1).plusMonths(1).minusDays(1);
 
-        if (inicio.isAfter(fin)) {
-            throw new IllegalArgumentException("La fecha de inicio no puede ser posterior a la fecha de fin");
-        }
+        if (inicio.isAfter(fin)) throw new IllegalArgumentException("La fecha de inicio no puede ser posterior a la fecha de fin");
 
         // Obtener registros de reportes segun cantidad de personas
         List<ReporteIngresosPersonas> reportes = reportesCantidadPersonasRepository.findReportesPersonasEntreMeses(inicio, fin);
@@ -38,37 +37,37 @@ public class ReporteIngresosPersonasService {
 
 
 
-
     // Metodos privados, logica interna
 
     private List<ReporteIngresosPorPersonasDTO> procesarDatosReporte(List<ReporteIngresosPersonas> reportes, LocalDate inicio, LocalDate fin) {
-        // Lista con Strings de nombres de cantidad de personas
-        List<String> ordenRangos = Arrays.asList("1-2 personas", "3-5 personas", "6-10 personas", "11-15 personas");
+        List<LocalDate> meses = generarListaMeses(inicio, fin);
 
-        // generar la lista de meses segun el rango
-        List<LocalDate> meses = new ArrayList<>();
-        LocalDate fecha = inicio;
-        while (!fecha.isAfter(fin)) {
-            meses.add(fecha.withDayOfMonth(1));
-            fecha = fecha.plusMonths(1);
-        }
+        // Diccionario para acumular totales por mes. Nombre mes, total
+        Map<String, Double> totalesPorMes = inicializarTotalesPorMes(meses);
 
-        // Diccionario para acumular totales por mes
-        Map<String, Double> totalesPorMes = new LinkedHashMap<>();
-        for (LocalDate mes : meses) {
-            totalesPorMes.put(formatearMes(mes), 0.0);
-        }
 
-        // Lista para generar resultado
+        List<ReporteIngresosPorPersonasDTO> resultado = procesarRangos(RANGOS_PERSONAS, meses,  reportes, totalesPorMes);
+
+        // calcular total general iterando por todos los totales por mes
+        double totalGeneral = 0.0;
+        for (Double valor : totalesPorMes.values()) totalGeneral += valor;
+
+        // Agregar el total general de la ultima fila
+        resultado.add(new ReporteIngresosPorPersonasDTO("TOTAL GENERAL", totalesPorMes, totalGeneral, true));
+        return resultado;
+    }
+
+
+
+    // Genera lista de ReporteIngresosPorPersona sin obtener el total general
+    private List<ReporteIngresosPorPersonasDTO> procesarRangos(List<String> ordenRangos, List<LocalDate> meses, List<ReporteIngresosPersonas> reportes, Map<String, Double> totalesPorMes){
         List<ReporteIngresosPorPersonasDTO> resultado = new ArrayList<>();
 
-        // Iteracion sobre los rangos determinados en lista ordenRangos
         for (String rango : ordenRangos) {
             // Diccionario para obtener ingresos por mes,  se formatea como clave mes y valor 0.0
             Map<String, Double> ingresosPorMes = new LinkedHashMap<>();
-            for (LocalDate mes : meses) {
-                ingresosPorMes.put(formatearMes(mes), 0.0);
-            }
+            for (LocalDate mes : meses) ingresosPorMes.put(formatearMes(mes), 0.0);
+
 
             double totalRango = 0.0;
 
@@ -88,46 +87,20 @@ public class ReporteIngresosPersonasService {
             }
 
             // Se agrega elemento del rango al resultado
-            resultado.add(new ReporteIngresosPorPersonasDTO(
-                    rango,
-                    ingresosPorMes,
-                    totalRango,
-                    false
-            ));
+            resultado.add(new ReporteIngresosPorPersonasDTO(rango, ingresosPorMes, totalRango, false));
         }
-
-        // calcular total general iterando por todos los totales por mes
-        double totalGeneral = 0.0;
-        for (Double valor : totalesPorMes.values()) {
-            totalGeneral += valor;
-        }
-
-        // Agregar el total general de la ultima fila
-        resultado.add(new ReporteIngresosPorPersonasDTO(
-                "TOTAL GENERAL",
-                totalesPorMes,
-                totalGeneral,
-                true
-        ));
-
         return resultado;
     }
 
-    private String formatearMes(LocalDate fecha) {
-        return fecha.format(monthFormatter);
-    }
 
-
-    // Actualizar ingresos de registro en la tabla de reporte, para agregar o quitar segun el atributo bool esSuma
+    // Actualizar ingresos de registro en la tabla de reporte
     @Transactional
     public void actualizarIngresos(String rangoPersonas, LocalDate fechaReserva, Double monto, boolean esSuma) {
         LocalDate primerDiaMes = fechaReserva.withDayOfMonth(1);
 
-        // Si es suma, se crea comprobante --> se agrega valor a reporte
         if (esSuma) {
             sumarIngresos(rangoPersonas, primerDiaMes, monto);
         } else {
-            // Si no es suma, se elimina o cambia a estado no pagado el comprobante --> se resta valor a reporte
             restarIngresos(rangoPersonas, primerDiaMes, monto);
         }
     }

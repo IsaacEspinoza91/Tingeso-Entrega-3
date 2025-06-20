@@ -1,13 +1,14 @@
 
-1.- Plan-service: CHECK    	coverage: 79.3%,  duplications: 0%,  security: 0 open issues,  maintainability: 0 open issues,  debt ratio (overall): 0%
+1.- Plan-service: 	   	coverage: 79.3%,  duplications: 0%,  security: 0 open issues,  maintainability: 0 open issues,  debt ratio (overall): 0%
 
 2.- Dias-especiales:		coverage: 86.5%,  duplications: 0%,  security: 0 open issues,  maintainability: 0 open issues,  debt ratio (overall): 0%
-	- ClienteCumpleanios:  CHECK
-	- DiaFeriado: CHECK
 
-3.- DescuentoGrupo: CHECK	coverage: 86.8%,  duplications: 0%,  security: 0 open issues,  maintainability: 0 open issues,  debt ratio (overall): 0%
+3.- DescuentoGrupo: 		coverage: 86.8%,  duplications: 0%,  security: 0 open issues,  maintainability: 0 open issues,  debt ratio (overall): 0%
 
-4.- Cliente-desc-frecu:
-	- DescuentoClienteFrecuente: CHECK
-	- Cliente: CHECK
- 	- ClienteReserva: CHECK
+4.- RackSemanal:		coverage: 75.5%,  duplications: 0%,  security: 0 open issues,  maintainability: 0 open issues,  debt ratio (overall): 0%
+
+5.- Reportes:			coverage: 66.8%,  duplications: 0%,  security: 0 open issues,  maintainability: 0 open issues,  debt ratio (overall): 0%
+
+6.- Cliente-desc-frecu:
+
+7.- ReservasComprobantes:

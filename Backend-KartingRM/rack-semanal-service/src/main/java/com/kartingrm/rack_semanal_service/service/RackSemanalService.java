@@ -1,11 +1,10 @@
 package com.kartingrm.rack_semanal_service.service;
 
-import com.kartingrm.rack_semanal_service.DTO.ReservaInfo;
-import com.kartingrm.rack_semanal_service.DTO.ReservaSemanalResponse;
-import com.kartingrm.rack_semanal_service.DTO.ReservasPorDia;
+import com.kartingrm.rack_semanal_service.dto.ReservaInfo;
+import com.kartingrm.rack_semanal_service.dto.ReservaSemanalResponse;
+import com.kartingrm.rack_semanal_service.dto.ReservasPorDia;
 import com.kartingrm.rack_semanal_service.entity.RackReserva;
 import com.kartingrm.rack_semanal_service.repository.RackReservaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -20,7 +19,6 @@ public class RackSemanalService {
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    @Autowired
     public RackSemanalService(RackReservaRepository reservaRepository) {
         this.reservaRepository = reservaRepository;
     }
@@ -30,14 +28,13 @@ public class RackSemanalService {
         LocalDate inicioSemana = hoy.with(DayOfWeek.MONDAY).plusWeeks(semanaOffset);
         LocalDate finSemana = inicioSemana.plusDays(6);
 
-        // reservas en la semana
-        List<RackReserva> reservas = reservaRepository.findByFechaBetween(inicioSemana, finSemana);
+        List<RackReserva> reservasDeLaSemana = reservaRepository.findByFechaBetween(inicioSemana, finSemana);
 
         // Creacion de diccionario agrupado segun la fecha. Key (fecha), Value (lista reservas)
-        Map<LocalDate, List<RackReserva>> reservasPorFecha = reservas.stream()
+        Map<LocalDate, List<RackReserva>> reservasPorFecha = reservasDeLaSemana.stream()
                 .collect(Collectors.groupingBy(RackReserva::getFecha));
 
-        // Creacion de listas para reservas por cada dia. Patron Builder
+        // Creacion de listas para reservas por cada dia
         ReservasPorDia reservasPorDia = new ReservasPorDia();
         reservasPorDia.setLunes(convertirReservas(reservasPorFecha.get(inicioSemana)));
         reservasPorDia.setMartes(convertirReservas(reservasPorFecha.get(inicioSemana.plusDays(1))));
@@ -58,7 +55,7 @@ public class RackSemanalService {
 
 
 
-    private List<ReservaInfo> convertirReservas(List<RackReserva> reservas) {
+    public List<ReservaInfo> convertirReservas(List<RackReserva> reservas) {
         if (reservas == null) return Collections.emptyList();
 
         // Retorno lista con los elementos reservaInfo del dia

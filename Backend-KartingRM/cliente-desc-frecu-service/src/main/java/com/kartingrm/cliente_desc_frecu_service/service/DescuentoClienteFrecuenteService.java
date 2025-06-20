@@ -2,7 +2,6 @@ package com.kartingrm.cliente_desc_frecu_service.service;
 
 import com.kartingrm.cliente_desc_frecu_service.entity.DescuentoClienteFrecuente;
 import com.kartingrm.cliente_desc_frecu_service.repository.DescuentoClienteFrecuenteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -12,8 +11,10 @@ import java.util.Optional;
 @Service
 public class DescuentoClienteFrecuenteService {
 
-    @Autowired
     private DescuentoClienteFrecuenteRepository descuentoClienteFrecuenteRepository;
+    public DescuentoClienteFrecuenteService(DescuentoClienteFrecuenteRepository descuentoClienteFrecuenteRepository) {
+        this.descuentoClienteFrecuenteRepository = descuentoClienteFrecuenteRepository;
+    }
 
     public List<DescuentoClienteFrecuente> getDescuentosClienteFrecuente() {
         return descuentoClienteFrecuenteRepository.findAll();

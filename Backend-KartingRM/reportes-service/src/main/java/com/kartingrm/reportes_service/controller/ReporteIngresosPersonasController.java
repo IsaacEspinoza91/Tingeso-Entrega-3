@@ -1,8 +1,7 @@
 package com.kartingrm.reportes_service.controller;
 
-import com.kartingrm.reportes_service.DTO.ReporteIngresosPorPersonasDTO;
+import com.kartingrm.reportes_service.dto.ReporteIngresosPorPersonasDTO;
 import com.kartingrm.reportes_service.service.ReporteIngresosPersonasService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
@@ -12,8 +11,10 @@ import java.util.List;
 @RequestMapping("/api/reportes-service/segun-rango-personas")
 public class ReporteIngresosPersonasController {
 
-    @Autowired
     private ReporteIngresosPersonasService reporteService;
+    public ReporteIngresosPersonasController(ReporteIngresosPersonasService reporteService) {
+        this.reporteService = reporteService;
+    }
 
     // Metodo para actualizar rango, dependiendo de si se ejecuta desde un metodo crearComprobante
     //  se indica que se suman los valores. Si se ejecuta desde el metodo de actualizar como no pagado

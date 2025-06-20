@@ -13,6 +13,6 @@ public interface DescuentoClienteFrecuenteRepository extends JpaRepository<Descu
 
 
     @Query("SELECT d FROM DescuentoClienteFrecuente AS d WHERE :cantidad_visitas_mes BETWEEN d.minReservas AND d.maxReservas")
-    Optional<DescuentoClienteFrecuente> findByVisitasBetweenMinimoMaximo(@Param("cantidad_visitas_mes") int cantidad_visitas_mes);
+    Optional<DescuentoClienteFrecuente> findByVisitasBetweenMinimoMaximo(@Param("cantidad_visitas_mes") int cantidadVisitasMes);
 
 }
