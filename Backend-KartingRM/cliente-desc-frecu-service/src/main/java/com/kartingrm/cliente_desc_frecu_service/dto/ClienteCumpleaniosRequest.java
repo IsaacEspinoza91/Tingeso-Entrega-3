@@ -9,6 +9,7 @@ public class ClienteCumpleaniosRequest {
 
 
     public ClienteCumpleaniosRequest() {}
+
     public ClienteCumpleaniosRequest(Long idCliente, LocalDate fecha) {
         this.idCliente = idCliente;
         this.fecha = fecha;

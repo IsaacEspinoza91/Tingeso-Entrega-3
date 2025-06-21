@@ -1,5 +1,6 @@
 package com.kartingrm.cliente_desc_frecu_service.service;
 
+import com.kartingrm.cliente_desc_frecu_service.dto.ClienteReservaDTO;
 import com.kartingrm.cliente_desc_frecu_service.entity.ClienteReserva;
 import com.kartingrm.cliente_desc_frecu_service.entity.ClienteReservaId;
 import com.kartingrm.cliente_desc_frecu_service.repository.ClienteReservaRepository;
@@ -36,26 +37,34 @@ public class ClienteReservaService {
         return clienteReservaRepository.findById_IdCliente(idCliente);
     }
 
-    public ClienteReserva createClienteReserva(ClienteReserva reserva) {
-        if (reserva.getId() == null || reserva.getId().getIdReserva() == null || reserva.getId().getIdCliente() == null) {
+    public ClienteReserva createClienteReserva(ClienteReservaDTO reservaDTO) {
+        if (reservaDTO == null) {
+            throw new EntityNotFoundException("Reserva no puede ser nula");
+        }
+        if (reservaDTO.getId() == null || reservaDTO.getId().getIdReserva() == null || reservaDTO.getId().getIdCliente() == null) {
             throw new IllegalArgumentException("El ID de reserva y el ID de cliente son obligatorios.");
         }
-        if (clienteReservaRepository.existsById(reserva.getId())) {
-            throw new IllegalArgumentException("Ya existe una reserva con el ID reserva " + reserva.getId().getIdReserva() + " e ID cliente " + reserva.getId().getIdCliente());
-        }
-        if (reserva.getEstado() == null) {
-            reserva.setEstado("completada");
+        if (clienteReservaRepository.existsById(reservaDTO.getId())) {
+            throw new IllegalArgumentException("Ya existe una reserva con el ID reserva " + reservaDTO.getId().getIdReserva() +
+                    " e ID cliente " + reservaDTO.getId().getIdCliente());
         }
 
+        ClienteReserva reserva = new ClienteReserva();
+        reserva.setEstado(reservaDTO.getEstado());
+        reserva.setFecha(reservaDTO.getFecha());
+        reserva.setId(new ClienteReservaId(reservaDTO.getId().getIdReserva(), reservaDTO.getId().getIdCliente()));
+
+        if (reservaDTO.getEstado() == null) reserva.setEstado("completada");
         return clienteReservaRepository.save(reserva);
     }
 
-    public ClienteReserva updateClienteReserva(ClienteReservaId id, ClienteReserva cliReser) {
-        Optional<ClienteReserva> clienteReserva = clienteReservaRepository.findById(id);
-        if (clienteReserva.isEmpty()) throw new EntityNotFoundException("ClienteReserva no encontrado");
+    public ClienteReserva updateClienteReserva(ClienteReservaId id, ClienteReservaDTO cliReser) {
+        ClienteReserva clienteReservaExistente = clienteReservaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("ClienteReserva no encontrado"));
 
-        cliReser.setId(id);
-        return clienteReservaRepository.save(cliReser);
+        clienteReservaExistente.setEstado(cliReser.getEstado());
+        clienteReservaExistente.setFecha(cliReser.getFecha());
+
+        return clienteReservaRepository.save(clienteReservaExistente);
     }
 
     public Boolean deleteClienteReserva(ClienteReservaId id) {
@@ -66,14 +75,13 @@ public class ClienteReservaService {
         return true;
     }
 
-    // Obtiene la cantidad de veces que un cliente segun id ha participado en una reserva, sea comprador o integrante
-    private int getReservasCompletadasUltimoMes(Long idCliente) {
-        // fecha de hace 30 dias atras
+    // Obtiene la cantidad de veces que un cliente según id ha participado en una reserva, sea comprador o integrante
+    public int getReservasCompletadasUltimoMes(Long idCliente) {
         LocalDate fechaInicio = LocalDate.now().minusDays(30);
         return clienteReservaRepository.countReservasCompletadasDespuesDeFecha(idCliente, fechaInicio);
     }
 
-    // Obtiene el descuento segun reglas de cliente frecuente segun la id del cliente
+    // Obtiene el descuento según reglas de cliente frecuente según id de cliente
     public double getDescuentoClienteFrecuenteSegunIdCliente(Long idCliente) {
         int cantidadVisitasUltimoMes = getReservasCompletadasUltimoMes(idCliente);
         return descuentoClienteFrecuenteService.getPorcentajeDescuentoClienteFrecuenteByCantidadVisitas(cantidadVisitasUltimoMes);

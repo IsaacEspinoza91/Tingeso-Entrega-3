@@ -1,5 +1,6 @@
 package com.kartingrm.cliente_desc_frecu_service.controller;
 
+import com.kartingrm.cliente_desc_frecu_service.dto.DescuentoClienteFrecuenteDTO;
 import com.kartingrm.cliente_desc_frecu_service.entity.DescuentoClienteFrecuente;
 import com.kartingrm.cliente_desc_frecu_service.service.DescuentoClienteFrecuenteService;
 import org.springframework.http.ResponseEntity;
@@ -29,21 +30,21 @@ public class DescuentoClienteFrecuenteController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<DescuentoClienteFrecuente> createDescuentoClienteFrecuente(@RequestBody DescuentoClienteFrecuente descuento) {
+    public ResponseEntity<DescuentoClienteFrecuente> createDescuentoClienteFrecuente(@RequestBody DescuentoClienteFrecuenteDTO descuento) {
         DescuentoClienteFrecuente descuentoCreado = descuentoClienteFrecuenteService.createDescuentoClienteFrecuente(descuento);
         return ResponseEntity.ok().body(descuentoCreado);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DescuentoClienteFrecuente> updateDescuentoClienteFrecuente(@PathVariable Long id, @RequestBody DescuentoClienteFrecuente descuento) {
+    public ResponseEntity<DescuentoClienteFrecuente> updateDescuentoClienteFrecuente(@PathVariable Long id, @RequestBody DescuentoClienteFrecuenteDTO descuento) {
         DescuentoClienteFrecuente descuentoActualizado = descuentoClienteFrecuenteService.updateDescuentoClienteFrecuente(id, descuento);
         return ResponseEntity.ok().body(descuentoActualizado);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteDescuentoClienteFrecuente(@PathVariable Long id) {
-        descuentoClienteFrecuenteService.deleteDescuentoClienteFrecuente(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Boolean> deleteDescuentoClienteFrecuente(@PathVariable Long id) {
+        boolean result = descuentoClienteFrecuenteService.deleteDescuentoClienteFrecuente(id);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/visitas/{cantidadvisitas}")

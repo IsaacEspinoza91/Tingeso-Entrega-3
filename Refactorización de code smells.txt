@@ -9,6 +9,6 @@
 
 5.- Reportes:			coverage: 66.8%,  duplications: 0%,  security: 0 open issues,  maintainability: 0 open issues,  debt ratio (overall): 0%
 
-6.- Cliente-desc-frecu:
+6.- Cliente-desc-frecu:		coverage: 72.6%,  duplications: 0%,  security: 0 open issues,  maintainability: 0 open issues,  debt ratio (overall): 0%
 
 7.- ReservasComprobantes:

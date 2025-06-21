@@ -1,24 +1,16 @@
 package com.kartingrm.cliente_desc_frecu_service.entity;
 
+import com.kartingrm.cliente_desc_frecu_service.modelbase.DescuentoClienteFrecuenteBase;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "descuento_cliente_frecuente")
-public class DescuentoClienteFrecuente {
+public class DescuentoClienteFrecuente extends DescuentoClienteFrecuenteBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "min_reservas", nullable = false)
-    private int minReservas;
-
-    @Column(name = "max_reservas", nullable = false)
-    private int maxReservas;
-
-    @Column(name = "porcentaje_descuento", nullable = false)
-    private double porcentajeDescuento;
-
 
     // Contructor
     public DescuentoClienteFrecuente() {}
@@ -42,30 +34,6 @@ public class DescuentoClienteFrecuente {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public int getMinReservas() {
-        return minReservas;
-    }
-
-    public void setMinReservas(int minReservas) {
-        this.minReservas = minReservas;
-    }
-
-    public double getPorcentajeDescuento() {
-        return porcentajeDescuento;
-    }
-
-    public void setPorcentajeDescuento(double porcentajeDescuento) {
-        this.porcentajeDescuento = porcentajeDescuento;
-    }
-
-    public int getMaxReservas() {
-        return maxReservas;
-    }
-
-    public void setMaxReservas(int maxReservas) {
-        this.maxReservas = maxReservas;
     }
 
     @Override

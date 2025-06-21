@@ -1,5 +1,6 @@
 package com.kartingrm.cliente_desc_frecu_service.controller;
 
+import com.kartingrm.cliente_desc_frecu_service.dto.ClienteReservaDTO;
 import com.kartingrm.cliente_desc_frecu_service.entity.ClienteReserva;
 import com.kartingrm.cliente_desc_frecu_service.entity.ClienteReservaId;
 import com.kartingrm.cliente_desc_frecu_service.service.ClienteReservaService;
@@ -37,13 +38,13 @@ public class ClienteReservaController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<ClienteReserva> createClienteReserva(@RequestBody ClienteReserva clienteReserva) {
+    public ResponseEntity<ClienteReserva> createClienteReserva(@RequestBody ClienteReservaDTO clienteReserva) {
         ClienteReserva clienteReservaCreado = clienteReservaService.createClienteReserva(clienteReserva);
         return ResponseEntity.ok(clienteReservaCreado);
     }
 
     @PutMapping("/reserva/{idReserva}/cliente/{idCliente}")
-    public ResponseEntity<ClienteReserva> updateClienteReserva(@PathVariable  Long idReserva, @PathVariable Long idCliente, @RequestBody ClienteReserva clienteReserva) {
+    public ResponseEntity<ClienteReserva> updateClienteReserva(@PathVariable  Long idReserva, @PathVariable Long idCliente, @RequestBody ClienteReservaDTO clienteReserva) {
         ClienteReservaId id = new ClienteReservaId(idReserva, idCliente);
         ClienteReserva clienteReservaActualizado = clienteReservaService.updateClienteReserva(id, clienteReserva);
         return ResponseEntity.ok(clienteReservaActualizado);

@@ -6,7 +6,6 @@ import com.kartingrm.reservas_comprobantes_service.model.PlanDTO;
 import com.kartingrm.reservas_comprobantes_service.model.RackReservaRequest;
 import com.kartingrm.reservas_comprobantes_service.model.ReservaDTO;
 import com.kartingrm.reservas_comprobantes_service.repository.ReservaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -21,11 +20,16 @@ import java.util.Optional;
 @Service
 public class ReservaService {
 
-    @Autowired
-    private ReservaRepository reservaRepository;
+    // Constantes
+    private static final String ESTADO_COMPLETADA = "completada";
+    private static final String ESTADO_CONFIRMADA = "confirmada";
 
-    @Autowired
+    private ReservaRepository reservaRepository;
     RestTemplate restTemplate;
+    public ReservaService(ReservaRepository reservaRepository, RestTemplate restTemplate) {
+        this.reservaRepository = reservaRepository;
+        this.restTemplate = restTemplate;
+    }
 
 
     public List<Reserva> getReservas() {
@@ -128,14 +132,11 @@ public class ReservaService {
         // Verificar parametros validos
         if (reserva.getHoraInicio() != null && cliente != null && plan != null) {
 
-            // Determinar hora de fin sumando minutos del plan a la hora inicial
-            LocalTime horaInicio = reserva.getHoraInicio();
-            LocalTime horaFinalCalculada = horaInicio.plusMinutes(plan.getDuracionTotal());
+            LocalTime horaFinalCalculada = deteminarHoraFin(reserva, plan);
             reserva.setHoraFin(horaFinalCalculada);
 
             // Verificar que no existan reservas enter ambas horas
-            if (existeReservaEntreDosHoras(reserva.getFecha(), horaInicio, horaFinalCalculada))
-                throw new IllegalStateException("Ya existe una reserva con ese horario");
+            if (existeReservaEntreDosHoras(reserva.getFecha(), reserva.getHoraInicio(), horaFinalCalculada)) throw new IllegalStateException("Ya existe una reserva con ese horario");
 
             // Verificar horario valido de atencion
             boolean esFinDeSemana = reserva.getFecha().getDayOfWeek().getValue() >= 6;
@@ -145,27 +146,7 @@ public class ReservaService {
             // Se guarda reserva en la base de datos
             reservaRepository.save(reserva);
 
-
-            // Guardar relacion de reserva en la tabla rack_reserva, para obtener el rack semanal desde el MC6
-            // Solo en caso de reserva confirmada o completada
-            if (reserva.getEstado().equals("completada") || reserva.getEstado().equals("confirmada")) {
-                RackReservaRequest rackReservaRequest = new RackReservaRequest(
-                        reserva.getId(),
-                        cliente.getId(),
-                        cliente.getNombre() + cliente.getApellido(),
-                        reserva.getFecha(),
-                        reserva.getHoraInicio(),
-                        reserva.getHoraFin()
-                );
-
-                HttpEntity<RackReservaRequest> rackReservaBody = new HttpEntity<>(rackReservaRequest);
-
-                RackReservaRequest respuesta = restTemplate.postForObject(
-                        "http://rack-semanal-service/api/rack-semanal-service/rack-reserva/",
-                        rackReservaBody,
-                        RackReservaRequest.class
-                );
-            }
+            guardarReservaEnRack(reserva, cliente);
 
             return reserva;
         } else {
@@ -183,16 +164,12 @@ public class ReservaService {
         // Reserva actualizada conserva id de la reserva original
         reserva.setId(id);
 
-        // Calculo de hora final segun nueva hora o plan
         PlanDTO plan = restTemplate.getForObject("http://plan-service/api/plan/planes/" + reserva.getIdPlan(), PlanDTO.class);
         ClienteDTO cliente = restTemplate.getForObject("http://cliente-desc-frecu-service/api/cliente-service/cliente/" + reserva.getIdReservante(), ClienteDTO.class);
 
-        // Solo permite actualizar la hora inicial
-        // Determinar hora de fin sumando minutos del plan a la hora inicial
-        LocalTime horaInicio = reserva.getHoraInicio();
-        LocalTime horaFinalCalculada = horaInicio.plusMinutes(plan.getDuracionTotal());
+        // Solo permite actualizar la hora inicial, en consecuencia se actualiza la hora final
+        LocalTime horaFinalCalculada = deteminarHoraFin(reserva, plan);
         reserva.setHoraFin(horaFinalCalculada);
-
 
         // Verificar horario valido de atencion
         boolean esFinDeSemana = reserva.getFecha().getDayOfWeek().getValue() >= 6;// Determina fin de semana o no
@@ -204,9 +181,9 @@ public class ReservaService {
 
         // Guardar relacion de reserva en la tabla rack_reserva, para obtener el rack semanal desde el MC6
         // Estado nuevo es completada o confirmada
-        if (reserva.getEstado().equals("completada") || reserva.getEstado().equals("confirmada")) {
+        if (reserva.getEstado().equals(ESTADO_COMPLETADA) || reserva.getEstado().equals(ESTADO_CONFIRMADA)) {
             // Estado anterior era cancelada
-            if (!estadoAnterior.equals("completada") && !estadoAnterior.equals("confirmada")) {
+            if (!estadoAnterior.equals(ESTADO_COMPLETADA) && !estadoAnterior.equals(ESTADO_CONFIRMADA)) {
 
                 RackReservaRequest rackReservaRequest = new RackReservaRequest(
                         reserva.getId(),
@@ -219,17 +196,13 @@ public class ReservaService {
 
                 HttpEntity<RackReservaRequest> rackReservaBody = new HttpEntity<>(rackReservaRequest);
 
-                RackReservaRequest respuesta = restTemplate.postForObject(
-                        "http://rack-semanal-service/api/rack-semanal-service/rack-reserva/",
-                        rackReservaBody,
-                        RackReservaRequest.class
-                );
+                restTemplate.postForObject("http://rack-semanal-service/api/rack-semanal-service/rack-reserva/", rackReservaBody, RackReservaRequest.class);
 
             }
             // Else, Caso mantiene estado era completada o confirmada. No realiza peticion http
         } else {// Estado nuevo es cancelada
             // Caso estado anterior era completada o confirmada
-            if (estadoAnterior.equals("completada") || estadoAnterior.equals("confirmada")) {
+            if (estadoAnterior.equals(ESTADO_COMPLETADA) || estadoAnterior.equals(ESTADO_CONFIRMADA)) {
                 restTemplate.delete("http://rack-semanal-service/api/rack-semanal-service/rack-reserva/" + reserva.getId());
             }
             // Else, Caso mantiene estado cancelada. No hace peticion http
@@ -260,9 +233,9 @@ public class ReservaService {
     // Validacion si reserva es en horario de trabajo
     //  Lunes a Viernes: 14:00 a 22:00
     //  Sabados, Domingos, Feriados: 10:00 a 22:00
-    private void esHorarioValido(Boolean diaFeriado, Boolean DiaFinDeSemana, Reserva reserva) {
+    private void esHorarioValido(Boolean diaFeriado, Boolean diaFinDeSemana, Reserva reserva) {
         // Horario fuera semana
-        if (diaFeriado || DiaFinDeSemana){
+        if (diaFeriado || diaFinDeSemana){
             if (reserva.getHoraInicio().isBefore(LocalTime.of(10,00,00)) ||
                     reserva.getHoraFin().isAfter(LocalTime.of(22,00,00))) {
                 throw new IllegalStateException("Horario incorrecto. Domingos, sábados y feriados: 10:00 a 22:00");
@@ -275,6 +248,30 @@ public class ReservaService {
         }
     }
 
+    // Determinar hora de fin sumando minutos del plan a la hora inicial
+    private LocalTime deteminarHoraFin(Reserva reserva, PlanDTO plan) {
+        return reserva.getHoraInicio().plusMinutes(plan.getDuracionTotal());
+    }
+
+
+    // Guardar relacion de reserva en la tabla rack_reserva, para obtener el rack semanal desde el MC6
+    // Solo en caso de reserva confirmada o completada
+    private void guardarReservaEnRack(Reserva reserva, ClienteDTO cliente) {
+        if (reserva.getEstado().equals(ESTADO_COMPLETADA) || reserva.getEstado().equals(ESTADO_CONFIRMADA)) {
+            RackReservaRequest rackReservaRequest = new RackReservaRequest(
+                    reserva.getId(),
+                    cliente.getId(),
+                    cliente.getNombre() + " " + cliente.getApellido(),
+                    reserva.getFecha(),
+                    reserva.getHoraInicio(),
+                    reserva.getHoraFin()
+            );
+
+            HttpEntity<RackReservaRequest> rackReservaBody = new HttpEntity<>(rackReservaRequest);
+
+            restTemplate.postForObject("http://rack-semanal-service/api/rack-semanal-service/rack-reserva/", rackReservaBody, RackReservaRequest.class);
+        }
+    }
 
 
 }

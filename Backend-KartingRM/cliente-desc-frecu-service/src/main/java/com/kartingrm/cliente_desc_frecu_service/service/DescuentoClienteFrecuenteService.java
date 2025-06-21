@@ -1,5 +1,6 @@
 package com.kartingrm.cliente_desc_frecu_service.service;
 
+import com.kartingrm.cliente_desc_frecu_service.dto.DescuentoClienteFrecuenteDTO;
 import com.kartingrm.cliente_desc_frecu_service.entity.DescuentoClienteFrecuente;
 import com.kartingrm.cliente_desc_frecu_service.repository.DescuentoClienteFrecuenteRepository;
 import org.springframework.stereotype.Service;
@@ -27,15 +28,25 @@ public class DescuentoClienteFrecuenteService {
         return descuento.get();
     }
 
-    public DescuentoClienteFrecuente createDescuentoClienteFrecuente(DescuentoClienteFrecuente descuento) {
+    public DescuentoClienteFrecuente createDescuentoClienteFrecuente(DescuentoClienteFrecuenteDTO descuentoDTO) {
+        if (descuentoDTO == null ) throw new EntityNotFoundException("Descuento no puede ser nulo");
+
+        DescuentoClienteFrecuente descuento = new DescuentoClienteFrecuente();
+        descuento.setPorcentajeDescuento(descuentoDTO.getPorcentajeDescuento());
+        descuento.setMaxReservas(descuentoDTO.getMaxReservas());
+        descuento.setMinReservas(descuentoDTO.getMinReservas());
+
         return descuentoClienteFrecuenteRepository.save(descuento);
     }
 
-    public DescuentoClienteFrecuente updateDescuentoClienteFrecuente(Long id,DescuentoClienteFrecuente descuento) {
-        Optional<DescuentoClienteFrecuente> descuentoOpt = descuentoClienteFrecuenteRepository.findById(id);
-        if (descuentoOpt.isEmpty()) throw new EntityNotFoundException("Descuento "+ id +" no encontrado");
+    public DescuentoClienteFrecuente updateDescuentoClienteFrecuente(Long id,DescuentoClienteFrecuenteDTO descuentoDTO) {
 
-        descuento.setId(id);
+        DescuentoClienteFrecuente descuento = descuentoClienteFrecuenteRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Descuento "+id+" no encontrado"));
+
+        descuento.setMinReservas(descuentoDTO.getMinReservas());
+        descuento.setMaxReservas(descuentoDTO.getMaxReservas());
+        descuento.setPorcentajeDescuento(descuentoDTO.getPorcentajeDescuento());
+
         return descuentoClienteFrecuenteRepository.save(descuento);
     }
 

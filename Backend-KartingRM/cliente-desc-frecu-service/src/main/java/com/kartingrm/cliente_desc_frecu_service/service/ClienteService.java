@@ -1,6 +1,7 @@
 package com.kartingrm.cliente_desc_frecu_service.service;
 
 import com.kartingrm.cliente_desc_frecu_service.dto.ClienteCumpleaniosRequest;
+import com.kartingrm.cliente_desc_frecu_service.dto.ClienteDTO;
 import com.kartingrm.cliente_desc_frecu_service.entity.Cliente;
 import com.kartingrm.cliente_desc_frecu_service.repository.ClienteRepository;
 import org.springframework.http.HttpEntity;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,8 +62,19 @@ public class ClienteService {
         return cliente.get();
     }
 
-    public Cliente createCliente(Cliente cliente) {
-        Cliente clienteCreado =  clienteRepository.save(cliente);
+    public Cliente createCliente(ClienteDTO clienteDTO) {
+        if (clienteDTO == null) throw new EntityNotFoundException("Cliente nulo");
+
+        Cliente clienteCreado = new Cliente();
+        clienteCreado.setNombre(clienteDTO.getNombre());
+        clienteCreado.setApellido(clienteDTO.getApellido());
+        clienteCreado.setRut(clienteDTO.getRut());
+        clienteCreado.setCorreo(clienteDTO.getCorreo());
+        clienteCreado.setTelefono(clienteDTO.getTelefono());
+        clienteCreado.setActivo(clienteDTO.isActivo());
+        clienteCreado.setFechaNacimiento(clienteDTO.getFechaNacimiento());
+
+        clienteRepository.save(clienteCreado);
 
         // Se guarda relacion cliente cumpleanios en la tabla correspondiente en MS44
         ClienteCumpleaniosRequest cumpleaniosRequest = new ClienteCumpleaniosRequest(clienteCreado.getId(), clienteCreado.getFechaNacimiento());
@@ -71,23 +84,29 @@ public class ClienteService {
         return clienteCreado;
     }
 
-    public Cliente updateCliente(Long id, Cliente cliente) {
-        Optional<Cliente> clienteOptional = clienteRepository.findById(id);
-        if (clienteOptional.isEmpty()) throw new EntityNotFoundException("Cliente id " + id + " no encontrado");
+    public Cliente updateCliente(Long id, ClienteDTO clienteDTO) {
+        Cliente clienteExistente = clienteRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Cliente id " + id + " no encontrado"));
 
-        cliente.setId(id);
+        LocalDate fechaNacimientoAnterior = clienteExistente.getFechaNacimiento();
 
-        // Se actualizacion de cumpleanios en tabla cliente_cumpleanios MS4
-        if (cliente.getFechaNacimiento() != clienteOptional.get().getFechaNacimiento()) {
+        // Actualizar campos
+        clienteExistente.setNombre(clienteDTO.getNombre());
+        clienteExistente.setApellido(clienteDTO.getApellido());
+        clienteExistente.setRut(clienteDTO.getRut());
+        clienteExistente.setCorreo(clienteDTO.getCorreo());
+        clienteExistente.setTelefono(clienteDTO.getTelefono());
+        clienteExistente.setActivo(clienteDTO.isActivo());
+        clienteExistente.setFechaNacimiento(clienteDTO.getFechaNacimiento());
+
+        // actualizacion de cumpleanios en tabla cliente_cumpleanios MS4
+        if (!clienteExistente.getFechaNacimiento().equals(fechaNacimientoAnterior)) {
             HttpEntity<ClienteCumpleaniosRequest> cumpleaniosRequestPutBody = new HttpEntity<>(
-                    new ClienteCumpleaniosRequest(null, cliente.getFechaNacimiento())
+                    new ClienteCumpleaniosRequest(clienteExistente.getId(), clienteExistente.getFechaNacimiento())
             );
-            restTemplate.put(URL_DIAS_ESPECIALES_MS + CLIENTE_CUMPLEANIOS_ENDPOINT + id,
-                    cumpleaniosRequestPutBody,
-                    ClienteCumpleaniosRequest.class);
+            restTemplate.put(URL_DIAS_ESPECIALES_MS + CLIENTE_CUMPLEANIOS_ENDPOINT + id, cumpleaniosRequestPutBody, ClienteCumpleaniosRequest.class);
         }
 
-        return clienteRepository.save(cliente);
+        return clienteRepository.save(clienteExistente);
     }
 
     public Boolean deleteCliente(Long id) {

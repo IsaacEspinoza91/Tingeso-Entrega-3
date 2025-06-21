@@ -1,29 +1,24 @@
 package com.kartingrm.cliente_desc_frecu_service.entity;
 
+import com.kartingrm.cliente_desc_frecu_service.modelbase.ClienteReservaBase;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "cliente_reserva")
-public class ClienteReserva {
+public class ClienteReserva extends ClienteReservaBase {
 
     @EmbeddedId
     private ClienteReservaId id;
-
-    @Column(name = "fecha", nullable = false)
-    private LocalDate fecha;
-
-    @Column(name = "estado", nullable = false)
-    private String estado;
-
 
     // Constructor
     public ClienteReserva() {}
 
     public ClienteReserva(ClienteReservaId id, LocalDate fecha, String estado) {
         this.id = id;
-        this.fecha = fecha;
-        this.estado = estado;
+        setFecha(fecha);
+        setEstado(estado);
     }
 
     // Getters y setters
@@ -35,18 +30,24 @@ public class ClienteReserva {
         this.id = id;
     }
 
+    @Override
+    @Column(name = "fecha", nullable = false)
     public LocalDate getFecha() {
         return fecha;
     }
 
+    @Override
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 
+    @Override
+    @Column(name = "estado", nullable = false)
     public String getEstado() {
         return estado;
     }
 
+    @Override
     public void setEstado(String estado) {
         this.estado = estado;
     }

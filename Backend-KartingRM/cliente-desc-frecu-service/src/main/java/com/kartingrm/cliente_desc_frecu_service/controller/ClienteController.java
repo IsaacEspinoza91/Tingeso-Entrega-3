@@ -1,5 +1,6 @@
 package com.kartingrm.cliente_desc_frecu_service.controller;
 
+import com.kartingrm.cliente_desc_frecu_service.dto.ClienteDTO;
 import com.kartingrm.cliente_desc_frecu_service.entity.Cliente;
 import com.kartingrm.cliente_desc_frecu_service.service.ClienteService;
 import org.springframework.http.ResponseEntity;
@@ -53,21 +54,21 @@ public class ClienteController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Cliente> createCliente(@RequestBody Cliente cliente) {
+    public ResponseEntity<Cliente> createCliente(@RequestBody ClienteDTO cliente) {
         Cliente clienteCreated = clienteService.createCliente(cliente);
         return ResponseEntity.ok(clienteCreated);
     }
 
     @PutMapping("/{idCliente}")
-    public ResponseEntity<Cliente> updateCliente(@PathVariable Long idCliente, @RequestBody Cliente cliente) {
+    public ResponseEntity<Cliente> updateCliente(@PathVariable Long idCliente, @RequestBody ClienteDTO cliente) {
         Cliente clienteUpdated = clienteService.updateCliente(idCliente, cliente);
         return ResponseEntity.ok(clienteUpdated);
     }
 
     @DeleteMapping("/{idCliente}")
     public ResponseEntity<Boolean> deleteCliente(@PathVariable Long idCliente) {
-        clienteService.deleteCliente(idCliente);
-        return ResponseEntity.noContent().build();
+        boolean result = clienteService.deleteCliente(idCliente);
+        return ResponseEntity.ok(result); // Retorna 200 OK con el booleano
     }
 
     @PutMapping("/activate/{idCliente}")
