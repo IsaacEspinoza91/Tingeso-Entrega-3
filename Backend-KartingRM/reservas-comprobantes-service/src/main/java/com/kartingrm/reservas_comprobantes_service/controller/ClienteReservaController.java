@@ -13,7 +13,6 @@ import java.util.List;
 public class ClienteReservaController {
 
     private final ClienteReservaService service;
-
     public ClienteReservaController(ClienteReservaService service) {
         this.service = service;
     }
@@ -30,7 +29,7 @@ public class ClienteReservaController {
     }
 
     @PostMapping("/agregar/cliente/{idCliente}/reserva/{idReserva}")
-    public ResponseEntity<?> agregarIntegrante(@PathVariable Long idCliente, @PathVariable Long idReserva) {
+    public ResponseEntity<Object> agregarIntegrante(@PathVariable Long idCliente, @PathVariable Long idReserva) {
         try {
             boolean resultado = service.agregarIntegrante(idCliente, idReserva);
             return ResponseEntity.ok(resultado);
@@ -40,7 +39,7 @@ public class ClienteReservaController {
     }
 
     @DeleteMapping("/quitar/cliente/{idCliente}/reserva/{idReserva}")
-    public ResponseEntity<?> quitarIntegrante(@PathVariable Long idCliente, @PathVariable Long idReserva) {
+    public ResponseEntity<Object> quitarIntegrante(@PathVariable Long idCliente, @PathVariable Long idReserva) {
         try {
             service.quitarIntegrante(idCliente, idReserva);
             return ResponseEntity.noContent().build();

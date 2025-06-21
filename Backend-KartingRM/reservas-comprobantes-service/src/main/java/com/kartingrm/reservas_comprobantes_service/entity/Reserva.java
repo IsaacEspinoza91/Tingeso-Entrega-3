@@ -1,5 +1,7 @@
 package com.kartingrm.reservas_comprobantes_service.entity;
 
+import com.kartingrm.reservas_comprobantes_service.model.ReservaRequest;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -36,29 +38,18 @@ public class Reserva {
 
 
     // Constructor
-    public Reserva() {}
-
-    public Reserva(Long id, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, String estado, int totalPersonas, Long idPlan, Long idReservante) {
-        this.id = id;
-        this.fecha = fecha;
-        this.horaInicio = horaInicio;
-        this.horaFin = horaFin;
-        this.estado = estado;
-        this.totalPersonas = totalPersonas;
-        this.idPlan = idPlan;
-        this.idReservante = idReservante;
+    public Reserva() {
+        // Vacío para contrucción por partes
     }
 
-    public Reserva(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, String estado, int totalPersonas, Long idPlan, Long idReservante) {
-        this.fecha = fecha;
-        this.horaInicio = horaInicio;
-        this.horaFin = horaFin;
-        this.estado = estado;
-        this.totalPersonas = totalPersonas;
-        this.idPlan = idPlan;
-        this.idReservante = idReservante;
+    public Reserva(ReservaRequest reservaRequest) {
+        this.fecha = reservaRequest.getFecha();
+        this.horaInicio = reservaRequest.getHoraInicio();
+        this.estado = reservaRequest.getEstado();
+        this.totalPersonas = reservaRequest.getTotalPersonas();
+        this.idPlan = reservaRequest.getIdPlan();
+        this.idReservante = reservaRequest.getIdReservante();
     }
-
 
     // Getters y setters
     public Long getId() {

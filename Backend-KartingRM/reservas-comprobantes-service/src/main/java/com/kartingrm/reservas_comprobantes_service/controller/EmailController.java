@@ -7,14 +7,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.io.IOException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/reservas-comprobantes-service/email")
 public class EmailController {
 
     private final JavaMailSender mailSender;
-    private final String fromEmail = "tingeso.karting.rm@gmail.com";
+    private static final String FROM_EMAIL = "tingeso.karting.rm@gmail.com";
 
     public EmailController(JavaMailSender mailSender) {
         this.mailSender = mailSender;
@@ -29,14 +29,18 @@ public class EmailController {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom(fromEmail);
+            helper.setFrom(FROM_EMAIL);
             helper.setTo(toEmail);
             helper.setSubject(subject);
             helper.setText("Muchas gracias por su reserva en Karting RM.\n\nAdjunto encontrará su comprobante de pago.");
 
+            // validación, nombre de archivo
+            String filename = Optional.ofNullable(pdfFile.getOriginalFilename())
+                    .filter(name -> !name.isBlank())
+                    .orElse("comprobante.pdf");
+
             // Adjuntar el PDF
-            helper.addAttachment(pdfFile.getOriginalFilename(),
-                    () -> pdfFile.getInputStream());
+            helper.addAttachment(filename, pdfFile::getInputStream);
 
             mailSender.send(message); // Enviar correo
             return ResponseEntity.ok("Correo enviado exitosamente");

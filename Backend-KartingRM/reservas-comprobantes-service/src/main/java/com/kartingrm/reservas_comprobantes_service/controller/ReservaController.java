@@ -2,8 +2,8 @@ package com.kartingrm.reservas_comprobantes_service.controller;
 
 import com.kartingrm.reservas_comprobantes_service.entity.Reserva;
 import com.kartingrm.reservas_comprobantes_service.model.ReservaDTO;
+import com.kartingrm.reservas_comprobantes_service.model.ReservaRequest;
 import com.kartingrm.reservas_comprobantes_service.service.ReservaService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping("/api/reservas-comprobantes-service/reservas")
 public class ReservaController {
 
-    private ReservaService reservaService;
+    private final ReservaService reservaService;
     public ReservaController(ReservaService reservaService) {
         this.reservaService = reservaService;
     }
@@ -57,27 +57,22 @@ public class ReservaController {
 
 
     @PostMapping("/")
-    public ResponseEntity<Reserva> createReserva(@RequestBody Reserva reserva) {
+    public ResponseEntity<Reserva> createReserva(@RequestBody ReservaRequest reserva) {
         try{
             Reserva reservaNuevo = reservaService.createReserva(reserva);
             return ResponseEntity.ok(reservaNuevo);
         } catch (Exception e) {
-            // Printear error en la cosola backend
-            System.err.println("Error inesperado: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Reserva> updateReserva(@PathVariable Long id, @RequestBody Reserva reserva) {
+    public ResponseEntity<Reserva> updateReserva(@PathVariable Long id, @RequestBody ReservaRequest reserva) {
         try {
             Reserva reservaActualizada = reservaService.updateReserva(id, reserva);
             return ResponseEntity.ok(reservaActualizada);
         } catch (Exception e){
-            System.err.println("Error inesperado: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }

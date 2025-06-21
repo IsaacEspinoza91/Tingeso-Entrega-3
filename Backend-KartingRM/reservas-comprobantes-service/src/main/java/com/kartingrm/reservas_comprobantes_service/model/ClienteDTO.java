@@ -14,18 +14,10 @@ public class ClienteDTO {
     private boolean activo = true;
 
     // Contructores
-    public ClienteDTO() {}
-
-    public ClienteDTO(Long id, String rut, String nombre, String apellido, String correo, String telefono, LocalDate fechaNacimiento, boolean activo) {
-        this.id = id;
-        this.rut = rut;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.correo = correo;
-        this.telefono = telefono;
-        this.fechaNacimiento = fechaNacimiento;
-        this.activo = activo;
+    public ClienteDTO() {
+        // Vacío para contrucción por partes
     }
+
 
     // Getters y setters
     public Long getId() {

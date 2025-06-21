@@ -2,7 +2,6 @@ package com.kartingrm.reservas_comprobantes_service.model;
 
 import com.kartingrm.reservas_comprobantes_service.entity.DetalleComprobante;
 
-import javax.persistence.Column;
 
 public class DetalleComprobanteConClienteDTO {
 

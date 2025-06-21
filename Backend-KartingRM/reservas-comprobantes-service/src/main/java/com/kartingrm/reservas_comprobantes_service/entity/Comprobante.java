@@ -28,6 +28,12 @@ public class Comprobante {
         this.idReserva = idReserva;
     }
 
+    public Comprobante(Double total, boolean pagado, Long idReserva) {
+        this.total = total;
+        this.pagado = pagado;
+        this.idReserva = idReserva;
+    }
+
     // Getters y Setters
     public Long getId() {
         return id;

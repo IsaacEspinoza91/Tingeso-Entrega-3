@@ -1,6 +1,6 @@
 package com.kartingrm.reservas_comprobantes_service.model;
 
-import com.kartingrm.reservas_comprobantes_service.entity.DetalleComprobante;
+import com.kartingrm.reservas_comprobantes_service.entity.Comprobante;
 
 import java.util.List;
 
@@ -22,6 +22,15 @@ public class ComprobanteConDetallesDTO {
         this.reserva = reserva;
         this.detalles = detalles;
     }
+
+    public ComprobanteConDetallesDTO(Comprobante comprobante, ReservaDTO reserva, List<DetalleComprobanteConClienteDTO> detalles) {
+        this.id = comprobante.getId();
+        this.total = comprobante.getTotal();
+        this.pagado = comprobante.isPagado();
+        this.reserva = reserva;
+        this.detalles = detalles;
+    }
+
 
     // getters y setters
     public Long getId() {

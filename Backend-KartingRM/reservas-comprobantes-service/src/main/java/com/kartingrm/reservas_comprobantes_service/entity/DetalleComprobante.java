@@ -44,25 +44,8 @@ public class DetalleComprobante {
 
 
     // Constructor
-    public DetalleComprobante() {}
-    public DetalleComprobante(Long id, double tarifa, double descuentoGrupo, double porcentajeDescuentoGrupo,
-                              double descuentoEspecial, double porcentajeDescuentoEspecial, double descuentoExtra,
-                              double montoFinal, double montoIva, double montoTotal, boolean tieneDescuentoCumpleanios,
-                              boolean tieneDescuentoClienteFrecuente, long idCliente, long idComprobante) {
-        this.id = id;
-        this.tarifa = tarifa;
-        this.descuentoGrupo = descuentoGrupo;
-        this.porcentajeDescuentoGrupo = porcentajeDescuentoGrupo;
-        this.descuentoEspecial = descuentoEspecial;
-        this.porcentajeDescuentoEspecial = porcentajeDescuentoEspecial;
-        this.descuentoExtra = descuentoExtra;
-        this.montoFinal = montoFinal;
-        this.montoIva = montoIva;
-        this.montoTotal = montoTotal;
-        this.tieneDescuentoCumpleanios = tieneDescuentoCumpleanios;
-        this.tieneDescuentoClienteFrecuente = tieneDescuentoClienteFrecuente;
-        this.idCliente = idCliente;
-        this.idComprobante = idComprobante;
+    public DetalleComprobante() {
+        // Vacío para contrucción por partes
     }
 
     // Getters y setters

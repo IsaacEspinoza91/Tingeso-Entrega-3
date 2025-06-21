@@ -1,5 +1,7 @@
 package com.kartingrm.reservas_comprobantes_service.model;
 
+import com.kartingrm.reservas_comprobantes_service.entity.Reserva;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -17,13 +19,13 @@ public class ReservaDTO {
 
     public ReservaDTO() {}
 
-    public ReservaDTO(Long id, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, String estado, int totalPersonas, PlanDTO plan, ClienteDTO reservante) {
-        this.id = id;
-        this.fecha = fecha;
-        this.horaInicio = horaInicio;
-        this.horaFin = horaFin;
-        this.estado = estado;
-        this.totalPersonas = totalPersonas;
+    public ReservaDTO(Reserva reserva, PlanDTO plan, ClienteDTO reservante) {
+        this.id = reserva.getId();
+        this.fecha = reserva.getFecha();
+        this.horaInicio = reserva.getHoraInicio();
+        this.horaFin = reserva.getHoraFin();
+        this.estado = reserva.getEstado();
+        this.totalPersonas = reserva.getTotalPersonas();
         this.plan = plan;
         this.reservante = reservante;
     }
