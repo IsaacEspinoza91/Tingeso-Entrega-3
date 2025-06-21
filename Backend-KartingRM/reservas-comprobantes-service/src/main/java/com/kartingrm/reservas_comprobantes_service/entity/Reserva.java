@@ -1,41 +1,17 @@
 package com.kartingrm.reservas_comprobantes_service.entity;
 
 import com.kartingrm.reservas_comprobantes_service.model.ReservaRequest;
+import com.kartingrm.reservas_comprobantes_service.modelbase.ReservaBase;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Entity
 @Table(name = "reserva")
-public class Reserva {
+public class Reserva extends ReservaBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "fecha", nullable = false)
-    private LocalDate fecha;
-
-    @Column(name = "hora_inicio", nullable = false)
-    private LocalTime horaInicio;
-
-    @Column(name = "hora_fin")
-    private LocalTime horaFin;
-
-    @Column(name = "estado", nullable = false)
-    private String estado;
-
-    @Column(name = "total_personas", nullable = false)
-    private int totalPersonas;
-
-    @Column(name = "id_plan", nullable = false)
-    private Long idPlan;
-
-    @Column(name = "id_reservante", nullable = false)
-    private Long idReservante;
-
-
 
     // Constructor
     public Reserva() {
@@ -58,62 +34,6 @@ public class Reserva {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public LocalDate getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
-    }
-
-    public LocalTime getHoraInicio() {
-        return horaInicio;
-    }
-
-    public void setHoraInicio(LocalTime horaInicio) {
-        this.horaInicio = horaInicio;
-    }
-
-    public LocalTime getHoraFin() {
-        return horaFin;
-    }
-
-    public void setHoraFin(LocalTime horaFin) {
-        this.horaFin = horaFin;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    public int getTotalPersonas() {
-        return totalPersonas;
-    }
-
-    public void setTotalPersonas(int totalPersonas) {
-        this.totalPersonas = totalPersonas;
-    }
-
-    public Long getIdPlan() {
-        return idPlan;
-    }
-
-    public void setIdPlan(Long idPlan) {
-        this.idPlan = idPlan;
-    }
-
-    public Long getIdReservante() {
-        return idReservante;
-    }
-
-    public void setIdReservante(Long idReservante) {
-        this.idReservante = idReservante;
     }
 
     @Override

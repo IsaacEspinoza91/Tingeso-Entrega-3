@@ -122,39 +122,61 @@ public class ComprobanteService extends BaseService {
     // Create. Crear comprobante completo con generacion automatica de detalles por cliente. Transactional, no usa save
     @Transactional
     public ComprobanteConDetallesDTO createComprobante(Long reservaId, double descuentoExtra) {
-        if (!comprobanteRepository.findByIdReserva(reservaId).isEmpty()) {
+        // Validaciones iniciales
+        if (reservaId == null) {
+            throw new IllegalArgumentException("ID de reserva no puede ser nulo");
+        }
+        if (descuentoExtra < 0) {
+            throw new IllegalArgumentException("Descuento extra no puede ser negativo");
+        }
+        if (comprobanteRepository.findByIdReserva(reservaId).isPresent()) {
             throw new IllegalArgumentException("Ya existe un comprobante asociado a esta reserva");
         }
-        if (descuentoExtra < 0) throw new IllegalArgumentException();
 
-
+        // Obtener datos principales
         Reserva reserva = reservaService.getReservaById(reservaId);
+        if (reserva == null) {
+            throw new EntityNotFoundException("Reserva no encontrada");
+        }
+        if (reserva.getTotalPersonas() <= 0) {
+            throw new IllegalStateException("La reserva debe tener al menos una persona");
+        }
+
         PlanDTO plan = obtenerPlan(reserva.getIdPlan());
         ClienteDTO cliente = obtenerCliente(reserva.getIdReservante());
         List<ClienteReserva> integrantes = clienteReservaService.obtenerIntegrantesByIdReserva(reservaId);
-        ReservaDTO reservaDTO = new ReservaDTO(reserva, plan, cliente);
 
+        // Validar integridad de datos
+        if (integrantes.isEmpty()) {
+            throw new IllegalStateException("No hay clientes asociados a la reserva");
+        }
+        if (integrantes.size() != reserva.getTotalPersonas()) {
+            throw new IllegalStateException(
+                    String.format("Cantidad de integrantes (%d) no coincide con total de personas (%d) en la reserva",
+                            integrantes.size(), reserva.getTotalPersonas())
+            );
+        }
+
+
+        // Crear objeto comprobante, asignar reserva y estado pagado
+        Comprobante comprobante = new Comprobante(null, true, reservaId);
+        comprobante = comprobanteRepository.save(comprobante); // Guardar primero para obtener ID
+
+        // Procesar detalles
         double tarifaBase = calcularTarifaBase(reserva.getFecha(), reserva.getIdPlan());
         int totalPersonas = reserva.getTotalPersonas();
         double tarifaIntegrante = tarifaBase / totalPersonas;
         double descuentoExtraIntegrante = descuentoExtra / totalPersonas;
 
 
-        // Condiciones de creación de comprobante
-        if (integrantes.isEmpty()) throw new IllegalStateException("No hay clientes asociados a la reserva");
-        if (integrantes.size() != totalPersonas) throw new IllegalStateException("No estan todos los clientes asociados a la reserva");
-
-        // Crear objeto comprobante, asignar reserva y estado pagado
-        Comprobante comprobante = new Comprobante(null, true, reservaId);
-
         // Crear detalles para cada persona en la reserva
         List<DetalleComprobanteConClienteDTO> detalles = crearDetallesDeComprobante(
                 integrantes, reserva, totalPersonas, descuentoExtraIntegrante, tarifaIntegrante, comprobante.getId());
 
         actualizarTotalComprobante(comprobante);
-
         notificarActualizacionDeReportes(reserva, comprobante, plan, true);
 
+        ReservaDTO reservaDTO = new ReservaDTO(reserva, plan, cliente);
         return new ComprobanteConDetallesDTO(comprobante, reservaDTO, detalles);
     }
 
@@ -333,7 +355,7 @@ public class ComprobanteService extends BaseService {
 
     // Obtiene porcentaje de descuento según el número de personas del grupo
     // Petición al MC2
-    private double calcularDescuentoGrupo(int totalPersonas) {
+    public double calcularDescuentoGrupo(int totalPersonas) {
         try {
             Double descuento = restTemplate.getForObject(DESCUENTO_GRUPO_ENDPOINT + "cantidad/" + totalPersonas, Double.class);
             if (descuento == null) throw new IllegalStateException("El servicio de descuento de grupo no devolvió respuesta válida");
@@ -358,7 +380,7 @@ public class ComprobanteService extends BaseService {
 
 
     // Obtiene el precio de tarifa del arriendo según el día (semana, fin de semana o feriado)
-    private double calcularTarifaBase(LocalDate fecha, Long idPlan) {
+    public double calcularTarifaBase(LocalDate fecha, Long idPlan) {
         boolean esFinDeSemana = fecha.getDayOfWeek().getValue() >= 6;
         boolean esFeriado = esDiaFeriado(fecha);
         PlanDTO plan = obtenerPlan(idPlan);
@@ -370,7 +392,7 @@ public class ComprobanteService extends BaseService {
 
 
     // Obtiene booleano si es cumpleaniero el cliente
-    private boolean esCumpleaniero(Long idCliente, LocalDate fecha) {
+    public boolean esCumpleaniero(Long idCliente, LocalDate fecha) {
         try{
             Boolean result = restTemplate.getForObject(CLIENTE_CUMPLEANIOS_ENDPOINT + "cliente/" + idCliente + "/esCumpleaniero?fecha=" + fecha, Boolean.class);
             if (result == null) throw new IllegalStateException("El servicio de cumpleaños no devolvió respuesta válida");
@@ -408,7 +430,7 @@ public class ComprobanteService extends BaseService {
     }
 
     // Crea string para indicar el rango de personas
-    private String determinarRangoPersonas(int cantidad) {
+    public String determinarRangoPersonas(int cantidad) {
         if (cantidad <= 2) return "1-2 personas";
         if (cantidad <= 5) return "3-5 personas";
         if (cantidad <= 10) return "6-10 personas";

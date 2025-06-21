@@ -216,7 +216,7 @@ public class ReservaService extends BaseService {
     // Validación si reserva es en horario de trabajo
     //  lunes a viernes: 14:00 a 22:00
     //  sábados, domingos, feriados: 10:00 a 22:00
-    private void esHorarioValido(Boolean diaFeriado, Boolean diaFinDeSemana, Reserva reserva) {
+    public void esHorarioValido(Boolean diaFeriado, Boolean diaFinDeSemana, Reserva reserva) {
         // Horario fuera semana
         if (diaFeriado || diaFinDeSemana){
             if (reserva.getHoraInicio().isBefore(LocalTime.of(10,0,0)) ||
@@ -232,7 +232,7 @@ public class ReservaService extends BaseService {
     }
 
     // Determinar hora de fin sumando minutos del plan a la hora inicial
-    private LocalTime determinarHoraFin(Reserva reserva, PlanDTO plan) {
+    public LocalTime determinarHoraFin(Reserva reserva, PlanDTO plan) {
         return reserva.getHoraInicio().plusMinutes(plan.getDuracionTotal());
     }
 
