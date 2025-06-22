@@ -1,0 +1,6 @@
+projectKey=Tingeso3-Frontend
+serverUrl=http://localhost:9000
+serverVersion=25.6.0.109173
+dashboardUrl=http://localhost:9000/dashboard?id=Tingeso3-Frontend
+ceTaskId=1d163c9d-fcc2-444b-9294-efe6402b7d97
+ceTaskUrl=http://localhost:9000/api/ce/task?id=1d163c9d-fcc2-444b-9294-efe6402b7d97

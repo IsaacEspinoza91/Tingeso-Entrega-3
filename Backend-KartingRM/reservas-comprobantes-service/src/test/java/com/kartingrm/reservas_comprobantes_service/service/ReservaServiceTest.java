@@ -63,7 +63,7 @@ class ReservaServiceTest {
         planDTO = new PlanDTO();
         planDTO.setId(1L);
         planDTO.setDuracionTotal(60); // 60 minutos
-        
+
     }
 
     @Test
