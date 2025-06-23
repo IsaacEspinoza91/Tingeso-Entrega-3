@@ -1,5 +1,6 @@
 package com.kartingrm.reportes_service.repository;
 
+import com.kartingrm.reportes_service.dto.IngresosMensualesDTO;
 import com.kartingrm.reportes_service.entity.ReporteIngresosPlan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -24,4 +25,12 @@ public interface ReporteIngresosPlanRepository extends JpaRepository<ReporteIngr
 
     @Query("SELECT r FROM ReporteIngresosPlan r WHERE r.mes BETWEEN :mesInicio AND :mesFin ORDER BY r.descripcionPlan, r.mes")
     List<ReporteIngresosPlan> findReportesPlanEntreMeses(@Param("mesInicio") LocalDate mesInicio, @Param("mesFin") LocalDate mesFin);
+
+    @Query("SELECT " +
+            "new com.kartingrm.reportes_service.dto.IngresosMensualesDTO(" +
+            "COALESCE(SUM(CASE WHEN YEAR(r.mes) = YEAR(:fechaActual) AND MONTH(r.mes) = MONTH(:fechaActual) THEN r.ingresos ELSE 0 END), 0), " +
+            "COALESCE(SUM(CASE WHEN YEAR(r.mes) = YEAR(:fechaMesAnterior) AND MONTH(r.mes) = MONTH(:fechaMesAnterior) THEN r.ingresos ELSE 0 END), 0)) " +
+            "FROM ReporteIngresosPlan r")
+    IngresosMensualesDTO sumIngresosMensuales(@Param("fechaActual") LocalDate fechaActual,
+                                              @Param("fechaMesAnterior") LocalDate fechaMesAnterior);
 }

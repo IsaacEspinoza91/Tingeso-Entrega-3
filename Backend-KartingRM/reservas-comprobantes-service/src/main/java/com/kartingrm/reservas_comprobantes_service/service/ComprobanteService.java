@@ -26,32 +26,6 @@ public class ComprobanteService extends BaseService {
     // Constantes
     private static final double IVA = 0.19;
 
-    static final String URL_PLAN_MS = "http://plan-service";
-    static final String PLAN_BASE = "/api/plan-service";
-    static final String PLAN_ENDPOINT = URL_PLAN_MS + PLAN_BASE + "/planes/";
-
-    static final String URL_CLIENTE_DESC_FRECU_MS = "http://cliente-desc-frecu-service";
-    static final String CLIENTE_DESC_FRECU_BASE = "/api/cliente-service";
-    static final String CLIENTE_ENDPOINT = URL_CLIENTE_DESC_FRECU_MS + CLIENTE_DESC_FRECU_BASE + "/cliente/";
-    static final String CLIENTE_RESERVA_ENDPOINT = URL_CLIENTE_DESC_FRECU_MS + CLIENTE_DESC_FRECU_BASE + "/cliente-reserva/";
-
-    static final String URL_DIAS_ESPECIALES_MS = "http://dias-especiales-service";
-    static final String DIAS_ESPECIALES_BASE = "/api/dias-especiales-service";
-    static final String DIAS_FERIADOS_ENDPOINT = URL_DIAS_ESPECIALES_MS + DIAS_ESPECIALES_BASE + "/dias-feriados/";
-    static final String CLIENTE_CUMPLEANIOS_ENDPOINT = URL_DIAS_ESPECIALES_MS + DIAS_ESPECIALES_BASE + "/cliente-cumpleanios/";
-
-    static final String URL_DESCUENTO_GRUPO_MS = "http://descuento-grupo-service";
-    static final String DESCUENTO_GRUPO_BASE = "/api/descuento-grupo-service";
-    static final String DESCUENTO_GRUPO_ENDPOINT = URL_DESCUENTO_GRUPO_MS + DESCUENTO_GRUPO_BASE + "/desc-grupo/";
-
-    static final String URL_REPORTES_MS = "http://reportes-service";
-    static final String REPORTES_BASE = "/api/reportes-service";
-    static final String REPORTES_RANGO_ENDPOINT = URL_REPORTES_MS + REPORTES_BASE + "/segun-rango-personas/";
-    static final String REPORTES_PLAN_ENDPOINT = URL_REPORTES_MS + REPORTES_BASE + "/segun-plan/";
-
-
-
-
     private final ComprobanteRepository comprobanteRepository;
     private final DetalleComprobanteRepository detalleComprobanteRepository;      // Entidad débil depende de comprobante
     private final ReservaService reservaService;

@@ -3,6 +3,7 @@ package com.kartingrm.reservas_comprobantes_service.controller;
 import com.kartingrm.reservas_comprobantes_service.entity.Reserva;
 import com.kartingrm.reservas_comprobantes_service.model.ReservaDTO;
 import com.kartingrm.reservas_comprobantes_service.model.ReservaRequest;
+import com.kartingrm.reservas_comprobantes_service.model.ReservasDiariasDTO;
 import com.kartingrm.reservas_comprobantes_service.service.ReservaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -82,5 +83,11 @@ public class ReservaController {
         reservaService.deleteReserva(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/contador-diario")
+    public ReservasDiariasDTO getContadorReservasDiarias() {
+        return reservaService.contarReservasDiarias();
+    }
+
 
 }

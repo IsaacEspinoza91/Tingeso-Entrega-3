@@ -1,5 +1,6 @@
 package com.kartingrm.reportes_service.service;
 
+import com.kartingrm.reportes_service.dto.IngresosMensualesDTO;
 import com.kartingrm.reportes_service.dto.ReporteIngresosPorPlanDTO;
 import com.kartingrm.reportes_service.entity.ReporteIngresosPlan;
 import com.kartingrm.reportes_service.modelbase.ReportesIngresosServiceBase;
@@ -140,4 +141,12 @@ public class ReporteIngresosPlanService extends ReportesIngresosServiceBase {
             reportesPlanRepository.restarIngresos(idPlan, mes, monto);
         }
     }
+
+    public IngresosMensualesDTO obtenerIngresosMensuales() {
+        LocalDate fechaActual = LocalDate.now();
+        LocalDate fechaMesAnterior = fechaActual.minusMonths(1);
+
+        return reportesPlanRepository.sumIngresosMensuales(fechaActual, fechaMesAnterior);
+    }
+
 }

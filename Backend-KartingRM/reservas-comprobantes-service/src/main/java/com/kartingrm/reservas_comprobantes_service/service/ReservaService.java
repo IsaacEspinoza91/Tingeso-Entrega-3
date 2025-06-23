@@ -22,23 +22,6 @@ public class ReservaService extends BaseService {
     private static final String ESTADO_COMPLETADA = "completada";
     private static final String ESTADO_CONFIRMADA = "confirmada";
 
-    static final String URL_CLIENTE_DESC_FRECU_MS = "http://cliente-desc-frecu-service";
-    static final String CLIENTE_DESC_FRECU_BASE = "/api/cliente-service";
-    static final String CLIENTE_ENDPOINT = URL_CLIENTE_DESC_FRECU_MS + CLIENTE_DESC_FRECU_BASE + "/cliente/";
-
-    static final String URL_PLAN_MS = "http://plan-service";
-    static final String PLAN_BASE = "/api/plan-service";
-    static final String PLAN_ENDPOINT = URL_PLAN_MS + PLAN_BASE + "/planes/";
-
-    static final String URL_DIAS_ESPECIALES_MS = "http://dias-especiales-service";
-    static final String DIAS_ESPECIALES_BASE = "/api/dias-especiales-service";
-    static final String DIAS_FERIADOS_ENDPOINT = URL_DIAS_ESPECIALES_MS + DIAS_ESPECIALES_BASE + "/dias-feriados/";
-
-    static final String URL_RACK_SEMANAL_MS = "http://rack-semanal-service";
-    static final String RACK_SEMANAL_BASE = "/api/rack-semanal-service";
-    static final String RACK_SEMANAL_ENDPOINT = URL_RACK_SEMANAL_MS + RACK_SEMANAL_BASE + "/rack-reserva/";
-
-
 
     private final ReservaRepository reservaRepository;
     public ReservaService(ReservaRepository reservaRepository, RestTemplate restTemplate) {
@@ -257,5 +240,11 @@ public class ReservaService extends BaseService {
     }
 
 
+    public ReservasDiariasDTO contarReservasDiarias() {
+        LocalDate fechaHoy = LocalDate.now();
+        LocalDate fechaAyer = fechaHoy.minusDays(1);
+
+        return reservaRepository.countReservasConfirmadasOCompletadasDiarias(fechaHoy, fechaAyer);
+    }
 
 }

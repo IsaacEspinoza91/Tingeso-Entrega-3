@@ -1,8 +1,10 @@
 package com.kartingrm.cliente_desc_frecu_service.modelbase;
 
 import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 import java.time.LocalDate;
 
+@MappedSuperclass
 public abstract class ClienteBase {
 
     @Column(name = "rut", nullable = true, length = 12, unique = true)

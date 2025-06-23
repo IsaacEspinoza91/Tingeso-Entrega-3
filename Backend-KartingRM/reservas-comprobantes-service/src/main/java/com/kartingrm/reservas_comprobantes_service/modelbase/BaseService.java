@@ -12,17 +12,33 @@ import java.time.LocalDate;
 
 public abstract class BaseService {
 
-    static final String URL_CLIENTE_DESC_FRECU_MS = "http://cliente-desc-frecu-service";
-    static final String CLIENTE_DESC_FRECU_BASE = "/api/cliente-service";
-    static final String CLIENTE_ENDPOINT = URL_CLIENTE_DESC_FRECU_MS + CLIENTE_DESC_FRECU_BASE + "/cliente/";
+    public static final String URL_CLIENTE_DESC_FRECU_MS = "http://cliente-desc-frecu-service";
+    public static final String CLIENTE_DESC_FRECU_BASE = "/api/cliente-service";
+    public static final String CLIENTE_ENDPOINT = URL_CLIENTE_DESC_FRECU_MS + CLIENTE_DESC_FRECU_BASE + "/cliente/";
+    public static final String CLIENTE_RESERVA_ENDPOINT = URL_CLIENTE_DESC_FRECU_MS + CLIENTE_DESC_FRECU_BASE + "/cliente-reserva/";
 
-    static final String URL_PLAN_MS = "http://plan-service";
-    static final String PLAN_BASE = "/api/plan-service";
-    static final String PLAN_ENDPOINT = URL_PLAN_MS + PLAN_BASE + "/planes/";
+    public static final String URL_PLAN_MS = "http://plan-service";
+    public static final String PLAN_BASE = "/api/plan";
+    public static final String PLAN_ENDPOINT = URL_PLAN_MS + PLAN_BASE + "/planes/";
 
-    static final String URL_DIAS_ESPECIALES_MS = "http://dias-especiales-service";
-    static final String DIAS_ESPECIALES_BASE = "/api/dias-especiales-service";
-    static final String DIAS_FERIADOS_ENDPOINT = URL_DIAS_ESPECIALES_MS + DIAS_ESPECIALES_BASE + "/dias-feriados/";
+    public static final String URL_DIAS_ESPECIALES_MS = "http://dias-especiales-service";
+    public static final String DIAS_ESPECIALES_BASE = "/api/dias-especiales-service";
+    public static final String DIAS_FERIADOS_ENDPOINT = URL_DIAS_ESPECIALES_MS + DIAS_ESPECIALES_BASE + "/dias-feriados/";
+    public static final String CLIENTE_CUMPLEANIOS_ENDPOINT = URL_DIAS_ESPECIALES_MS + DIAS_ESPECIALES_BASE + "/cliente-cumpleanios/";
+
+    public static final String URL_RACK_SEMANAL_MS = "http://rack-semanal-service";
+    public static final String RACK_SEMANAL_BASE = "/api/rack-semanal-service";
+    public static final String RACK_SEMANAL_ENDPOINT = URL_RACK_SEMANAL_MS + RACK_SEMANAL_BASE + "/rack-reserva/";
+
+    public static final String URL_DESCUENTO_GRUPO_MS = "http://descuento-grupo-service";
+    public static final String DESCUENTO_GRUPO_BASE = "/api/descuento-grupo-service";
+    public static final String DESCUENTO_GRUPO_ENDPOINT = URL_DESCUENTO_GRUPO_MS + DESCUENTO_GRUPO_BASE + "/desc-grupo/";
+
+    public static final String URL_REPORTES_MS = "http://reportes-service";
+    public static final String REPORTES_BASE = "/api/reportes-service";
+    public static final String REPORTES_RANGO_ENDPOINT = URL_REPORTES_MS + REPORTES_BASE + "/segun-rango-personas/";
+    public static final String REPORTES_PLAN_ENDPOINT = URL_REPORTES_MS + REPORTES_BASE + "/segun-plan/";
+
 
     protected final RestTemplate restTemplate;
     protected BaseService(RestTemplate restTemplate) {

@@ -1,5 +1,6 @@
 package com.kartingrm.reportes_service.controller;
 
+import com.kartingrm.reportes_service.dto.IngresosMensualesDTO;
 import com.kartingrm.reportes_service.dto.ReporteIngresosPorPlanDTO;
 import com.kartingrm.reportes_service.service.ReporteIngresosPlanService;
 import org.springframework.http.ResponseEntity;
@@ -48,5 +49,10 @@ public class ReporteIngresosPlanController {
                 .generarReporteIngresosPorPlan(mesInicio, anioInicio, mesFin, anioFin);
 
         return ResponseEntity.ok(reporte);
+    }
+
+    @GetMapping("/ingresos-totales-mes")
+    public IngresosMensualesDTO getSumaIngresosMensuales() {
+        return reporteService.obtenerIngresosMensuales();
     }
 }

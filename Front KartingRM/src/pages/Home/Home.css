@@ -1,66 +1,495 @@
+:root {
+  --primary-color: #00b4d8;
+  /* Celeste moderno */
+  --primary-hover: #0096c7;
+  --secondary-color: #023e8a;
+  --background-light: #f8f9fa;
+  --text-dark: #2c3e50;
+  --text-light: #ffffff;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
 .home-container {
-  background: url('../../assets/images/background-home.jpg') no-repeat center center;
-  background-size: cover;
-  min-height: 100vh;
+  min-height: calc(100vh - 60px);
   width: 100%;
-  margin-top: -60px; /* Compensa el navbar fixed */
+  padding: 2rem;
+  background-color: var(--background-light);
+  background-image: linear-gradient(to bottom, rgba(240, 248, 255, 0.8), rgba(240, 248, 255, 0.5)),
+    url('../../assets/images/background-pattern.png');
+  background-size: cover;
+}
+
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.highlight {
+  color: var(--secondary-color);
+  position: relative;
+  display: inline-block;
+}
+
+.highlight::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--primary-color);
+  border-radius: 3px;
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.welcome-section h1 {
+  font-size: 2.5rem;
+  color: var(--secondary-color);
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: var(--text-dark);
+  max-width: 700px;
+  margin: 0 auto;
+  opacity: 0.9;
+}
+
+/* Sección interactiva */
+.interactive-section {
+  margin-bottom: 3rem;
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(0, 180, 216, 0.1);
+  animation: slideUp 0.5s ease-out;
+}
+
+.interactive-section h2 {
+  font-size: 1.8rem;
+  color: var(--secondary-color);
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.task-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.task-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: var(--transition);
+  border: 1px solid rgba(0, 180, 216, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.task-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 180, 216, 0.1);
+  border-color: rgba(0, 180, 216, 0.4);
+}
+
+.task-header {
   display: flex;
-  justify-content: center;
   align-items: center;
+  margin-bottom: 1.2rem;
+}
+
+.task-header .task-icon {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  margin-right: 1rem;
+}
+
+.task-header h3 {
+  font-size: 1.2rem;
+  color: var(--text-dark);
+  margin: 0;
+  font-weight: 500;
+}
+
+.task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.task-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: var(--transition);
+  font-weight: 500;
+}
+
+.task-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 180, 216, 0.3);
+}
+
+.btn-icon {
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Accesos rápidos */
+.quick-actions {
+  margin-bottom: 3rem;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.quick-actions h2 {
+  font-size: 1.8rem;
+  color: var(--secondary-color);
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.2rem;
+  justify-content: center;
+}
+
+.action-btn {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+
+.action-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 180, 216, 0.2);
+  border-color: var(--primary-color);
+}
+
+.action-icon {
+  color: var(--primary-color);
+  margin-bottom: 0.8rem;
+  font-size: 1.8rem;
+}
+
+.action-btn span {
+  margin-top: 0.3rem;
+  font-size: 1rem;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+/* Estadísticas */
+.stats-preview {
+  animation: fadeIn 1s ease-out;
+}
+
+.stats-preview h2 {
+  font-size: 1.8rem;
+  color: var(--secondary-color);
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 180, 216, 0.15);
+}
+
+.stat-icon {
+  color: var(--primary-color);
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.8rem;
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: var(--transition);
+  border: 1px solid rgba(0, 180, 216, 0.1);
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stat-value {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: var(--secondary-color);
+  margin: 0.5rem 0;
+}
+
+.stat-value.loading {
+  color: #7f8c8d;
+  font-size: 1.2rem;
+  font-weight: normal;
+}
+
+.stat-comparison {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.stat-comparison.positive {
+  color: #27ae60;
+}
+
+.stat-comparison.negative {
+  color: #e74c3c;
+}
+
+
+/* Animaciones */
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.loading {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .home-container {
+    padding: 1rem;
+  }
+
+  .welcome-section h1 {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .task-list {
+    grid-template-columns: 1fr;
+  }
+
+  .action-buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .stat-card {
+    padding: 1.5rem;
+    min-height: auto;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+  }
+}
+
+/* Estilos para el título mejorado */
+.welcome-title-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+.welcome-title {
+  font-size: 2.8rem;
+  background: linear-gradient(135deg, #00b4d8 0%, #023e8a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  padding: 0 1rem;
+  text-align: center;
+  transition: all 0.4s ease;
+}
+
+.welcome-text {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 400;
+  margin-bottom: -0.5rem;
+  background: linear-gradient(135deg, #7f8c8d 0%, #2c3e50 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.company-name {
+  display: block;
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(0, 180, 216, 0.3);
   position: relative;
 }
 
-.welcome-message {
-  background-color: rgba(51, 51, 51, 0.85); /* Fondo oscuro semitransparente */
-  padding: 3rem 4rem;
-  border-radius: 15px;
-  text-align: center;
-  max-width: 80%;
-  backdrop-filter: blur(2px); /* Efecto de desenfoque sutil */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+.title-decoration {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg,
+      rgba(0, 180, 216, 0) 0%,
+      rgba(0, 180, 216, 1) 20%,
+      rgba(2, 62, 138, 1) 80%,
+      rgba(2, 62, 138, 0) 100%);
+  border-radius: 4px;
+  z-index: 1;
+  transition: all 0.4s ease;
 }
 
-.welcome-message h1 {
-  font-size: 3.5rem;
-  font-weight: 700;
-  margin: 0;
-  color: white;
-  line-height: 1.3;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+/* Efecto hover con destello */
+.welcome-title-container:hover .welcome-title {
+  transform: scale(1.02);
+  text-shadow: 0 0 15px rgba(0, 180, 216, 0.4);
 }
 
-/* Efecto de brillo al pasar el mouse */
-.welcome-message:hover {
-  box-shadow: 0 4px 30px rgba(97, 218, 251, 0.4);
-  transition: box-shadow 0.3s ease;
+.welcome-title-container:hover .company-name {
+  background: linear-gradient(135deg, #00b4d8 0%, #0096c7 45%, #023e8a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
-/* Responsive Design */
-@media (max-width: 992px) {
-  .welcome-message {
-    padding: 2.5rem 3rem;
+.welcome-title-container:hover .title-decoration {
+  height: 6px;
+  background: linear-gradient(90deg,
+      rgba(0, 180, 216, 0) 0%,
+      rgba(0, 180, 216, 0.8) 20%,
+      #00b4d8 50%,
+      rgba(2, 62, 138, 0.8) 80%,
+      rgba(2, 62, 138, 0) 100%);
+  box-shadow: 0 0 20px rgba(0, 180, 216, 0.6);
+}
+
+/* Efecto de destello animado */
+@keyframes flash {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
   }
-  
-  .welcome-message h1 {
-    font-size: 2.8rem;
+
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
   }
 }
 
+.welcome-title-container:hover::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 120%;
+  height: 140%;
+  background: radial-gradient(circle,
+      rgba(255, 255, 255, 0.8) 0%,
+      rgba(255, 255, 255, 0) 70%);
+  z-index: 1;
+  animation: flash 0.8s ease-out;
+  pointer-events: none;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .welcome-message {
-    padding: 2rem;
-    max-width: 90%;
-  }
-  
-  .welcome-message h1 {
+  .welcome-title {
     font-size: 2rem;
   }
+
+  .welcome-text {
+    font-size: 1.2rem;
+  }
+
+  .company-name {
+    font-size: 2.5rem;
+  }
 }
 
-/* Opcional: diferentes imágenes para diferentes resoluciones */
-@media (min-resolution: 192dpi) {
-  .home-container {
-    background-image: url('../../assets/images/background-home@2x.jpg');
+@media (max-width: 480px) {
+  .action-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
   }
 }

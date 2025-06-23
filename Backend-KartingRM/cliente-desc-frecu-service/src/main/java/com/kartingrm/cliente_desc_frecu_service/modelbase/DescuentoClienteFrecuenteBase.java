@@ -1,7 +1,9 @@
 package com.kartingrm.cliente_desc_frecu_service.modelbase;
 
 import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 
+@MappedSuperclass
 public abstract class DescuentoClienteFrecuenteBase {
 
     @Column(name = "min_reservas", nullable = false)
