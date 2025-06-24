@@ -19,15 +19,15 @@ const CreatePlanForm = ({ onPlanCreated }) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: name.includes('precio') || name === 'duracionTotal' 
-        ? Number(value) 
+      [name]: name.includes('precio') || name === 'duracionTotal'
+        ? Number(value)
         : value
     });
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.descripcion.trim()) newErrors.descripcion = 'Descripción es requerida';
     if (formData.duracionTotal <= 0) newErrors.duracionTotal = 'Duración debe ser mayor a 0';
     if (formData.precioRegular <= 0) newErrors.precioRegular = 'Precio debe ser mayor a 0';
@@ -40,7 +40,7 @@ const CreatePlanForm = ({ onPlanCreated }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setIsSubmitting(true);
@@ -54,11 +54,11 @@ const CreatePlanForm = ({ onPlanCreated }) => {
         precioFinSemana: 0,
         precioFeriado: 0
       });
-      
+
       if (onPlanCreated) {
         onPlanCreated();
       }
-      
+
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       console.error('Error al crear plan:', error);
@@ -73,7 +73,7 @@ const CreatePlanForm = ({ onPlanCreated }) => {
       <h3>Crear Nuevo Plan</h3>
       {successMessage && <div className="success-message">{successMessage}</div>}
       {errors.submit && <div className="error-message">{errors.submit}</div>}
-      
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Descripción:</label>

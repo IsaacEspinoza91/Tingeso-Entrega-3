@@ -1,0 +1,404 @@
+.planes-page {
+    min-height: calc(100vh - 60px);
+    width: 100%;
+    padding: 2rem;
+    background-color: var(--background-light);
+    /*background-image: linear-gradient(to bottom, rgba(240, 248, 255, 0.8), rgba(240, 248, 255, 0.5)), url('../../assets/images/background-home.jpg');*/
+    background-image: linear-gradient(to bottom, rgba(240, 248, 255, 0.8), rgba(240, 248, 255, 0.5));
+    background-size: cover;
+}
+
+.planes-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.planes-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.planes-header h1 {
+    color: #023e8a;
+    font-size: 2.2rem;
+    margin: 0;
+}
+
+.search-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.search-group {
+    display: flex;
+    gap: 1rem;
+    flex: 1;
+    max-width: 500px;
+}
+
+
+.search-bar input {
+    flex: 1;
+    padding: 0.6rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    max-width: 300px;
+}
+
+.search-btn,
+.add-btn {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.search-btn {
+    background-color: #00b4d8;
+    color: white;
+}
+
+.search-btn:hover {
+    background-color: #0096c7;
+}
+
+.add-btn {
+    background-color: #2ecc71;
+    color: white;
+    padding: 0.7rem 1.3rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    margin-left: auto;
+}
+
+.add-btn:hover {
+    background-color: #27ae60;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
+}
+
+.search-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-bar button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    width: 80px;
+    background-color: #2c3e50;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1000;
+    /* Valor extremadamente alto */
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    /* Permite interactuar con elementos debajo */
+}
+
+.tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #2c3e50 transparent transparent transparent;
+}
+
+.tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Contexto de apilamiento para la tabla */
+.planes-table-container {
+    position: relative;
+    z-index: 1;
+    /* Establece un contexto de apilamiento */
+}
+
+.planes-table {
+    position: relative;
+    z-index: 1;
+    /* Menor que los tooltips */
+}
+
+.planes-table thead {
+    position: relative;
+    z-index: 2;
+}
+
+.planes-table th,
+.planes-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.planes-table th {
+    background-color: #00b4d8;
+    color: white;
+    font-weight: 500;
+}
+
+.planes-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.planes-table thead {
+    background-color: #00b4d8;
+    position: sticky;
+    top: 0;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.edit-btn,
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.edit-btn {
+    color: #00b4d8;
+}
+
+.edit-btn:hover {
+    background-color: rgba(0, 180, 216, 0.1);
+}
+
+.delete-btn {
+    color: #e74c3c;
+}
+
+.delete-btn:hover {
+    background-color: rgba(231, 76, 60, 0.1);
+}
+
+.loading-message,
+.no-results {
+    text-align: center;
+    padding: 2rem;
+    color: #7f8c8d;
+}
+
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.plan-form-modal,
+.delete-modal {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #7f8c8d;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+/* Estilos estandarizados para todos los botones */
+.form-actions,
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Botón base */
+.action-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: 1px solid transparent;
+    min-width: 120px;
+
+}
+
+/* Botón Cancelar */
+.cancel-btn {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    border: 1px solid #ddd !important;
+}
+
+.cancel-btn:hover {
+    background-color: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón Confirmar/Enviar */
+.submit-btn {
+    background-color: #00b4d8;
+    color: white;
+}
+
+.submit-btn:hover {
+    background-color: #0096c7;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 180, 216, 0.3);
+}
+
+/* Botón Eliminar */
+.delete-confirm-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.delete-confirm-btn:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+}
+
+/* Iconos en botones */
+.btn-icon {
+    margin-right: 10px;
+    display: inline;
+}
+
+/* Iconos en inputs */
+.input-icon {
+    color: #00b4d8;
+    margin-right: 8px;
+}
+
+/* Mensajes de error */
+.error-message {
+    color: #e74c3c;
+    font-size: 0.8rem;
+    margin-top: 4px;
+    display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .planes-header {
+        flex-direction: column;
+    }
+
+    .search-bar {
+        flex-direction: column;
+    }
+
+    .search-bar input {
+        max-width: none;
+    }
+
+    .search-group {
+        max-width: none;
+        width: 100%;
+    }
+
+    .add-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .planes-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .plan-form-modal,
+    .delete-modal {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+}

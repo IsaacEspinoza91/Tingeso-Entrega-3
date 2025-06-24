@@ -4,6 +4,7 @@ import CreatePlanForm from './CreatePlanForm';
 import PlanSearch from './PlanSearch';
 import EditPlanModal from './EditPlanModal';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
+import { FaPlus, FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
 import './PlanesList.css';
 
 const PlanesList = () => {
@@ -77,17 +78,16 @@ const PlanesList = () => {
 
   return (
     <div className="planes-container">
-      <div className="planes-header">
-        <h2>Lista de Planes</h2>
+      <div className="actions-header">
+        <PlanSearch onSearchResults={handleSearchResults} />
+
         <button
           onClick={() => setShowCreateForm(!showCreateForm)}
-          className="create-button"
+          className="primary-button"
         >
-          {showCreateForm ? 'Cancelar' : 'Crear Nuevo Plan'}
+          <FaPlus /> {showCreateForm ? 'Cancelar' : 'Nuevo Plan'}
         </button>
       </div>
-
-      <PlanSearch onSearchResults={handleSearchResults} />
 
       {showCreateForm && (
         <CreatePlanForm onPlanCreated={handlePlanCreated} />
@@ -110,54 +110,67 @@ const PlanesList = () => {
         />
       )}
 
-      <table className="planes-table">
-        <thead>
-          <tr>
-            <th>ID Plan</th>
-            <th>Descripción</th>
-            <th>Duración Total (min)</th>
-            <th>Precio Regular</th>
-            <th>Precio Fin de Semana</th>
-            <th>Precio Feriado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {displayedPlanes.length > 0 ? (
-            displayedPlanes.map((plan) => (
-              <tr key={plan.id}>
-                <td>{plan.id}</td>
-                <td>{plan.descripcion}</td>
-                <td>{plan.duracionTotal}</td>
-                <td>${plan.precioRegular.toLocaleString()}</td>
-                <td>${plan.precioFinSemana.toLocaleString()}</td>
-                <td>${plan.precioFeriado.toLocaleString()}</td>
-                <td className="actions-cell">
-                  <button
-                    onClick={() => setEditingPlan(plan)}
-                    className="edit-button"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => setDeletingPlan(plan)}
-                    className="delete-button"
-                    disabled={isDeleting}
-                  >
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="7" className="no-results">
-                {filteredPlanes ? 'No se encontraron planes' : 'No hay planes registrados'}
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      <div className="card-container">
+        {loading ? (
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>Cargando planes...</p>
+          </div>
+        ) : error ? (
+          <div className="error-message">
+            Error al cargar los planes: {error}
+          </div>
+        ) : displayedPlanes.length > 0 ? (
+          <div className="responsive-table">
+            <table className="planes-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Descripción</th>
+                  <th>Duración</th>
+                  <th>Precio Regular</th>
+                  <th>Precio Fin de Semana</th>
+                  <th>Precio Feriado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {displayedPlanes.map((plan) => (
+                  <tr key={plan.id}>
+                    <td>{plan.id}</td>
+                    <td>{plan.descripcion}</td>
+                    <td>{plan.duracionTotal} min</td>
+                    <td>${plan.precioRegular.toLocaleString()}</td>
+                    <td>${plan.precioFinSemana.toLocaleString()}</td>
+                    <td>${plan.precioFeriado.toLocaleString()}</td>
+                    <td className="actions-cell">
+                      <button
+                        onClick={() => setEditingPlan(plan)}
+                        className="icon-button edit"
+                        title="Editar"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => setDeletingPlan(plan)}
+                        className="icon-button delete"
+                        title="Eliminar"
+                        disabled={isDeleting}
+                      >
+                        <FaTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="no-results">
+            {filteredPlanes ? 'No se encontraron planes' : 'No hay planes registrados'}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
