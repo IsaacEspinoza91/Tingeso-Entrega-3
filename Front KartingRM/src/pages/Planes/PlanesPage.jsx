@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
 import { getPlanes, getPlanById } from '../../services/planService'
 import PlanesList from '../../components/planesv2/PlanesList'
 import PlanForm from '../../components/planesv2/PlanForm'
 import './PlanesPage.css'
-import { FaPlus, FaSearch } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaHome } from 'react-icons/fa';
 
 export default function PlanesPage() {
     const [planes, setPlanes] = useState([])
@@ -11,6 +12,8 @@ export default function PlanesPage() {
     const [searchId, setSearchId] = useState('')
     const [showForm, setShowForm] = useState(false)
     const [currentPlan, setCurrentPlan] = useState(null)
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         fetchPlanes()
@@ -57,7 +60,19 @@ export default function PlanesPage() {
     return (
         <div className="planes-container">
             <div className="planes-header">
-                <h1>Gestión de Planes</h1>
+
+                <div className="content-header">
+                    <button
+                        onClick={() => navigate('/')}
+                        className="floating-home-btn"
+                        aria-label="Volver al inicio"
+                    >
+                        <FaHome />
+                        <span>Inicio</span>
+                    </button>
+
+                    <h1>Gestión de Planes</h1>
+                </div>
 
                 <div className="search-container">
                     <div className="search-bar">
