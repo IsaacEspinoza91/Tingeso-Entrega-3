@@ -1,16 +1,21 @@
-import React from 'react';
-import { FaEdit, FaToggleOn, FaToggleOff, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaUserCheck, FaUserSlash } from 'react-icons/fa'
 
 export default function ClientesList({
     clientes,
     loading,
-    showInactive,
     onEdit,
-    onStatusChange,
-    onDelete
+    onDelete,
+    showInactivos,
+    refreshClientes
 }) {
-    if (loading) return <div className="loading-message">Cargando clientes...</div>;
-    if (clientes.length === 0) return <div className="no-results">No se encontraron clientes</div>;
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-CL');
+    };
+
+    if (loading) return <div className="loading-message">Cargando clientes...</div>
+    if (clientes.length === 0) return <div className="no-results">No se encontraron clientes</div>
 
     return (
         <div className="clientes-list-container">
@@ -18,11 +23,11 @@ export default function ClientesList({
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>RUT</th>
                         <th>Nombre</th>
-                        <th>Apellido</th>
+                        <th>RUT</th>
                         <th>Correo</th>
                         <th>Teléfono</th>
+                        <th>Fecha Nacimiento</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -31,44 +36,51 @@ export default function ClientesList({
                     {clientes.map((cliente) => (
                         <tr key={cliente.id}>
                             <td>{cliente.id}</td>
+                            <td>{cliente.nombre} {cliente.apellido}</td>
                             <td>{cliente.rut}</td>
-                            <td>{cliente.nombre}</td>
-                            <td>{cliente.apellido}</td>
                             <td>{cliente.correo}</td>
                             <td>{cliente.telefono}</td>
-                            <td>
-                                <span className={`status-badge ${cliente.activo ? 'active' : 'inactive'}`}>
-                                    {cliente.activo ? 'Activo' : 'Inactivo'}
-                                </span>
+                            <td>{formatDate(cliente.fechaNacimiento)}</td>
+                            <td className={cliente.activo ? 'status-active' : 'status-inactive'}>
+                                {cliente.activo ? 'Activo' : 'Inactivo'}
                             </td>
                             <td className="actions-cell">
-                                <div className="tooltip-container">
-                                    <button onClick={() => onEdit(cliente)} className="edit-btn">
-                                        <FaEdit />
-                                        <span className="tooltip-text">Editar</span>
-                                    </button>
-                                </div>
-                                <div className="tooltip-container">
+                                <button
+                                    onClick={() => onEdit(cliente)}
+                                    className="edit-btn"
+                                    aria-label="Editar cliente"
+                                >
+                                    <FaEdit />
+                                </button>
+
+                                {cliente.activo ? (
                                     <button
-                                        onClick={() => onStatusChange(cliente)}
-                                        className={`status-btn ${cliente.activo ? 'deactivate' : 'activate'}`}
+                                        onClick={() => onDelete(cliente)}
+                                        className="deactivate-btn"
+                                        aria-label="Desactivar cliente"
+                                        title="Desactivar cliente"
                                     >
-                                        {cliente.activo ? <FaToggleOff /> : <FaToggleOn />}
-                                        <span className="tooltip-text">
-                                            {cliente.activo ? 'Desactivar' : 'Activar'}
-                                        </span>
+                                        <FaUserSlash />
                                     </button>
-                                </div>
-                                {!cliente.activo && (
-                                    <div className="tooltip-container">
+                                ) : (
+                                    <>
                                         <button
-                                            onClick={() => onDelete(cliente.id)}
+                                            onClick={() => onDelete(cliente)}
                                             className="delete-btn"
+                                            aria-label="Eliminar cliente"
+                                            title="Eliminar permanentemente"
                                         >
                                             <FaTrash />
-                                            <span className="tooltip-text">Eliminar</span>
                                         </button>
-                                    </div>
+                                        <button
+                                            onClick={() => onDelete(cliente)}
+                                            className="activate-btn"
+                                            aria-label="Activar cliente"
+                                            title="Activar cliente"
+                                        >
+                                            <FaUserCheck />
+                                        </button>
+                                    </>
                                 )}
                             </td>
                         </tr>
@@ -76,5 +88,5 @@ export default function ClientesList({
                 </tbody>
             </table>
         </div>
-    );
+    )
 }

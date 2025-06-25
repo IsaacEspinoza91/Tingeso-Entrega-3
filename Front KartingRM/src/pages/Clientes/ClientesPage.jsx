@@ -1,109 +1,114 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
-    getClientes,
+    getClientesActivos,
+    getClientesInactivos,
     getClienteById,
-    createCliente,
-    updateCliente,
-    deleteCliente,
-    activarCliente,
-    desactivarCliente
-} from '../../services/clienteService';
-import ClientesList from '../../components/clientesv1/ClientesList';
-import ClienteForm from '../../components/clientesv1/ClienteForm';
-import Notification from '../../components/Notification';
-import { FaHome, FaSearch, FaPlus, FaListUl } from 'react-icons/fa';
-import './ClientesPage.css';
+    getClienteByRut,
+    getClientesByNombre
+} from '../../services/clienteService'
+import ClientesList from '../../components/clientesv1/ClientesList'
+import ClientesForm from '../../components/clientesv1/ClientesForm'
+import DeleteClienteModal from '../../components/clientesv1/DeleteClienteModal'
+import './ClientesPage.css'
+import { FaPlus, FaSearch, FaHome, FaListUl, FaUsers, FaUserSlash } from 'react-icons/fa'
 
 export default function ClientesPage() {
-    const [clientes, setClientes] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [searchId, setSearchId] = useState('');
-    const [showForm, setShowForm] = useState(false);
-    const [currentCliente, setCurrentCliente] = useState(null);
-    const [showInactive, setShowInactive] = useState(false);
-    const [notification, setNotification] = useState({ show: false, message: '', type: '' });
-    const navigate = useNavigate();
+    const [clientes, setClientes] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [searchTerm, setSearchTerm] = useState('')
+    const [searchType, setSearchType] = useState('nombre') // 'id', 'rut', 'nombre'
+    const [showForm, setShowForm] = useState(false)
+    const [currentCliente, setCurrentCliente] = useState(null)
+    const [showInactivos, setShowInactivos] = useState(false)
+    const [clienteToDelete, setClienteToDelete] = useState(null)
+    const navigate = useNavigate()
 
     useEffect(() => {
-        fetchClientes();
-    }, [showInactive]);
+        fetchClientes()
+    }, [showInactivos])
+
+    const handleToggleStatus = async (cliente) => {
+        setLoading(true);
+        try {
+            if (cliente.activo) {
+                await desactivarCliente(cliente.id);
+            } else {
+                await activarCliente(cliente.id);
+            }
+            fetchClientes();
+        } catch (error) {
+            console.error('Error al cambiar estado del cliente:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchClientes = async () => {
-        setLoading(true);
+        setLoading(true)
         try {
-            const data = await getClientes(showInactive);
-            setClientes(data);
+            const data = showInactivos
+                ? await getClientesInactivos()
+                : await getClientesActivos()
+            setClientes(data)
         } catch (error) {
-            console.error('Error:', error);
-            showNotification('Error al cargar clientes', 'error');
+            console.error('Error:', error)
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }
 
     const handleSearch = async () => {
-        if (!searchId) return fetchClientes();
+        if (!searchTerm.trim()) return fetchClientes()
 
-        setLoading(true);
+        setLoading(true)
         try {
-            const cliente = await getClienteById(searchId);
-            setClientes(cliente ? [cliente] : []);
+            let results = []
+
+            switch (searchType) {
+                case 'id':
+                    if (!/^\d+$/.test(searchTerm)) {
+                        alert('Por favor ingrese solo números para ID')
+                        return
+                    }
+                    const clienteById = await getClienteById(searchTerm)
+                    results = clienteById ? [clienteById] : []
+                    break
+                case 'rut':
+                    const clienteByRut = await getClienteByRut(searchTerm)
+                    results = clienteByRut ? [clienteByRut] : []
+                    break
+                case 'nombre':
+                    results = await getClientesByNombre(searchTerm)
+                    break
+                default:
+                    results = []
+            }
+
+            setClientes(results)
         } catch (error) {
-            console.error('Error:', error);
-            showNotification('Cliente no encontrado', 'error');
-            setClientes([]);
+            console.error('Error:', error)
+            setClientes([])
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }
 
     const handleEdit = (cliente) => {
-        setCurrentCliente(cliente);
-        setShowForm(true);
-    };
-
-    const handleStatusChange = async (cliente) => {
-        try {
-            const updatedCliente = cliente.activo
-                ? await desactivarCliente(cliente.id)
-                : await activarCliente(cliente.id);
-
-            setClientes(clientes.map(c =>
-                c.id === updatedCliente.id ? updatedCliente : c
-            ));
-
-            showNotification(
-                `Cliente ${updatedCliente.activo ? 'activado' : 'desactivado'} correctamente`,
-                'success'
-            );
-        } catch (error) {
-            console.error('Error:', error);
-            showNotification('Error al cambiar estado del cliente', 'error');
-        }
-    };
-
-    const handleDelete = async (id) => {
-        try {
-            await deleteCliente(id);
-            setClientes(clientes.filter(c => c.id !== id));
-            showNotification('Cliente eliminado correctamente', 'success');
-        } catch (error) {
-            console.error('Error:', error);
-            showNotification('Error al eliminar cliente', 'error');
-        }
-    };
+        setCurrentCliente(cliente)
+        setShowForm(true)
+    }
 
     const handleFormClose = () => {
-        setShowForm(false);
-        setCurrentCliente(null);
-        fetchClientes();
-    };
+        setShowForm(false)
+        setCurrentCliente(null)
+        fetchClientes()
+    }
 
-    const showNotification = (message, type) => {
-        setNotification({ show: true, message, type });
-        setTimeout(() => setNotification({ ...notification, show: false }), 5000);
-    };
+    const handleToggleInactivos = () => {
+        setShowInactivos(!showInactivos)
+        setSearchTerm('')
+    }
 
     return (
         <div className="clientes-container">
@@ -124,31 +129,36 @@ export default function ClientesPage() {
                     <div className="search-bar">
                         <div className="search-group">
                             <label htmlFor="clienteSearch" className="search-label">Buscar Cliente:</label>
-                            <input
-                                id="clienteSearch"
-                                type="text"
-                                placeholder="Ingrese ID..."
-                                value={searchId}
-                                onChange={(e) => {
-                                    const validatedValue = e.target.value.replace(/[^0-9]/g, '');
-                                    setSearchId(validatedValue);
-                                }}
-                                onKeyDown={(e) => {
-                                    if (!/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight|Tab/.test(e.key)) {
-                                        e.preventDefault();
-                                    }
-                                }}
-                            />
+                            <div className="input-container">
+                                <select
+                                    value={searchType}
+                                    onChange={(e) => setSearchType(e.target.value)}
+                                    className="search-type-select"
+                                >
+                                    <option value="nombre">Por Nombre</option>
+                                    <option value="rut">Por RUT</option>
+                                    <option value="id">Por ID</option>
+                                </select>
+                                <input
+                                    id="clienteSearch"
+                                    type="text"
+                                    placeholder={`Ingrese ${searchType === 'id' ? 'ID' : searchType === 'rut' ? 'RUT' : 'nombre'}...`}
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                                />
+                            </div>
+
                             <div className="search-actions">
                                 <button onClick={handleSearch} className="search-btn">
                                     <FaSearch className="btn-icon" />
                                     Buscar
                                 </button>
-                                {searchId && (
+                                {(searchTerm || showInactivos) && (
                                     <button
                                         onClick={() => {
-                                            setSearchId('');
-                                            fetchClientes();
+                                            setSearchTerm('')
+                                            fetchClientes()
                                         }}
                                         className="show-all-btn"
                                     >
@@ -160,14 +170,24 @@ export default function ClientesPage() {
                         </div>
                         <div className="clientes-actions">
                             <button
-                                onClick={() => setShowInactive(!showInactive)}
-                                className={`toggle-btn ${showInactive ? 'active' : ''}`}
+                                onClick={handleToggleInactivos}
+                                className={`toggle-inactivos-btn ${showInactivos ? 'inactive' : ''}`}
                             >
-                                {showInactive ? 'Mostrar Activos' : 'Mostrar Inactivos'}
+                                {showInactivos ? (
+                                    <>
+                                        <FaUsers className="btn-icon" />
+                                        Ver Activos
+                                    </>
+                                ) : (
+                                    <>
+                                        <FaUserSlash className="btn-icon" />
+                                        Ver Inactivos
+                                    </>
+                                )}
                             </button>
                             <button onClick={() => setShowForm(true)} className="add-btn">
                                 <FaPlus className="btn-icon" />
-                                Crear Cliente
+                                Nuevo Cliente
                             </button>
                         </div>
                     </div>
@@ -177,27 +197,26 @@ export default function ClientesPage() {
             <ClientesList
                 clientes={clientes}
                 loading={loading}
-                showInactive={showInactive}
                 onEdit={handleEdit}
-                onStatusChange={handleStatusChange}
-                onDelete={handleDelete}
+                onDelete={setClienteToDelete}
+                showInactivos={showInactivos}
+                refreshClientes={fetchClientes}
             />
 
             {showForm && (
-                <ClienteForm
+                <ClientesForm
                     cliente={currentCliente}
                     onClose={handleFormClose}
-                    showNotification={showNotification}
                 />
             )}
 
-            {notification.show && (
-                <Notification
-                    message={notification.message}
-                    type={notification.type}
-                    onClose={() => setNotification({ ...notification, show: false })}
+            {clienteToDelete && (
+                <DeleteClienteModal
+                    cliente={clienteToDelete}
+                    onClose={() => setClienteToDelete(null)}
+                    onSuccess={fetchClientes}
                 />
             )}
         </div>
-    );
+    )
 }

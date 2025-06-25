@@ -58,7 +58,7 @@ export const getClienteByRut = async (rut) => {
 };
 
 // Petición GET para obtener clientes por nombre y apellido
-export const getClientesByNombreApellido = async (nombre, apellido) => {
+export const getClientesByNombre = async (nombre, apellido) => {
   try {
     const response = await httpClient.get(`${BASE_URL}/nombre/${nombre}/apellido/${apellido}`);
     return response.data;
