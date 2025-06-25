@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { getPlanes, getPlanById } from '../../services/planService'
-import PlanesList from '../../components/planesv2/PlanesList'
-import PlanForm from '../../components/planesv2/PlanForm'
+import PlanesList from '../../components/planes/PlanesList'
+import PlanForm from '../../components/planes/PlanForm'
 import './PlanesPage.css'
-import { FaPlus, FaSearch, FaHome } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaHome, FaListUl, FaExclamationTriangle } from 'react-icons/fa';
 
 export default function PlanesPage() {
     const [planes, setPlanes] = useState([])
@@ -12,7 +12,10 @@ export default function PlanesPage() {
     const [searchId, setSearchId] = useState('')
     const [showForm, setShowForm] = useState(false)
     const [currentPlan, setCurrentPlan] = useState(null)
+    const [inputError, setInputError] = useState(false);
     const navigate = useNavigate();
+    const [lastKeyPressed, setLastKeyPressed] = useState('');
+
 
 
     useEffect(() => {
@@ -31,8 +34,21 @@ export default function PlanesPage() {
         }
     }
 
+    const handleKeyDown = (e) => {
+        setLastKeyPressed(e.key);
+        if (!/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight|Tab|Control|Meta|Shift|Alt/.test(e.key)) {
+            setInputError(true);
+            e.preventDefault();
+        }
+    };
+
     const handleSearch = async () => {
         if (!searchId) return fetchPlanes()
+
+        if (!/^\d+$/.test(searchId)) {
+            alert('Por favor ingrese solo números positivos');
+            return;
+        }
 
         setLoading(true)
         try {
@@ -45,6 +61,12 @@ export default function PlanesPage() {
             setLoading(false)
         }
     }
+
+    const validateNumberInput = (value) => {
+        // Permite solo números y elimina ceros a la izquierda
+        const numericValue = value.replace(/[^0-9]/g, '').replace(/^0+/, '');
+        return numericValue === '' ? '' : numericValue;
+    };
 
     const handleEdit = (plan) => {
         setCurrentPlan(plan)
@@ -60,7 +82,6 @@ export default function PlanesPage() {
     return (
         <div className="planes-container">
             <div className="planes-header">
-
                 <div className="content-header">
                     <button
                         onClick={() => navigate('/')}
@@ -70,23 +91,52 @@ export default function PlanesPage() {
                         <FaHome />
                         <span>Inicio</span>
                     </button>
-
                     <h1>Gestión de Planes</h1>
                 </div>
 
                 <div className="search-container">
                     <div className="search-bar">
                         <div className="search-group">
-                            <input
-                                type="text"
-                                placeholder="Buscar por ID..."
-                                value={searchId}
-                                onChange={(e) => setSearchId(e.target.value)}
-                            />
-                            <button onClick={handleSearch} className="search-btn">
-                                <FaSearch className="btn-icon" />
-                                Buscar
-                            </button>
+                            <label htmlFor="planSearch" className="search-label">Buscar Plan:</label>
+                            <div className="input-container">
+                                <input
+                                    id="planSearch"
+                                    type="text"
+                                    placeholder="Ingrese ID..."
+                                    value={searchId}
+                                    onChange={(e) => {
+                                        const validatedValue = e.target.value.replace(/[^0-9]/g, '');
+                                        setSearchId(validatedValue);
+                                        setInputError(false);
+                                    }}
+                                    onKeyDown={handleKeyDown}
+                                />
+                                {inputError && (
+                                    <div className="error-tooltip">
+                                        <FaExclamationTriangle className="error-icon" />
+                                        Solo se permiten números positivos
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="search-actions">
+                                <button onClick={handleSearch} className="search-btn">
+                                    <FaSearch className="btn-icon" />
+                                    Buscar
+                                </button>
+                                {searchId && (
+                                    <button
+                                        onClick={() => {
+                                            setSearchId('');
+                                            fetchPlanes();
+                                        }}
+                                        className="show-all-btn"
+                                    >
+                                        <FaListUl className="btn-icon" />
+                                        Ver Todos
+                                    </button>
+                                )}
+                            </div>
                         </div>
                         <button onClick={() => setShowForm(true)} className="add-btn">
                             <FaPlus className="btn-icon" />
@@ -94,7 +144,6 @@ export default function PlanesPage() {
                         </button>
                     </div>
                 </div>
-
             </div>
 
             <PlanesList

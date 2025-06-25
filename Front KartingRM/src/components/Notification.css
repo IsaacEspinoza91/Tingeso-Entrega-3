@@ -3,51 +3,45 @@
     top: 20px;
     right: 20px;
     padding: 15px 20px;
-    border-radius: 8px;
+    border-radius: 5px;
     display: flex;
     align-items: center;
-    gap: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 10000;
+    gap: 10px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
     animation: slideIn 0.3s ease-out;
-    max-width: 350px;
+    max-width: 300px;
 }
 
 .notification.success {
-    background-color: #2ecc71;
-    color: white;
+    background-color: #f0fff4;
+    color: #2f855a;
+    border-left: 4px solid #38a169;
 }
 
 .notification.error {
-    background-color: #e74c3c;
-    color: white;
-}
-
-.notification.info {
-    background-color: #3498db;
-    color: white;
+    background-color: #fff5f5;
+    color: #c53030;
+    border-left: 4px solid #e53e3e;
 }
 
 .notification.warning {
-    background-color: #f39c12;
-    color: white;
+    background-color: #fffaf0;
+    color: #c05621;
+    border-left: 4px solid #ed8936;
 }
 
 .notification-icon {
-    font-size: 1.5rem;
-}
-
-.notification-message {
-    flex: 1;
+    font-size: 1.2rem;
 }
 
 .notification-close {
+    margin-left: auto;
     background: none;
     border: none;
-    color: inherit;
     font-size: 1.2rem;
     cursor: pointer;
-    padding: 0 0 0 10px;
+    color: inherit;
 }
 
 @keyframes slideIn {

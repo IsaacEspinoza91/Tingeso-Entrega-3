@@ -1,17 +1,33 @@
 import { useState } from 'react'
 import { deletePlan } from '../../services/planService'
 import { FaTrash, FaTimes } from 'react-icons/fa'
+import Notification from '../Notification'
 
 export default function DeletePlanModal({ plan, onClose, onSuccess }) {
     const [loading, setLoading] = useState(false)
+    const [notification, setNotification] = useState({ show: false, message: '', type: '' });
+
+    const showNotification = (message, type) => {
+        setNotification({ show: true, message, type });
+    };
+
+    const closeNotification = () => {
+        setNotification({ ...notification, show: false });
+    };
+
 
     const handleDelete = async () => {
         setLoading(true)
         try {
             await deletePlan(plan.id)
-            onSuccess()
-            onClose()
+            showNotification('Plan eliminado exitosamente', 'success')
+
+            setTimeout(() => {
+                onSuccess();
+                onClose();
+            }, 2000);
         } catch (error) {
+            showNotification('No se pudo eliminar el plan', 'error')
             console.error('Error:', error)
         } finally {
             setLoading(false)
@@ -20,16 +36,19 @@ export default function DeletePlanModal({ plan, onClose, onSuccess }) {
 
     return (
         <div className="modal-overlay">
+            {notification.show && (
+                <Notification
+                    message={notification.message}
+                    type={notification.type}
+                    onClose={closeNotification}
+                />
+            )}
             <div className="delete-modal">
                 <button className="close-btn" onClick={onClose}>×</button>
                 <h3>Confirmar Eliminación</h3>
                 <p>¿Estás seguro que deseas eliminar el plan "{plan.descripcion}" (ID: {plan.id})?</p>
 
                 <div className="modal-actions">
-                    <button type="button" onClick={onClose} className="cancel-btn">
-                        <FaTimes className="btn-icon" />
-                        Cancelar
-                    </button>
                     <button
                         onClick={handleDelete}
                         disabled={loading}

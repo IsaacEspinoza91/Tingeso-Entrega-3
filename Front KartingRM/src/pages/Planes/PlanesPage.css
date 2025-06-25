@@ -19,6 +19,8 @@
     flex-direction: column;
     gap: 1.5rem;
     margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
 }
 
 .planes-header h1 {
@@ -37,9 +39,8 @@
 
 .search-group {
     display: flex;
-    gap: 1rem;
-    flex: 1;
-    max-width: 500px;
+    align-items: flex-start;
+    gap: 0.8rem;
 }
 
 
@@ -52,6 +53,64 @@
     max-width: 300px;
 }
 
+.search-btn {
+    background-color: #00b4d8;
+    color: white;
+}
+
+.search-btn:hover {
+    background-color: #0096c7;
+}
+
+
+.search-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-bar button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.search-label {
+    font-weight: 500;
+    color: #2c3e50;
+    align-self: center;
+    white-space: nowrap;
+}
+
+.search-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.search-container {
+    margin-bottom: 0;
+    padding-bottom: 30px;
+}
+
+.show-all-btn {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    border: 1px solid #ddd;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.show-all-btn:hover {
+    background-color: #e9ecef;
+    border-color: #00b4d8;
+    color: #00b4d8;
+}
+
 .search-btn,
 .add-btn {
     padding: 0.6rem 1.2rem;
@@ -60,15 +119,6 @@
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
-}
-
-.search-btn {
-    background-color: #00b4d8;
-    color: white;
-}
-
-.search-btn:hover {
-    background-color: #0096c7;
 }
 
 .add-btn {
@@ -92,20 +142,6 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
 }
-
-.search-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.search-bar button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
 
 .tooltip-container {
     position: relative;
@@ -150,6 +186,57 @@
     opacity: 1;
 }
 
+.input-error {
+    border-color: #e74c3c !important;
+    box-shadow: 0 0 0 1px #e74c3c;
+}
+
+/* Contenedor para el input y mensaje de error */
+.input-container {
+    position: relative;
+}
+
+/* Estilo para el tooltip de error */
+.error-tooltip {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    background-color: #ffffff;
+    color: #e74c3c;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #fecaca;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    animation: fadeIn 0.2s ease-out;
+    white-space: nowrap;
+}
+
+/* Triángulo indicador */
+.error-tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 10px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #fecaca transparent;
+}
+
+.error-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 10px;
+    border-width: 4px;
+    border-style: solid;
+    border-color: transparent transparent #fff transparent;
+}
+
 /* Contexto de apilamiento para la tabla */
 .planes-table-container {
     position: relative;
@@ -164,8 +251,9 @@
 }
 
 .planes-table thead {
-    position: relative;
-    z-index: 2;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .planes-table th,
@@ -243,6 +331,10 @@
     z-index: 1000;
 }
 
+.plan-form-modal {
+    padding-bottom: 1.5rem;
+}
+
 .plan-form-modal,
 .delete-modal {
     background: white;
@@ -263,6 +355,23 @@
     font-size: 1.5rem;
     cursor: pointer;
     color: #7f8c8d;
+    transition: all 0.3s ease;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close-btn:hover {
+    color: #e74c3c;
+    transform: rotate(90deg) scale(1.1);
+    background-color: rgba(231, 76, 60, 0.1);
+}
+
+.close-btn:active {
+    transform: rotate(90deg) scale(0.9);
 }
 
 .form-group {
@@ -312,13 +421,13 @@
 
 /* Botón Cancelar */
 .cancel-btn {
-    background-color: #f8f9fa;
-    color: #2c3e50;
+    background-color: #f44336;
+    color: #ffffff;
     border: 1px solid #ddd !important;
 }
 
 .cancel-btn:hover {
-    background-color: #e9ecef;
+    background-color: #d93a2f;
     transform: translateY(-2px);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
@@ -365,6 +474,111 @@
     font-size: 0.8rem;
     margin-top: 4px;
     display: block;
+}
+
+/* Añadir a tu CSS */
+input:invalid {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 1px #e74c3c;
+}
+
+.input-hint {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    margin-top: 0.3rem;
+    display: none;
+}
+
+input:invalid+.input-hint {
+    display: block;
+}
+
+.error-feedback {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    color: #e74c3c;
+    font-size: 0.8rem;
+    background-color: #fdeded;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    animation: shake 0.5s ease;
+}
+
+.error-icon {
+    font-size: 0.9rem;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20%,
+    60% {
+        transform: translateX(-3px);
+    }
+
+    40%,
+    80% {
+        transform: translateX(3px);
+    }
+}
+
+
+/* Mensaje de error mejorado */
+.error-feedback {
+    position: relative;
+    /* Cambiado a relative para fluir con el contenedor */
+    margin-top: 8px;
+    padding: 8px 12px;
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Triángulo indicador (opcional) */
+.error-feedback::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 10px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #fecaca;
+}
+
+/* Animación */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Asegurar que la tabla tenga margen superior */
+.planes-list-container {
+    margin-top: 1rem;
 }
 
 /* Responsive */

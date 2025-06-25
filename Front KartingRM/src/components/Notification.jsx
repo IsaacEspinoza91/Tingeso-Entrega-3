@@ -1,29 +1,33 @@
-import { useEffect } from 'react'
-import { FaCheckCircle, FaTimesCircle, FaInfoCircle, FaExclamationTriangle } from 'react-icons/fa'
-import './Notification.css'
-
-const icons = {
-    success: <FaCheckCircle />,
-    error: <FaTimesCircle />,
-    info: <FaInfoCircle />,
-    warning: <FaExclamationTriangle />
-}
+import { useEffect } from 'react';
+import { FaCheckCircle, FaTimesCircle, FaExclamationTriangle } from 'react-icons/fa';
+import './Notification.css';
 
 export default function Notification({ message, type, onClose }) {
     useEffect(() => {
         const timer = setTimeout(() => {
-            onClose()
-        }, 5000)
-        return () => clearTimeout(timer)
-    }, [onClose])
+            onClose();
+        }, 5000);
+        return () => clearTimeout(timer);
+    }, [onClose]);
+
+    const getIcon = () => {
+        switch (type) {
+            case 'success':
+                return <FaCheckCircle className="notification-icon" />;
+            case 'error':
+                return <FaTimesCircle className="notification-icon" />;
+            case 'warning':
+                return <FaExclamationTriangle className="notification-icon" />;
+            default:
+                return null;
+        }
+    };
 
     return (
         <div className={`notification ${type}`}>
-            <div className="notification-icon">{icons[type]}</div>
-            <div className="notification-message">{message}</div>
-            <button onClick={onClose} className="notification-close">
-                &times;
-            </button>
+            {getIcon()}
+            <span>{message}</span>
+            <button onClick={onClose} className="notification-close">×</button>
         </div>
-    )
+    );
 }
