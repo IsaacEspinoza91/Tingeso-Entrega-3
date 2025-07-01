@@ -6,7 +6,7 @@ export default function Notification({ message, type, onClose }) {
     useEffect(() => {
         const timer = setTimeout(() => {
             onClose();
-        }, 5000);
+        }, 6000);
         return () => clearTimeout(timer);
     }, [onClose]);
 

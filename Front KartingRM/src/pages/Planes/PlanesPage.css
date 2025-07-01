@@ -43,7 +43,6 @@
     gap: 0.8rem;
 }
 
-
 .search-bar input {
     flex: 1;
     padding: 0.6rem 1rem;
@@ -146,19 +145,21 @@
 .tooltip-container {
     position: relative;
     display: inline-block;
+    z-index: 1000;
 }
 
 .tooltip-text {
     visibility: hidden;
-    width: 80px;
+    width: max-content;
+    min-width: 80px;
+    max-width: 200px;
     background-color: #2c3e50;
     color: #fff;
     text-align: center;
     border-radius: 6px;
     padding: 5px;
     position: absolute;
-    z-index: 1000;
-    /* Valor extremadamente alto */
+    z-index: 1001;
     bottom: 125%;
     left: 50%;
     transform: translateX(-50%);
@@ -167,7 +168,6 @@
     font-size: 0.8rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     pointer-events: none;
-    /* Permite interactuar con elementos debajo */
 }
 
 .tooltip-text::after {
@@ -241,7 +241,6 @@
 .planes-table-container {
     position: relative;
     z-index: 1;
-    /* Establece un contexto de apilamiento */
 }
 
 .planes-table {

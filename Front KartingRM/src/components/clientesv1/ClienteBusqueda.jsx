@@ -91,7 +91,7 @@ export default function ClienteBusqueda({
                         <input
                             id="clienteSearch"
                             type="text"
-                            placeholder={`Ingrese ${searchType === 'id' ? 'ID' : searchType === 'rut' ? 'RUT (máx. 12 caracteres)' : 'nombre'}...`}
+                            placeholder={`Ingrese ${searchType === 'id' ? 'ID' : searchType === 'rut' ? 'RUT (12345678-9)' : 'nombre'}...`}
                             value={searchTerm}
                             onChange={handleInputChange}
                             onKeyPress={handleKeyPress}

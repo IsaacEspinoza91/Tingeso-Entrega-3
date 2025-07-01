@@ -21,6 +21,10 @@ public class PlanService {
         return planRepository.findAll();
     }
 
+    public List<Plan> getPlanesByBusqueda(String busqueda){
+        return planRepository.findByDescripcionContainingIgnoreCase(busqueda);
+    }
+
     public Plan getPlanById(Long id){
         Optional<Plan> plan = planRepository.findById(id);
         if (plan.isEmpty()) throw new EntityNotFoundException("Plan id " + id + " no encontrado");

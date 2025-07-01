@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
 import { getPlanes, getPlanById } from '../../services/planService'
 import PlanesList from '../../components/planes/PlanesList'
 import PlanForm from '../../components/planes/PlanForm'
 import './PlanesPage.css'
-import { FaPlus, FaSearch, FaHome, FaListUl, FaExclamationTriangle } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaHome, FaListUl, FaExclamationTriangle } from 'react-icons/fa'
 
 export default function PlanesPage() {
     const [planes, setPlanes] = useState([])

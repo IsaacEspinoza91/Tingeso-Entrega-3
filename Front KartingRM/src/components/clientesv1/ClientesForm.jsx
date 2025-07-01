@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { createCliente, updateCliente } from '../../services/clienteService'
 import { FaSave, FaUserPlus, FaUserEdit, FaTimes, FaIdCard, FaEnvelope, FaPhone, FaCalendarAlt, FaExclamationTriangle } from 'react-icons/fa'
-import Notification from '../Notification'
+import Notification from '../notificaciones/Notification'
 
 export default function ClientesForm({ cliente, onClose }) {
     const [formData, setFormData] = useState({
@@ -41,10 +41,6 @@ export default function ClientesForm({ cliente, onClose }) {
                 ...prev,
                 telefono: '+569'
             }));
-            setErrors(prev => ({
-                ...prev,
-                telefono: 'Debe tener 8 dígitos después del +569'
-            }));
             return;
         }
 
@@ -57,11 +53,11 @@ export default function ClientesForm({ cliente, onClose }) {
             telefono: telefonoCompleto
         }));
 
-        // Validación en tiempo real
-        if (telefonoCompleto.length < 12) {
+        // Validación en tiempo real solo para caracteres no numéricos
+        if (/[^0-9]/.test(value.slice(4))) {
             setErrors(prev => ({
                 ...prev,
-                telefono: 'Debe tener 8 dígitos después del +569'
+                telefono: 'Solo se permiten números'
             }));
         } else {
             setErrors(prev => ({
@@ -106,6 +102,21 @@ export default function ClientesForm({ cliente, onClose }) {
                     setErrors(prev => ({ ...prev, rut: '' }))
                 }
                 break
+
+            case 'telefono':
+                if (value.length < 12) {
+                    setErrors(prev => ({
+                        ...prev,
+                        telefono: 'Formato completo: +569XXXXXXXX'
+                    }));
+                } else {
+                    setErrors(prev => ({
+                        ...prev,
+                        telefono: ''
+                    }));
+                }
+                break
+
         }
     }
 
@@ -310,7 +321,7 @@ export default function ClientesForm({ cliente, onClose }) {
                     {renderInput('apellido', 'Apellido:', <FaIdCard />)}
                     {renderInput('rut', 'RUT (Formato: 12345678-9) (*):', <FaIdCard />)}
                     {renderInput('correo', 'Correo electrónico (*):', <FaEnvelope />, 'email')}
-                    {renderInput('telefono', 'Teléfono (*):', <FaPhone />, 'tel', '+569', handleTelefonoChange)}
+                    {renderInput('telefono', 'Teléfono (Formato: +569XXXXXXXX) (*):', <FaPhone />, 'tel', '+569', handleTelefonoChange)}
                     {renderInput('fechaNacimiento', 'Fecha de Nacimiento (*):', <FaCalendarAlt />, 'date')}
 
                     <div className="form-actions">

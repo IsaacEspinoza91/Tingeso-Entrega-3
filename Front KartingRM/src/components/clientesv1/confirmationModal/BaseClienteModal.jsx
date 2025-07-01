@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Notification from '../../Notification'
+import Notification from '../../notificaciones/Notification'
 import { FaTimes } from 'react-icons/fa'
 import './ConfirmationModal.css'
 

@@ -55,50 +55,59 @@ export default function ClientesList({
                                 {cliente.activo ? 'Activo' : 'Inactivo'}
                             </td>
                             <td className="actions-cell">
-                                <button
-                                    onClick={() => onEdit(cliente)}
-                                    className="edit-btn"
-                                    aria-label="Editar cliente"
-                                >
-                                    <FaEdit />
-                                </button>
+                                <div className="tooltip-container">
+                                    <button
+                                        onClick={() => onEdit(cliente)}
+                                        className="edit-btn"
+                                        aria-label="Editar cliente"
+                                    >
+                                        <FaEdit />
+                                        <span className="tooltip-text">Editar</span>
+                                    </button>
+                                </div>
 
                                 {cliente.activo ? (
-                                    <button
-                                        onClick={() => {
-                                            setSelectedCliente(cliente)
-                                            setModalType('desactivar')
-                                        }}
-                                        className="deactivate-btn"
-                                        aria-label="Desactivar cliente"
-                                        title="Desactivar cliente"
-                                    >
-                                        <FaUserSlash />
-                                    </button>
+                                    <div className="tooltip-container">
+                                        <button
+                                            onClick={() => {
+                                                setSelectedCliente(cliente)
+                                                setModalType('desactivar')
+                                            }}
+                                            className="deactivate-btn"
+                                            aria-label="Desactivar cliente"
+                                        >
+                                            <FaUserSlash />
+                                            <span className="tooltip-text">Desactivar</span>
+                                        </button>
+                                    </div>
                                 ) : (
                                     <>
-                                        <button
-                                            onClick={() => {
-                                                setSelectedCliente(cliente)
-                                                setModalType('eliminar')
-                                            }}
-                                            className="delete-btn"
-                                            aria-label="Eliminar cliente"
-                                            title="Eliminar permanentemente"
-                                        >
-                                            <FaTrash />
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setSelectedCliente(cliente)
-                                                setModalType('activar')
-                                            }}
-                                            className="activate-btn"
-                                            aria-label="Activar cliente"
-                                            title="Activar cliente"
-                                        >
-                                            <FaUserCheck />
-                                        </button>
+                                        <div className="tooltip-container">
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedCliente(cliente)
+                                                    setModalType('eliminar')
+                                                }}
+                                                className="delete-btn"
+                                                aria-label="Eliminar cliente"
+                                            >
+                                                <FaTrash />
+                                                <span className="tooltip-text">Eliminar</span>
+                                            </button>
+                                        </div>
+                                        <div className="tooltip-container">
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedCliente(cliente)
+                                                    setModalType('activar')
+                                                }}
+                                                className="activate-btn"
+                                                aria-label="Activar cliente"
+                                            >
+                                                <FaUserCheck />
+                                                <span className="tooltip-text">Activar</span>
+                                            </button>
+                                        </div>
                                     </>
                                 )}
                             </td>

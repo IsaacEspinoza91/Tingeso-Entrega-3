@@ -13,6 +13,17 @@ export const getPlanes = async () => {
   }
 };
 
+// Peticion GET de los planes segun busqueda de descripcion
+export const getPlanesBuscadosByTexto = async (texto) => {
+  try {
+    const response = await httpClient.get(`${URL_LOCAL}/buscar/${texto}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al buscar planes segun ${texto} :', error);
+    throw error;
+  }
+};
+
 /// Peticion GET de plan segun id
 export const getPlanById = async (id) => {
   try {

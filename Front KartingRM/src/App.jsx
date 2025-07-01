@@ -8,6 +8,7 @@ import Comprobantes from './pages/Comprobantes/Comprobantes'
 import Calendario from './pages/Calendario/Calendario'
 import Reportes from './pages/Reportes/Reportes'
 import Configuraciones from './pages/Configuraciones/SettingsMenu'
+import ScrollToTop from './components/ScrollToTop'
 import './App.css'
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
     <div className="app">
       <Navbar />
       <main className="main-content">
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/clientes" element={<Clientes />} />

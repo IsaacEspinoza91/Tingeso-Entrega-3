@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { deletePlan } from '../../services/planService'
 import { FaTrash, FaTimes } from 'react-icons/fa'
-import Notification from '../Notification'
+import Notification from '../notificaciones/Notification'
 
 export default function DeletePlanModal({ plan, onClose, onSuccess }) {
     const [loading, setLoading] = useState(false)

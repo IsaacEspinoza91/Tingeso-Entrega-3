@@ -24,6 +24,12 @@ public class PlanController {
         return ResponseEntity.ok(planEntities);
     }
 
+    @GetMapping("/buscar/{texto}")
+    public ResponseEntity<List<Plan>> getPlanesBuscados(@PathVariable("texto") String texto){
+        List<Plan> planes = planService.getPlanesByBusqueda(texto);
+        return ResponseEntity.ok(planes);
+    }
+
     @GetMapping("/{idPlan}")
     public ResponseEntity<Plan> getPlanById(@PathVariable Long idPlan){
         Plan plan = planService.getPlanById(idPlan);

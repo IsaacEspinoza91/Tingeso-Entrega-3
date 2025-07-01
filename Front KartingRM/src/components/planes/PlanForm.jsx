@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { createPlan, updatePlan } from '../../services/planService'
 import { FaSave, FaPlus, FaClock, FaMoneyBillWave, FaTimes, FaListAlt, FaExclamationTriangle } from 'react-icons/fa'
-import Notification from '../Notification'
+import Notification from '../notificaciones/Notification'
 
 export default function PlanForm({ plan, onClose }) {
     const [formData, setFormData] = useState({
