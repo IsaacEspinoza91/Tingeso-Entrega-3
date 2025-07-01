@@ -1,18 +1,28 @@
+import { useState } from 'react'
 import { FaEdit, FaTrash, FaUserCheck, FaUserSlash } from 'react-icons/fa'
+import DesactivarClienteModal from './confirmationModal/DesactivarClienteModal'
+import EliminarClienteModal from './confirmationModal/EliminarClienteModal'
+import ActivarClienteModal from './confirmationModal/ActivarClienteModal'
 
 export default function ClientesList({
     clientes,
     loading,
     onEdit,
-    onDelete,
-    showInactivos,
     refreshClientes
 }) {
+    const [modalType, setModalType] = useState(null)
+    const [selectedCliente, setSelectedCliente] = useState(null)
+
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         const date = new Date(dateString);
         return date.toLocaleDateString('es-CL');
     };
+
+    const handleCloseModal = () => {
+        setModalType(null)
+        setSelectedCliente(null)
+    }
 
     if (loading) return <div className="loading-message">Cargando clientes...</div>
     if (clientes.length === 0) return <div className="no-results">No se encontraron clientes</div>
@@ -55,7 +65,10 @@ export default function ClientesList({
 
                                 {cliente.activo ? (
                                     <button
-                                        onClick={() => onDelete(cliente)}
+                                        onClick={() => {
+                                            setSelectedCliente(cliente)
+                                            setModalType('desactivar')
+                                        }}
                                         className="deactivate-btn"
                                         aria-label="Desactivar cliente"
                                         title="Desactivar cliente"
@@ -65,7 +78,10 @@ export default function ClientesList({
                                 ) : (
                                     <>
                                         <button
-                                            onClick={() => onDelete(cliente)}
+                                            onClick={() => {
+                                                setSelectedCliente(cliente)
+                                                setModalType('eliminar')
+                                            }}
                                             className="delete-btn"
                                             aria-label="Eliminar cliente"
                                             title="Eliminar permanentemente"
@@ -73,7 +89,10 @@ export default function ClientesList({
                                             <FaTrash />
                                         </button>
                                         <button
-                                            onClick={() => onDelete(cliente)}
+                                            onClick={() => {
+                                                setSelectedCliente(cliente)
+                                                setModalType('activar')
+                                            }}
                                             className="activate-btn"
                                             aria-label="Activar cliente"
                                             title="Activar cliente"
@@ -87,6 +106,31 @@ export default function ClientesList({
                     ))}
                 </tbody>
             </table>
+
+            {/* Modales */}
+            {modalType === 'desactivar' && (
+                <DesactivarClienteModal
+                    cliente={selectedCliente}
+                    onClose={handleCloseModal}
+                    onSuccess={refreshClientes}
+                />
+            )}
+
+            {modalType === 'eliminar' && (
+                <EliminarClienteModal
+                    cliente={selectedCliente}
+                    onClose={handleCloseModal}
+                    onSuccess={refreshClientes}
+                />
+            )}
+
+            {modalType === 'activar' && (
+                <ActivarClienteModal
+                    cliente={selectedCliente}
+                    onClose={handleCloseModal}
+                    onSuccess={refreshClientes}
+                />
+            )}
         </div>
     )
 }

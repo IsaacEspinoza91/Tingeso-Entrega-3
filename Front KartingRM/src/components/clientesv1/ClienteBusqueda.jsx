@@ -18,11 +18,13 @@ export default function ClienteBusqueda({
     onToggleInactivos,
     onNuevoCliente,
     mostrarBotonVerTodos = true,
-    mostrarInactivos = false
+    mostrarInactivos = false,
+    hayResultadosFiltrados
 }) {
 
     const mostrarVerTodos = mostrarBotonVerTodos &&
-        (!mostrarInactivos || searchTerm.trim() !== '');
+        (!mostrarInactivos || hayResultadosFiltrados || searchTerm.trim() !== '');
+
     return (
         <div className="cliente-busqueda-container">
             <div className="busqueda-superior">
@@ -58,7 +60,11 @@ export default function ClienteBusqueda({
             <div className="busqueda-inferior">
                 <div className="botones-derecha">
                     {mostrarVerTodos && (
-                        <button className="ver-todos-btn" onClick={onReset}>
+                        <button
+                            className="ver-todos-btn"
+                            onClick={onReset}
+                            title="Restablecer la vista a todos los clientes"
+                        >
                             <FaListUl className="btn-icon" />
                             Ver Todos
                         </button>

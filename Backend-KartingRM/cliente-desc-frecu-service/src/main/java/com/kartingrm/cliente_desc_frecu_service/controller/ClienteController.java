@@ -41,9 +41,21 @@ public class ClienteController {
         return ResponseEntity.ok(cliente);
     }
 
+    @GetMapping("/busqueda-rut/{rut}")
+    public ResponseEntity<List<Cliente>> getClienteByRutBusqueda(@PathVariable String rut) {
+        List<Cliente> clientes = clienteService.getClientesByRut(rut);
+        return ResponseEntity.ok(clientes);
+    }
+
     @GetMapping("/nombre/{nombre}/apellido/{apellido}")
     public ResponseEntity<List<Cliente>> getClientesByNombreApellido(@PathVariable String nombre, @PathVariable String apellido) {
         List<Cliente> clientes = clienteService.getClientesByNombreApellido(nombre, apellido);
+        return ResponseEntity.ok(clientes);
+    }
+
+    @GetMapping("/busqueda-nombre/{nombre}")
+    public ResponseEntity<List<Cliente>> getClientesByBusquedaParcialNombre(@PathVariable String nombre) {
+        List<Cliente> clientes = clienteService.getClientesByBusquedaParcialNombre(nombre);
         return ResponseEntity.ok(clientes);
     }
 

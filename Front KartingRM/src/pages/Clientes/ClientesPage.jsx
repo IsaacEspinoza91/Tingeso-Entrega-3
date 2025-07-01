@@ -5,15 +5,14 @@ import {
     getClientesInactivos,
     getClienteById,
     getClienteByRut,
-    getClientesByNombre,
+    getClientesByNombreParcial,
     desactivarCliente,
     activarCliente
 } from '../../services/clienteService'
 import ClientesList from '../../components/clientesv1/ClientesList'
 import ClientesForm from '../../components/clientesv1/ClientesForm'
-import DeleteClienteModal from '../../components/clientesv1/DeleteClienteModal'
 import './ClientesPage.css'
-import { FaPlus, FaSearch, FaHome, FaListUl, FaUsers, FaUserSlash } from 'react-icons/fa'
+import { FaHome } from 'react-icons/fa'
 import ClienteBusqueda from '../../components/clientesv1/ClienteBusqueda'
 
 export default function ClientesPage() {
@@ -24,7 +23,7 @@ export default function ClientesPage() {
     const [showForm, setShowForm] = useState(false)
     const [currentCliente, setCurrentCliente] = useState(null)
     const [showInactivos, setShowInactivos] = useState(false)
-    const [clienteToDelete, setClienteToDelete] = useState(null)
+    const [hayResultadosFiltrados, setHayResultadosFiltrados] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -54,6 +53,7 @@ export default function ClientesPage() {
                 ? await getClientesInactivos()
                 : await getClientesActivos()
             setClientes(data)
+            setHayResultadosFiltrados(false) // Resetear al cargar todos los clientes
         } catch (error) {
             console.error('Error:', error)
         } finally {
@@ -62,7 +62,10 @@ export default function ClientesPage() {
     }
 
     const handleSearch = async () => {
-        if (!searchTerm.trim()) return fetchClientes()
+        if (!searchTerm.trim()) {
+            fetchClientes()
+            return
+        }
 
         setLoading(true)
         try {
@@ -78,22 +81,22 @@ export default function ClientesPage() {
                     results = clienteById ? [clienteById] : []
                     break
                 }
-                case 'rut': {
-                    const clienteByRut = await getClienteByRut(searchTerm)
-                    results = clienteByRut ? [clienteByRut] : []
+                case 'rut':
+                    results = await getClienteByRut(searchTerm)
                     break
-                }
                 case 'nombre':
-                    results = await getClientesByNombre(searchTerm)
+                    results = await getClientesByNombreParcial(searchTerm)
                     break
                 default:
                     results = []
             }
 
             setClientes(results)
+            setHayResultadosFiltrados(true) // Marcar que hay resultados filtrados
         } catch (error) {
             console.error('Error:', error)
             setClientes([])
+            setHayResultadosFiltrados(false)
         } finally {
             setLoading(false)
         }
@@ -113,6 +116,13 @@ export default function ClientesPage() {
     const handleToggleInactivos = () => {
         setShowInactivos(!showInactivos)
         setSearchTerm('')
+        setHayResultadosFiltrados(false)
+    }
+
+    const handleReset = () => {
+        setSearchTerm('')
+        setHayResultadosFiltrados(false)
+        fetchClientes()
     }
 
     return (
@@ -136,23 +146,19 @@ export default function ClientesPage() {
                     searchType={searchType}
                     setSearchType={setSearchType}
                     onBuscar={handleSearch}
-                    onReset={() => {
-                        setSearchTerm('')
-                        fetchClientes()
-                    }}
+                    onReset={handleReset}
                     onToggleInactivos={handleToggleInactivos}
                     onNuevoCliente={() => setShowForm(true)}
-                    mostrarBotonVerTodos={!!searchTerm || showInactivos}
+                    mostrarBotonVerTodos={!!searchTerm || showInactivos || hayResultadosFiltrados}
                     mostrarInactivos={showInactivos}
+                    hayResultadosFiltrados={hayResultadosFiltrados}
                 />
-
             </div>
 
             <ClientesList
                 clientes={clientes}
                 loading={loading}
                 onEdit={handleEdit}
-                onDelete={setClienteToDelete}
                 showInactivos={showInactivos}
                 refreshClientes={fetchClientes}
             />
@@ -161,14 +167,6 @@ export default function ClientesPage() {
                 <ClientesForm
                     cliente={currentCliente}
                     onClose={handleFormClose}
-                />
-            )}
-
-            {clienteToDelete && (
-                <DeleteClienteModal
-                    cliente={clienteToDelete}
-                    onClose={() => setClienteToDelete(null)}
-                    onSuccess={fetchClientes}
                 />
             )}
         </div>

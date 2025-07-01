@@ -49,7 +49,7 @@ export const getClienteById = async (id) => {
 // Petición GET para obtener cliente por RUT
 export const getClienteByRut = async (rut) => {
   try {
-    const response = await httpClient.get(`${BASE_URL}/rut/${rut}`);
+    const response = await httpClient.get(`${BASE_URL}/busqueda-rut/${rut}`);
     return response.data;
   } catch (error) {
     console.error(`Error al obtener cliente con RUT ${rut}:`, error);
@@ -57,16 +57,17 @@ export const getClienteByRut = async (rut) => {
   }
 };
 
-// Petición GET para obtener clientes por nombre y apellido
-export const getClientesByNombre = async (nombre, apellido) => {
+// Petición GET para obtener clientes por nombre parcial
+export const getClientesByNombreParcial = async (nombre) => {
   try {
-    const response = await httpClient.get(`${BASE_URL}/nombre/${nombre}/apellido/${apellido}`);
+    const response = await httpClient.get(`${BASE_URL}/busqueda-nombre/${nombre}`);
     return response.data;
   } catch (error) {
-    console.error(`Error al buscar clientes por nombre ${nombre} y apellido ${apellido}:`, error);
+    console.error(`Error al buscar clientes por nombre ${nombre}:`, error);
     throw error;
   }
 };
+
 
 // Petición POST para crear un nuevo cliente
 export const createCliente = async (clienteData) => {

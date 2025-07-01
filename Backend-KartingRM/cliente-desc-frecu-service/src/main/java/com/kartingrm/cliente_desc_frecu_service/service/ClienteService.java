@@ -55,11 +55,19 @@ public class ClienteService {
         return cliente.get();
     }
 
+    public List<Cliente> getClientesByRut(String rut) {
+        return clienteRepository.findClientesByRutParcial(rut);
+    }
+
     public List<Cliente> getClientesByNombreApellido(String nombre, String apellido) {
         Optional<List<Cliente>> cliente = clienteRepository.findClienteByNombreAndApellido(nombre, apellido);
         if (cliente.isEmpty()) throw new EntityNotFoundException("Cliente no encontrado");
 
         return cliente.get();
+    }
+
+    public List<Cliente> getClientesByBusquedaParcialNombre(String nombre) {
+        return clienteRepository.buscarPorNombreApellidoParcial(nombre);
     }
 
     public Cliente createCliente(ClienteDTO clienteDTO) {

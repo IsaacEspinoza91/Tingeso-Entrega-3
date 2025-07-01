@@ -299,9 +299,7 @@
     color: #2ecc71;
 }
 
-.activate-btn:hover {
-    background-color: rgba(46, 204, 113, 0.1);
-}
+
 
 .loading-message,
 .no-results {
@@ -320,13 +318,6 @@
     font-weight: 500;
 }
 
-.deactivate-btn {
-    color: #f39c12;
-}
-
-.deactivate-btn:hover {
-    background-color: rgba(243, 156, 18, 0.1);
-}
 
 .actions-cell button {
     padding: 8px;
@@ -363,9 +354,6 @@
 }
 
 
-/* Agregar al final del archivo ClientesPage.css */
-
-/* Estilos del modal */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -416,6 +404,13 @@
 
 .close-btn:active {
     transform: rotate(90deg) scale(0.9);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
 }
 
 /* Estilos para el formulario dentro del modal */
