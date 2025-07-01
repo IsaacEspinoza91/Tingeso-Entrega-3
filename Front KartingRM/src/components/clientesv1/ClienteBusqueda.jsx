@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './ClienteBusqueda.css'
 import {
     FaSearch,
     FaListUl,
     FaUserPlus,
     FaUsers,
-    FaUserSlash
+    FaUserSlash,
+    FaExclamationTriangle
 } from 'react-icons/fa'
 
 export default function ClienteBusqueda({
@@ -21,9 +22,55 @@ export default function ClienteBusqueda({
     mostrarInactivos = false,
     hayResultadosFiltrados
 }) {
+    const [error, setError] = useState(null)
+    const [inputRef, setInputRef] = useState(null)
 
     const mostrarVerTodos = mostrarBotonVerTodos &&
         (!mostrarInactivos || hayResultadosFiltrados || searchTerm.trim() !== '');
+
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+        let newError = null;
+
+        switch (searchType) {
+            case 'nombre':
+                if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'-]*$/.test(value)) {
+                    newError = 'Solo se permiten letras';
+                }
+                break;
+
+            case 'rut':
+                if (!/^[\d\.-]*$/.test(value)) {
+                    newError = 'Solo se permiten números, punto y guión';
+                } else if (value.length > 12) {
+                    newError = 'Máximo 12 caracteres';
+                }
+                break;
+
+            case 'id':
+                if (!/^\d*$/.test(value)) {
+                    newError = 'Solo se permiten números positivos';
+                }
+                break;
+        }
+
+        setError(newError);
+        if (!newError) {
+            setSearchTerm(value);
+        }
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && searchTerm.trim() && !error) {
+            onBuscar();
+        }
+    };
+
+    const handleSearchTypeChange = (e) => {
+        setSearchType(e.target.value);
+        setSearchTerm('');
+        setError(null);
+    };
 
     return (
         <div className="cliente-busqueda-container">
@@ -32,7 +79,7 @@ export default function ClienteBusqueda({
                     <label htmlFor="clienteSearch" className="search-label">Buscar Cliente:</label>
                     <select
                         value={searchType}
-                        onChange={(e) => setSearchType(e.target.value)}
+                        onChange={handleSearchTypeChange}
                         className="busqueda-select"
                     >
                         <option value="nombre">Por Nombre</option>
@@ -40,17 +87,30 @@ export default function ClienteBusqueda({
                         <option value="id">Por ID</option>
                     </select>
 
-                    <input
-                        id="clienteSearch"
-                        type="text"
-                        placeholder={`Ingrese ${searchType === 'id' ? 'ID' : searchType === 'rut' ? 'RUT' : 'nombre'}...`}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && onBuscar()}
-                        className="busqueda-input"
-                    />
+                    <div className="input-with-error-container">
+                        <input
+                            id="clienteSearch"
+                            type="text"
+                            placeholder={`Ingrese ${searchType === 'id' ? 'ID' : searchType === 'rut' ? 'RUT (máx. 12 caracteres)' : 'nombre'}...`}
+                            value={searchTerm}
+                            onChange={handleInputChange}
+                            onKeyPress={handleKeyPress}
+                            className="busqueda-input"
+                            maxLength={searchType === 'rut' ? 12 : undefined}
+                        />
+                        {error && (
+                            <div className="error-tooltip">
+                                <FaExclamationTriangle className="error-icon" />
+                                {error}
+                            </div>
+                        )}
+                    </div>
 
-                    <button className="buscar-btn" onClick={onBuscar}>
+                    <button
+                        className="buscar-btn"
+                        onClick={() => !error && onBuscar()}
+                        disabled={!searchTerm.trim() || error}
+                    >
                         <FaSearch className="btn-icon" />
                         Buscar
                     </button>
