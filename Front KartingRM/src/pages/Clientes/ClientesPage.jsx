@@ -5,13 +5,16 @@ import {
     getClientesInactivos,
     getClienteById,
     getClienteByRut,
-    getClientesByNombre
+    getClientesByNombre,
+    desactivarCliente,
+    activarCliente
 } from '../../services/clienteService'
 import ClientesList from '../../components/clientesv1/ClientesList'
 import ClientesForm from '../../components/clientesv1/ClientesForm'
 import DeleteClienteModal from '../../components/clientesv1/DeleteClienteModal'
 import './ClientesPage.css'
 import { FaPlus, FaSearch, FaHome, FaListUl, FaUsers, FaUserSlash } from 'react-icons/fa'
+import ClienteBusqueda from '../../components/clientesv1/ClienteBusqueda'
 
 export default function ClientesPage() {
     const [clientes, setClientes] = useState([])
@@ -66,7 +69,7 @@ export default function ClientesPage() {
             let results = []
 
             switch (searchType) {
-                case 'id':
+                case 'id': {
                     if (!/^\d+$/.test(searchTerm)) {
                         alert('Por favor ingrese solo números para ID')
                         return
@@ -74,10 +77,12 @@ export default function ClientesPage() {
                     const clienteById = await getClienteById(searchTerm)
                     results = clienteById ? [clienteById] : []
                     break
-                case 'rut':
+                }
+                case 'rut': {
                     const clienteByRut = await getClienteByRut(searchTerm)
                     results = clienteByRut ? [clienteByRut] : []
                     break
+                }
                 case 'nombre':
                     results = await getClientesByNombre(searchTerm)
                     break
@@ -125,73 +130,22 @@ export default function ClientesPage() {
                     <h1>Gestión de Clientes</h1>
                 </div>
 
-                <div className="search-container">
-                    <div className="search-bar">
-                        <div className="search-group">
-                            <label htmlFor="clienteSearch" className="search-label">Buscar Cliente:</label>
-                            <div className="input-container">
-                                <select
-                                    value={searchType}
-                                    onChange={(e) => setSearchType(e.target.value)}
-                                    className="search-type-select"
-                                >
-                                    <option value="nombre">Por Nombre</option>
-                                    <option value="rut">Por RUT</option>
-                                    <option value="id">Por ID</option>
-                                </select>
-                                <input
-                                    id="clienteSearch"
-                                    type="text"
-                                    placeholder={`Ingrese ${searchType === 'id' ? 'ID' : searchType === 'rut' ? 'RUT' : 'nombre'}...`}
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                                />
-                            </div>
+                <ClienteBusqueda
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    searchType={searchType}
+                    setSearchType={setSearchType}
+                    onBuscar={handleSearch}
+                    onReset={() => {
+                        setSearchTerm('')
+                        fetchClientes()
+                    }}
+                    onToggleInactivos={handleToggleInactivos}
+                    onNuevoCliente={() => setShowForm(true)}
+                    mostrarBotonVerTodos={!!searchTerm || showInactivos}
+                    mostrarInactivos={showInactivos}
+                />
 
-                            <div className="search-actions">
-                                <button onClick={handleSearch} className="search-btn">
-                                    <FaSearch className="btn-icon" />
-                                    Buscar
-                                </button>
-                                {(searchTerm || showInactivos) && (
-                                    <button
-                                        onClick={() => {
-                                            setSearchTerm('')
-                                            fetchClientes()
-                                        }}
-                                        className="show-all-btn"
-                                    >
-                                        <FaListUl className="btn-icon" />
-                                        Ver Todos
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                        <div className="clientes-actions">
-                            <button
-                                onClick={handleToggleInactivos}
-                                className={`toggle-inactivos-btn ${showInactivos ? 'inactive' : ''}`}
-                            >
-                                {showInactivos ? (
-                                    <>
-                                        <FaUsers className="btn-icon" />
-                                        Ver Activos
-                                    </>
-                                ) : (
-                                    <>
-                                        <FaUserSlash className="btn-icon" />
-                                        Ver Inactivos
-                                    </>
-                                )}
-                            </button>
-                            <button onClick={() => setShowForm(true)} className="add-btn">
-                                <FaPlus className="btn-icon" />
-                                Nuevo Cliente
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <ClientesList

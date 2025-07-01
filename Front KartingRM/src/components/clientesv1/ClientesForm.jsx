@@ -8,9 +8,10 @@ export default function ClientesForm({ cliente, onClose }) {
         nombre: '',
         apellido: '',
         rut: '',
-        email: '',
+        correo: '',
         telefono: '',
-        activo: true
+        activo: true,
+        fechaNacimiento: ''
     })
     const [errors, setErrors] = useState({})
     const [loading, setLoading] = useState(false)
@@ -22,9 +23,10 @@ export default function ClientesForm({ cliente, onClose }) {
                 nombre: cliente.nombre,
                 apellido: cliente.apellido,
                 rut: cliente.rut,
-                email: cliente.email,
+                correo: cliente.correo,
                 telefono: cliente.telefono,
-                activo: cliente.activo
+                activo: cliente.activo,
+                fechaNacimiento: cliente.fechaNacimiento
             })
         }
     }, [cliente])
@@ -61,16 +63,21 @@ export default function ClientesForm({ cliente, onClose }) {
             isValid = false
         }
 
-        if (!formData.email.trim()) {
-            newErrors.email = 'El email es requerido'
+        if (!formData.correo.trim()) {
+            newErrors.correo = 'El correo es requerido'
             isValid = false
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'Ingrese un email válido'
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.correo)) {
+            newErrors.correo = 'Ingrese un correo válido'
             isValid = false
         }
 
         if (!formData.telefono.trim()) {
             newErrors.telefono = 'El teléfono es requerido'
+            isValid = false
+        }
+
+        if (!formData.fechaNacimiento.trim()) {
+            newErrors.telefono = 'La fecha de nacimiento es requerida'
             isValid = false
         }
 
@@ -121,7 +128,7 @@ export default function ClientesForm({ cliente, onClose }) {
     const renderInput = (name, label, icon, type = 'text') => (
         <div className="form-group">
             <label>
-                {icon && React.cloneElement(icon, { className: 'btn-icon' })}
+                {icon && React.cloneElement(icon, { className: 'input-icon' })}
                 {label}
             </label>
             <input
@@ -155,8 +162,8 @@ export default function ClientesForm({ cliente, onClose }) {
                 <form onSubmit={handleSubmit}>
                     {renderInput('nombre', 'Nombre:', <FaIdCard />)}
                     {renderInput('apellido', 'Apellido:', <FaIdCard />)}
-                    {renderInput('rut', 'RUT:', <FaIdCard />)}
-                    {renderInput('correo', 'Correo:', <FaEnvelope />, 'email')}
+                    {renderInput('rut', 'RUT (Sin puntos y con guión):', <FaIdCard />)}
+                    {renderInput('correo', 'Correo:', <FaEnvelope />, 'correo')}
                     {renderInput('telefono', 'Teléfono:', <FaPhone />, 'tel')}
                     {renderInput('fechaNacimiento', 'Fecha de Nacimiento:', <FaCalendarAlt />, 'date')}
 
