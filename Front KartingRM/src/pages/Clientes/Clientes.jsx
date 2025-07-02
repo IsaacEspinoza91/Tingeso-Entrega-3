@@ -1,5 +1,4 @@
 import React from 'react';
-//import ClientesList from '../../components/clientes/ClientesList';
 import ClientesPage from './ClientesPage'
 import './Clientes.css';
 

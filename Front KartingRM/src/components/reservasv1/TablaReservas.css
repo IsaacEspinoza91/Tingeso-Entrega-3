@@ -1,0 +1,62 @@
+.tabla-reservas {
+    overflow-x: auto;
+    margin-top: 1.5rem;
+}
+
+.tabla-reservas table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.tabla-reservas th,
+.tabla-reservas td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.tabla-reservas th {
+    background-color: #e0f7fa;
+    color: #0077b6;
+}
+
+.estado {
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.estado-confirmada {
+    background-color: #d4edda;
+    color: #2e7d32;
+}
+
+.estado-cancelada {
+    background-color: #f8d7da;
+    color: #c62828;
+}
+
+.estado-completada {
+    background-color: #d0e7ff;
+    color: #1565c0;
+}
+
+.acciones {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.acciones button {
+    background-color: #f1f1f1;
+    border: none;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.acciones button:hover {
+    background-color: #dbeafe;
+}

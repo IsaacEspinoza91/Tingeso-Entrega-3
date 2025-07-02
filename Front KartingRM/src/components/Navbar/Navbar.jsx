@@ -4,6 +4,7 @@ import './Navbar.css'
 const menuItems = [
   { path: "/clientes", name: "Clientes" },
   { path: "/planes", name: "Planes" },
+  { path: "/reservasv1", name: "RESER" },
   { path: "/reservas", name: "Reservas" },
   { path: "/comprobantes", name: "Comprobantes" },
   { path: "/calendario", name: "Calendario" },
