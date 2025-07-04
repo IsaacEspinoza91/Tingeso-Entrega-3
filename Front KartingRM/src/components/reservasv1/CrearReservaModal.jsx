@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import './CrearReservaModal.css';
-import { FaCalendarAlt, FaClock, FaClipboardList, FaUsers, FaCheckCircle, FaUser, FaPlus, FaTrash } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock, FaClipboardList, FaUsers, FaCalendarPlus, FaUser, FaUserPlus, FaPlus, FaTrash, FaExclamationCircle, FaTimes } from 'react-icons/fa';
 import { getPlanes, getPlanesBuscadosByTexto } from '../../services/planService';
 import { getClientesActivos, getClientesByNombreParcial } from '../../services/clienteService';
 import { createReservaCompleta } from '../../services/reservaService';
+import ClientesForm from '../clientesv1/ClientesForm';
 
 const CrearReservaModal = ({ onClose, onReservaCreada }) => {
     const [fecha, setFecha] = useState('');
@@ -19,6 +20,16 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
     const [descuentoExtra, setDescuentoExtra] = useState(0);
     const [inputIntegrante, setInputIntegrante] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [tocadoFecha, setTocadoFecha] = useState(false);
+    const [tocadoHora, setTocadoHora] = useState(false);
+    const [showNuevoCliente, setShowNuevoCliente] = useState(false);
+    const [inputErrors, setInputErrors] = useState({
+        horaInicio: '',
+        fecha: '',
+        descuentoExtra: '',
+        totalPersonas: '',
+    });
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -33,6 +44,74 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
         };
         fetchData();
     }, []);
+
+    const mostrarTooltip = (campo, mensaje) => {
+        setInputErrors(prev => ({
+            ...prev,
+            [campo]: mensaje
+        }));
+        setTimeout(() => {
+            setInputErrors(prev => ({
+                ...prev,
+                [campo]: ''
+            }));
+        }, 3000);
+    };
+
+    const handleHoraChange = (e) => {
+        const value = e.target.value;
+        const [horas] = value.split(':').map(Number);
+
+        if (isNaN(horas)) {
+            mostrarTooltip('horaInicio', 'Solo se permiten números positivos');
+            return;
+        }
+
+        if (horas < 9 || horas > 23) {
+            mostrarTooltip('horaInicio', 'Solo se permiten horas entre 9 y 23');
+            return;
+        }
+
+        setHoraInicio(value);
+    };
+
+    const handleFechaChange = (e) => {
+        const value = e.target.value;
+        const seleccionada = new Date(value);
+        const limite = new Date('2025-01-01');
+
+        if (seleccionada < limite) {
+            mostrarTooltip('fecha', 'Solo fechas después del año 2025');
+            return;
+        }
+
+        setFecha(value);
+    };
+
+    const handleTotalPersonasChange = (e) => {
+        const value = e.target.value;
+        if (!/^\d*$/.test(value)) {
+            mostrarTooltip('totalPersonas', 'Solo se permiten números positivos');
+            return;
+        }
+
+        const numero = Number(value);
+        setTotalPersonas(numero);
+    };
+
+    const handleDescuentoChange = (e) => {
+        const value = e.target.value;
+        if (!/^\d*$/.test(value)) {
+            mostrarTooltip('descuentoExtra', 'Solo se permiten números positivos');
+            return;
+        }
+
+        setDescuentoExtra(Number(value));
+    };
+
+
+
+
 
     const getPlanOptions = () => {
         return planes.map((plan) => ({
@@ -94,12 +173,18 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
     };
 
     const agregarIntegrante = (selectedOption) => {
-        if (selectedOption && !integrantesSeleccionados.some(i => i.id === selectedOption.value)) {
+        if (
+            selectedOption &&
+            !integrantesSeleccionados.some(i => i.id === selectedOption.value) &&
+            integrantesSeleccionados.length < totalPersonas
+        ) {
             const cliente = clientes.find(c => c.id === selectedOption.value);
             if (cliente) {
                 setIntegrantesSeleccionados([...integrantesSeleccionados, cliente]);
                 setInputIntegrante('');
             }
+        } else if (integrantesSeleccionados.length >= totalPersonas) {
+            alert('Ya se alcanzó el número máximo de integrantes.');
         }
     };
 
@@ -133,9 +218,9 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                 }
 
                 if (typeof onReservaCreada === 'function') {
-                    onReservaCreada(); // Actualiza la lista en el padre
+                    onReservaCreada();
                 } else {
-                    onClose(); // Fallback si onReservaCreada no existe
+                    onClose();
                 }
 
             } catch (error) {
@@ -151,7 +236,7 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
     return (
         <div className="modal-overlay">
             <div className="crear-reserva-modal">
-                <button className="cerrar-modal" onClick={onClose}>&times;</button>
+                <button className="close-btn" onClick={onClose}><FaTimes /></button>
                 <h2><FaClipboardList /> Crear Nueva Reserva</h2>
 
                 <div className="form-grid">
@@ -162,8 +247,12 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                                 type="date"
                                 value={fecha}
                                 onChange={(e) => setFecha(e.target.value)}
-                                required
+                                onBlur={() => setTocadoFecha(true)}
+                                className={tocadoFecha && !fecha ? 'input-error' : ''}
                             />
+                            {inputErrors.fecha && (
+                                <div className="input-tooltip">{inputErrors.fecha}</div>
+                            )}
                         </div>
 
                         <div className="form-group">
@@ -172,12 +261,16 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                                 type="time"
                                 value={horaInicio}
                                 onChange={(e) => setHoraInicio(e.target.value)}
-                                required
+                                onBlur={() => setTocadoHora(true)}
+                                className={tocadoHora && !horaInicio ? 'input-error' : ''}
                             />
+                            {inputErrors.horaInicio && (
+                                <div className="input-tooltip">{inputErrors.horaInicio}</div>
+                            )}
                         </div>
 
                         <div className="form-group">
-                            <label><FaCheckCircle /> Estado:</label>
+                            <label><FaExclamationCircle /> Estado:</label>
                             <select
                                 value={estado}
                                 onChange={(e) => setEstado(e.target.value)}
@@ -199,6 +292,9 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                                 value={totalPersonas}
                                 onChange={(e) => setTotalPersonas(Number(e.target.value))}
                             />
+                            {inputErrors.totalPersonas && (
+                                <div className="input-tooltip">{inputErrors.totalPersonas}</div>
+                            )}
                         </div>
 
                         <div className="form-group">
@@ -209,6 +305,9 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                                 value={descuentoExtra}
                                 onChange={(e) => setDescuentoExtra(Number(e.target.value))}
                             />
+                            {inputErrors.descuentoExtra && (
+                                <div className="input-tooltip">{inputErrors.descuentoExtra}</div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -230,6 +329,11 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                         isSearchable
                         noOptionsMessage={() => "No hay opciones disponibles"}
                         loadingMessage={() => "Buscando..."}
+                        classNamePrefix="Select"
+                        menuPortalTarget={document.body}
+                        styles={{
+                            menuPortal: (base) => ({ ...base, zIndex: 1200 })
+                        }}
                     />
                 </div>
 
@@ -241,16 +345,43 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                         onChange={setClienteSeleccionado}
                         onInputChange={handleClienteInputChange}
                         onMenuOpen={() => handleClienteSearch('')}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                handleClienteSearch(e.target.value);
-                            }
-                        }}
                         placeholder="Buscar o seleccionar cliente..."
                         isSearchable
                         noOptionsMessage={() => "No hay opciones disponibles"}
-                        loadingMessage={() => "Buscando..."}
+                        menuPortalTarget={document.body}
+                        styles={{
+                            menuPortal: base => ({ ...base, zIndex: 1200 })
+                        }}
+                        classNamePrefix="Select"
                     />
+                    <button className="boton-nuevo-cliente" onClick={() => setShowNuevoCliente(true)}>
+                        <FaUserPlus /> Nuevo Cliente
+                    </button>
+                    {showNuevoCliente && (
+                        <div style={{ marginTop: '2rem' }}>
+                            <ClientesForm
+                                modoCompacto={true}
+                                onClose={() => setShowNuevoCliente(false)}
+                                onClienteCreado={(nuevoCliente) => {
+                                    setShowNuevoCliente(false);
+
+                                    setClientes((prevClientes) => {
+                                        const yaExiste = prevClientes.some(c => c.id === nuevoCliente.id);
+                                        if (!yaExiste) {
+                                            return [...prevClientes, nuevoCliente];
+                                        }
+                                        return prevClientes;
+                                    });
+
+                                    setClienteSeleccionado({
+                                        value: nuevoCliente.id,
+                                        label: `${nuevoCliente.nombre} ${nuevoCliente.apellido} (ID: ${nuevoCliente.id})`
+                                    });
+                                }}
+
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <div className="form-group">
@@ -265,6 +396,12 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                             placeholder="Buscar y agregar integrante..."
                             isSearchable
                             noOptionsMessage={() => "No hay opciones disponibles"}
+                            isDisabled={integrantesSeleccionados.length >= totalPersonas}
+                            classNamePrefix="Select"
+                            menuPortalTarget={document.body}
+                            styles={{
+                                menuPortal: (base) => ({ ...base, zIndex: 1200 })
+                            }}
                         />
                     </div>
 
@@ -273,8 +410,8 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Nombre</th>
-                                        <th>Apellido</th>
+                                        <th>ID</th>
+                                        <th>Nombre Completo</th>
                                         <th>RUT</th>
                                         <th>Acciones</th>
                                     </tr>
@@ -282,14 +419,11 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                                 <tbody>
                                     {integrantesSeleccionados.map((integrante) => (
                                         <tr key={integrante.id}>
-                                            <td>{integrante.nombre}</td>
-                                            <td>{integrante.apellido}</td>
+                                            <td>{integrante.id}</td>
+                                            <td>{`${integrante.nombre} ${integrante.apellido}`}</td>
                                             <td>{integrante.rut}</td>
                                             <td>
-                                                <button
-                                                    className="btn-eliminar"
-                                                    onClick={() => eliminarIntegrante(integrante.id)}
-                                                >
+                                                <button className="btn-eliminar" onClick={() => eliminarIntegrante(integrante.id)}>
                                                     <FaTrash />
                                                 </button>
                                             </td>
@@ -307,7 +441,7 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                         onClick={handleCrearReserva}
                         disabled={isLoading}
                     >
-                        <FaCheckCircle /> {isLoading ? 'Creando...' : 'Crear Reserva'}
+                        <FaCalendarPlus /> {isLoading ? 'Creando...' : 'Crear Reserva'}
                     </button>
                 </div>
             </div>

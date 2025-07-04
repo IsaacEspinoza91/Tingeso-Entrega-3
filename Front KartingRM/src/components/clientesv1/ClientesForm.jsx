@@ -3,7 +3,7 @@ import { createCliente, updateCliente } from '../../services/clienteService'
 import { FaSave, FaUserPlus, FaUserEdit, FaTimes, FaIdCard, FaEnvelope, FaPhone, FaCalendarAlt, FaExclamationTriangle } from 'react-icons/fa'
 import Notification from '../notificaciones/Notification'
 
-export default function ClientesForm({ cliente, onClose }) {
+export default function ClientesForm({ cliente, onClose, modoCompacto = false }) {
     const [formData, setFormData] = useState({
         nombre: '',
         apellido: '',
@@ -302,7 +302,7 @@ export default function ClientesForm({ cliente, onClose }) {
     )
 
     return (
-        <div className="modal-overlay">
+        <div className={modoCompacto ? 'clientes-form-compacto' : 'modal-overlay'}>
             {notification.show && (
                 <Notification
                     message={notification.message}
@@ -310,25 +310,34 @@ export default function ClientesForm({ cliente, onClose }) {
                     onClose={closeNotification}
                 />
             )}
-            <div className="clientes-form-modal">
-                <button className="close-btn" onClick={onClose}>
-                    <FaTimes />
-                </button>
-                <h2>{cliente ? 'Editar Cliente' : 'Crear Nuevo Cliente'}</h2>
+            <div className={modoCompacto ? 'clientes-form-contenedor' : 'clientes-form-modal'}>
+                <h2 className="titulo-formulario">
+                    {cliente ? 'Editar Cliente' : 'Crear Nuevo Cliente'}
+                    <button className="close-btn" onClick={onClose}><FaTimes /></button>
+                </h2>
 
                 <form onSubmit={handleSubmit}>
-                    {renderInput('nombre', 'Nombre (*):', <FaIdCard />)}
-                    {renderInput('apellido', 'Apellido:', <FaIdCard />)}
-                    {renderInput('rut', 'RUT (Formato: 12345678-9) (*):', <FaIdCard />)}
-                    {renderInput('correo', 'Correo electrónico (*):', <FaEnvelope />, 'email')}
-                    {renderInput('telefono', 'Teléfono (Formato: +569XXXXXXXX) (*):', <FaPhone />, 'tel', '+569', handleTelefonoChange)}
-                    {renderInput('fechaNacimiento', 'Fecha de Nacimiento (*):', <FaCalendarAlt />, 'date')}
+                    {modoCompacto ? (
+                        <div className="clientes-form-grid">
+                            {renderInput('nombre', 'Nombre (*):', <FaIdCard />)}
+                            {renderInput('apellido', 'Apellido:', <FaIdCard />)}
+                            {renderInput('rut', 'RUT (12345678-9) (*):', <FaIdCard />)}
+                            {renderInput('correo', 'Correo electrónico (*):', <FaEnvelope />, 'email')}
+                            {renderInput('telefono', 'Teléfono (+569XXXXXXXX) (*):', <FaPhone />, 'tel', '+569', handleTelefonoChange)}
+                            {renderInput('fechaNacimiento', 'Fecha de Nacimiento (*):', <FaCalendarAlt />, 'date')}
+                        </div>
+                    ) : (
+                        <>
+                            {renderInput('nombre', 'Nombre (*):', <FaIdCard />)}
+                            {renderInput('apellido', 'Apellido:', <FaIdCard />)}
+                            {renderInput('rut', 'RUT (Formato: 12345678-9) (*):', <FaIdCard />)}
+                            {renderInput('correo', 'Correo electrónico (*):', <FaEnvelope />, 'email')}
+                            {renderInput('telefono', 'Teléfono (Formato: +569XXXXXXXX) (*):', <FaPhone />, 'tel', '+569', handleTelefonoChange)}
+                            {renderInput('fechaNacimiento', 'Fecha de Nacimiento (*):', <FaCalendarAlt />, 'date')}
+                        </>
+                    )}
 
                     <div className="form-actions">
-                        <button onClick={onClose} className="cancel-btn">
-                            <FaTimes className="btn-icon" />
-                            Cancelar
-                        </button>
                         <button disabled={loading} className="submit-btn">
                             {loading ? (
                                 'Procesando...'

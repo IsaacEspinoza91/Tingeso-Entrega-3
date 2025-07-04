@@ -577,6 +577,107 @@ input:focus {
     box-shadow: 0 0 0 3px rgba(252, 129, 129, 0.2);
 }
 
+.clientes-form-compacto {
+    width: 100%;
+    background-color: transparent;
+    position: relative;
+    padding: 0;
+}
+
+.clientes-form-contenedor {
+    background-color: #f9f9f9;
+    padding: 1rem 1.5rem;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    width: 100%;
+    box-shadow: none;
+}
+
+.clientes-form-contenedor .titulo-formulario {
+    font-size: 1.4rem;
+    color: #023e8a;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.clientes-form-contenedor .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.clientes-form-contenedor .form-group label {
+    display: inline-flex;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: #333;
+    min-height: 1.4rem;
+    line-height: 1.4rem;
+}
+
+.clientes-form-contenedor .form-group input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
+}
+
+.clientes-form-contenedor .form-group input:focus {
+    outline: none;
+    border-color: #023e8a;
+}
+
+.clientes-form-contenedor .input-error {
+    border-color: #dc3545;
+}
+
+.clientes-form-contenedor .error-tooltip {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 0.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.clientes-form-contenedor .form-actions {
+    margin-top: 1.5rem;
+    text-align: right;
+}
+
+.clientes-form-contenedor .submit-btn {
+    background-color: #023e8a;
+    color: white;
+}
+
+.clientes-form-contenedor .submit-btn:hover {
+    background-color: #022d66;
+}
+
+/* Distribución en columnas */
+.clientes-form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+}
+
+/* Botón cerrar compacto */
+.clientes-form-contenedor .close-btn {
+    font-size: 1.2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+}
+
+.clientes-form-contenedor .close-btn:hover {
+    color: #000;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -634,6 +735,10 @@ input:focus {
 
     .busqueda-input {
         width: 100%;
+    }
+
+    .clientes-form-grid {
+        grid-template-columns: 1fr;
     }
 }
 

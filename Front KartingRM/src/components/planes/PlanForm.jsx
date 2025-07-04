@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { createPlan, updatePlan } from '../../services/planService'
-import { FaSave, FaPlus, FaClock, FaMoneyBillWave, FaTimes, FaListAlt, FaExclamationTriangle } from 'react-icons/fa'
+import { FaSave, FaPlus, FaClock, FaMoneyBillWave, FaListAlt, FaExclamationTriangle, FaTimes } from 'react-icons/fa'
 import Notification from '../notificaciones/Notification'
 
 export default function PlanForm({ plan, onClose }) {
@@ -215,7 +215,7 @@ export default function PlanForm({ plan, onClose }) {
             )}
             <div className="plan-form-modal">
                 <h2>{plan ? 'Editar Plan' : 'Crear Nuevo Plan'}</h2>
-                <button className="close-btn" onClick={onClose}>×</button>
+                <button className="close-btn" onClick={onClose}><FaTimes /></button>
 
                 <form onSubmit={handleSubmit} noValidate>
                     {renderInput('descripcion', 'Descripción:', <FaListAlt />)}
@@ -228,10 +228,6 @@ export default function PlanForm({ plan, onClose }) {
 
                     {renderInput('precioFeriado', 'Precio Feriado:', <FaMoneyBillWave />, 'number', '0')}
                     <div className="form-actions">
-                        <button onClick={onClose} className="cancel-btn">
-                            <FaTimes className="btn-icon" />
-                            Cancelar
-                        </button>
                         <button disabled={loading} className="submit-btn">
                             {loading ? (
                                 <span>Procesando...</span>
