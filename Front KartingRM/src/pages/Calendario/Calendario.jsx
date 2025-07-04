@@ -125,10 +125,10 @@ const ReservaBlock = ({ reserva }) => {
 
   const obtenerPosicionTop = (hora) => {
     const [h, m] = hora.split(':').map(Number);
-    return ((h - 8) * 60 + m) * (110 / 60); // para que 1 minuto = 1.83px
+    return ((h - 8) * 60 + m) * (120 / 60); // para que 1 minuto = 1.83px
   };
 
-  const altura = (new Date(`1970-01-01T${horaFin}`) - new Date(`1970-01-01T${horaInicio}`)) / 60000 * (110 / 60);
+  const altura = (new Date(`1970-01-01T${horaFin}`) - new Date(`1970-01-01T${horaInicio}`)) / 60000 * (120 / 60);
 
   return (
     <div

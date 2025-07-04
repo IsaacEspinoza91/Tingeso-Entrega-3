@@ -4,10 +4,13 @@ import { FaSearch, FaPlus, FaHome, FaListUl } from 'react-icons/fa';
 import {
     getReservas,
     getReservaById,
-    getReservasByCliente
+    getReservasByNombreParcialCliente
 } from '../../services/reservaService';
 import ReservaDetalle from '../../components/reservasv1/ReservaDetalle';
 import TablaReservas from '../../components/reservasv1//TablaReservas';
+import CrearReservaModal from '../../components/reservasv1/CrearReservaModal';
+import { getPlanes } from '../../services/planService';
+import { getClientes } from '../../services/clienteService';
 import './ReservasPage.css';
 
 
@@ -18,6 +21,10 @@ const ReservasPage = () => {
     const [filtro, setFiltro] = useState('');
     const [tipoBusqueda, setTipoBusqueda] = useState('id');
     const [reservaSeleccionada, setReservaSeleccionada] = useState(null);
+    const [mostrarModalCrear, setMostrarModalCrear] = useState(false);
+    const [planes, setPlanes] = useState([]);
+    const [clientes, setClientes] = useState([]);
+
 
     useEffect(() => {
         cargarReservas();
@@ -32,6 +39,18 @@ const ReservasPage = () => {
         }
     };
 
+    const abrirModalCrearReserva = async () => {
+        try {
+            const [planesData, clientesData] = await Promise.all([getPlanes(), getClientes()]);
+            setPlanes(planesData);
+            setClientes(clientesData);
+            setMostrarModalCrear(true);
+        } catch (error) {
+            console.error('Error al cargar datos para crear reserva:', error);
+        }
+    };
+
+
     const handleBuscar = async () => {
         if (!filtro) return;
 
@@ -43,7 +62,7 @@ const ReservasPage = () => {
                     setReservas([reserva]);
                 }
             } else if (tipoBusqueda === 'nombre') {
-                const resultados = await getReservasByNombreCliente(filtro);
+                const resultados = await getReservasByNombreParcialCliente(filtro);
                 setReservas(resultados);
             }
         } catch (error) {
@@ -80,7 +99,7 @@ const ReservasPage = () => {
                                 <select
                                     value={tipoBusqueda}
                                     onChange={(e) => setTipoBusqueda(e.target.value)}
-                                    className="tipo-busqueda-selector"
+                                    className="busqueda-select"
                                 >
                                     <option value="id">Por ID</option>
                                     <option value="nombre">Por Nombre</option>
@@ -103,7 +122,7 @@ const ReservasPage = () => {
                                     )}
                                 </div>
                             </div>
-                            <button onClick={() => alert('Abrir modal crear reserva')} className="add-btn">
+                            <button onClick={abrirModalCrearReserva} className="add-btn">
                                 <FaPlus className="btn-icon" /> Crear Reserva
                             </button>
                         </div>
@@ -115,6 +134,18 @@ const ReservasPage = () => {
                 {reservaSeleccionada && (
                     <ReservaDetalle reserva={reservaSeleccionada} onClose={() => setReservaSeleccionada(null)} />
                 )}
+                {mostrarModalCrear && (
+                    <CrearReservaModal
+                        planes={planes}
+                        clientes={clientes}
+                        onClose={() => setMostrarModalCrear(false)}
+                        onReservaCreada={() => {
+                            cargarReservas();
+                            setMostrarModalCrear(false);
+                        }}
+                    />
+                )}
+
             </div>
         </div>
     );

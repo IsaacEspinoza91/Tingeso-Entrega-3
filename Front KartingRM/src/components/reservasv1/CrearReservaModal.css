@@ -1,0 +1,198 @@
+/* CrearReservaModal.css */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.crear-reserva-modal {
+    background-color: #fff;
+    padding: 2rem;
+    max-width: 800px;
+    width: 95%;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow-y: auto;
+    max-height: 90vh;
+}
+
+.crear-reserva-modal h2 {
+    font-size: 1.8rem;
+    color: #023e8a;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cerrar-modal {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+}
+
+.cerrar-modal:hover {
+    color: #333;
+}
+
+.form-grid {
+    margin-bottom: 1.5rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-row:last-child {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 66%;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #023e8a;
+}
+
+.react-select-container {
+    margin-top: 0.5rem;
+}
+
+.agregar-integrante {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.integrante-select {
+    flex: 1;
+}
+
+.btn-agregar {
+    background-color: #28a745;
+    color: white;
+    padding: 0 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.btn-agregar:hover {
+    background-color: #218838;
+}
+
+.btn-agregar:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+.tabla-integrantes {
+    margin-top: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.tabla-integrantes table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-integrantes th,
+.tabla-integrantes td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.tabla-integrantes th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.tabla-integrantes tr:last-child td {
+    border-bottom: none;
+}
+
+.btn-eliminar {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-eliminar:hover {
+    background-color: #c82333;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2rem;
+}
+
+.btn-crear {
+    background-color: #023e8a;
+    color: white;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-crear:hover {
+    background-color: #022d66;
+}

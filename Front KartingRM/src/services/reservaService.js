@@ -35,13 +35,35 @@ export const getReservasByCliente = async (idCliente) => {
   }
 };
 
+// Peticion Get de reservas segun busqeuda parcial de nombre de reservante
+export const getReservasByNombreParcialCliente = async (nombre) => {
+  try {
+    const response = await httpClient.get(`${URL_LOCAL}/reservas/DTO/busqueda-nombre/${nombre}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al obtener reservas del cliente ${nombre}:`, error);
+    throw error;
+  }
+};
+
 // Peticion POST para crear reserva
 export const createReserva = async (reservaData) => {
   try {
     const response = await httpClient.post(`${URL_LOCAL}/reservas/`, reservaData);
     return response.data;
   } catch (error) {
-    console.error('Error al crear reservaxx:', error);
+    console.error('Error al crear reserva:', error);
+    throw error;
+  }
+};
+
+// Peticion POST para crear un reserva completa, con integrantes y crear comprobante
+export const createReservaCompleta = async (reservaData) => {
+  try {
+    const response = await httpClient.post(`${URL_LOCAL}/reservas/crear-completa/`, reservaData);
+    return response.data;
+  } catch (error) {
+    console.error('Error al crear reserva completa:', error);
     throw error;
   }
 };
