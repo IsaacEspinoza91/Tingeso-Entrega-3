@@ -12,7 +12,7 @@ import java.util.List;
 @RequestMapping("/api/cliente-service/cliente")
 public class ClienteController {
 
-    private ClienteService clienteService;
+    private final ClienteService clienteService;
     public ClienteController(ClienteService clienteService) {
         this.clienteService = clienteService;
     }
@@ -57,6 +57,12 @@ public class ClienteController {
     public ResponseEntity<List<Cliente>> getClientesByBusquedaParcialNombre(@PathVariable String nombre) {
         List<Cliente> clientes = clienteService.getClientesByBusquedaParcialNombre(nombre);
         return ResponseEntity.ok(clientes);
+    }
+
+    @GetMapping("/ids-busqueda-nombre/{nombre}")
+    public ResponseEntity<List<Long>> getIdClientesByBusquedaParcialNombre(@PathVariable String nombre) {
+        List<Long> ids = clienteService.getIdClientesByBusquedaParcialNombre(nombre);
+        return ResponseEntity.ok(ids);
     }
 
     @GetMapping("/{idCliente}")

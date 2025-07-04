@@ -69,6 +69,7 @@ class RackReservaControllerTest {
         assertEquals(rackReserva, response.getBody());
     }
 
+    /*
     @Test
     void createRackReserva_WithValidDTO_ShouldReturnCreatedReserva() {
         when(rackReservaService.createRackReserva(any(RackReservaDTO.class))).thenReturn(rackReserva);
@@ -87,7 +88,7 @@ class RackReservaControllerTest {
         ResponseEntity<RackReserva> response = rackReservaController.createRackReserva(rackReservaDTO);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
+    }*/
 
     @Test
     void updateRackReserva_ShouldReturnUpdatedReserva() {

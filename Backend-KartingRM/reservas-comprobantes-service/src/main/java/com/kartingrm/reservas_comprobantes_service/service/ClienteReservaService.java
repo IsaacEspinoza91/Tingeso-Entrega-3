@@ -5,29 +5,24 @@ import com.kartingrm.reservas_comprobantes_service.entity.ClienteReservaId;
 import com.kartingrm.reservas_comprobantes_service.entity.Reserva;
 import com.kartingrm.reservas_comprobantes_service.model.ClienteDTO;
 import com.kartingrm.reservas_comprobantes_service.model.ClienteReservaRequest;
+import com.kartingrm.reservas_comprobantes_service.modelbase.BaseService;
 import com.kartingrm.reservas_comprobantes_service.repository.ClienteReservaRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ClienteReservaService {
-
-    static final String URL_CLIENTE_DESC_FRECU_MS = "http://cliente-desc-frecu-service";
-    static final String CLIENTE_DESC_FRECU_BASE = "/api/cliente-service";
-    static final String CLIENTE_RESERVA_ENDPOINT = URL_CLIENTE_DESC_FRECU_MS + CLIENTE_DESC_FRECU_BASE + "/cliente-reserva/";
-    static final String CLIENTE_ENDPOINT = URL_CLIENTE_DESC_FRECU_MS + CLIENTE_DESC_FRECU_BASE + "/cliente/";
+public class ClienteReservaService extends BaseService {
 
     private final ClienteReservaRepository clienteReservaRepository;
-    private final ReservaService reservaService;
-    private final RestTemplate restTemplate;
-    public ClienteReservaService(ClienteReservaRepository clienteReservaRepository, ReservaService reservaService, RestTemplate restTemplate) {
+
+    public ClienteReservaService(ClienteReservaRepository clienteReservaRepository, RestTemplate restTemplate) {
+        super(restTemplate);
         this.clienteReservaRepository = clienteReservaRepository;
-        this.reservaService = reservaService;
-        this.restTemplate = restTemplate;
     }
 
 
@@ -48,8 +43,7 @@ public class ClienteReservaService {
     }
 
     public boolean agregarIntegrante(Long idCliente, Long idReserva) {
-        Reserva reserva = reservaService.getReservaById(idReserva);
-
+        Reserva reserva = obtenerReserva(idReserva);
         // Verificar si ya existe la relación cliente reserva
         if (clienteReservaRepository.existsByIdClienteAndIdReserva(idCliente, idReserva)) {
             throw new IllegalStateException("El cliente ya esta en esta reserva");

@@ -4,8 +4,12 @@ import com.kartingrm.reservas_comprobantes_service.entity.Reserva;
 import com.kartingrm.reservas_comprobantes_service.model.*;
 import com.kartingrm.reservas_comprobantes_service.modelbase.BaseService;
 import com.kartingrm.reservas_comprobantes_service.repository.ReservaRepository;
+import com.kartingrm.reservas_comprobantes_service.utils.ReservaCreationException;
+import com.kartingrm.reservas_comprobantes_service.utils.ServiceIntegrationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityNotFoundException;
@@ -24,9 +28,13 @@ public class ReservaService extends BaseService {
 
 
     private final ReservaRepository reservaRepository;
-    public ReservaService(ReservaRepository reservaRepository, RestTemplate restTemplate) {
+    private final ClienteReservaService clienteReservaService;
+    private final ComprobanteService comprobanteService;
+    public ReservaService(ReservaRepository reservaRepository, ClienteReservaService clienteReservaService, ComprobanteService comprobanteService, RestTemplate restTemplate) {
         super(restTemplate);
         this.reservaRepository = reservaRepository;
+        this.clienteReservaService = clienteReservaService;
+        this.comprobanteService = comprobanteService;
     }
 
 
@@ -36,16 +44,7 @@ public class ReservaService extends BaseService {
 
     public List<ReservaDTO> getReservasDTO() {
         List<Reserva> reservas = reservaRepository.findAll();
-        List<ReservaDTO> reservasDTO = new ArrayList<>();
-        for (Reserva reservaActual : reservas) {
-            ClienteDTO cliente = obtenerCliente(reservaActual.getIdReservante());
-            PlanDTO plan = obtenerPlan(reservaActual.getIdPlan());
-
-            ReservaDTO reservaDTO = new ReservaDTO(reservaActual, plan, cliente);
-
-            reservasDTO.add(reservaDTO);
-        }
-        return reservasDTO;
+        return createReservasConFormatoDTO(reservas);
     }
 
     public Reserva getReservaById(Long id) {
@@ -74,16 +73,18 @@ public class ReservaService extends BaseService {
     // Obtener todas las reservas DTO de un cliente según id
     public List<ReservaDTO> getReservasDTOByIdReservante(Long idCliente) {
         List<Reserva> reservas = reservaRepository.findReservasByIdReservante(idCliente);
-        List<ReservaDTO> reservasDTO = new ArrayList<>();
-        for (Reserva reservaActual : reservas) {
-            ClienteDTO cliente = obtenerCliente(reservaActual.getIdReservante());
-            PlanDTO plan = obtenerPlan(reservaActual.getIdPlan());
+        return createReservasConFormatoDTO(reservas);
+    }
 
-            ReservaDTO reservaDTO = new ReservaDTO(reservaActual, plan, cliente);
+    // Obtener todas las reservas encontradas según nombre parcial de cliente
+    public List<ReservaDTO> getReservasDTOByNombreParcialCliente(String nombre) {
+        List<ReservaDTO> reservas = new ArrayList<>();
+        List<Integer> listaIdsClientes = obtenerIdsClientes(nombre);
 
-            reservasDTO.add(reservaDTO);
+        for(Integer idCliente : listaIdsClientes){
+            reservas.addAll(getReservasDTOByIdReservante(idCliente.longValue()));
         }
-        return reservasDTO;
+        return reservas;
     }
 
 
@@ -114,6 +115,29 @@ public class ReservaService extends BaseService {
             return reserva;
         } else {
             throw new EntityNotFoundException("Cliente no encontrado, plan no existe, o hora errónea");
+        }
+    }
+
+
+    // Función que crea una reserva completamente, agregando integrantes y creando el comprobante.
+    // Mejor usabilidad para el cliente
+    public void createReservaCompleta(ReservaCreateRequest req) {
+        ReservaRequest reservaRequest = new ReservaRequest(req.getFecha(), req.getHoraInicio(), req.getEstado(), req.getTotalPersonas(), req.getIdPlan(), req.getIdReservante());
+        Reserva reserva = null;
+
+        try {
+            reserva = createReserva(reservaRequest);
+
+            for (Long idIntegrante : req.getIdsIntegrantes()) {
+                clienteReservaService.agregarIntegrante(idIntegrante, reserva.getId());
+            }
+
+            comprobanteService.createComprobante(reserva.getId(), req.getDescuentoExtra());
+
+        } catch (IllegalStateException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ReservaCreationException("Error interno al procesar la reserva", e);
         }
     }
 
@@ -161,16 +185,16 @@ public class ReservaService extends BaseService {
 
                 HttpEntity<RackReservaRequest> rackReservaBody = new HttpEntity<>(rackReservaRequest);
 
-                restTemplate.postForObject(RACK_SEMANAL_ENDPOINT, rackReservaBody, RackReservaRequest.class);
+                restTemplate.postForObject(RACK_RESERVA_ENDPOINT, rackReservaBody, RackReservaRequest.class);
 
             }
             // Else, Caso mantiene estado era completada o confirmada. No realiza petición http
         } else {// Estado nuevo es cancelada
             // Caso estado anterior era completada o confirmada
             if (estadoAnterior.equals(ESTADO_COMPLETADA) || estadoAnterior.equals(ESTADO_CONFIRMADA)) {
-                restTemplate.delete(RACK_SEMANAL_ENDPOINT + reserva.getId());
+                restTemplate.delete(RACK_RESERVA_ENDPOINT + reserva.getId());
             }
-            // Else, Caso mantiene estado cancelada. No hace petición http
+            // Else, Caso mantiene estado cancelado. No hace petición http
         }
 
         return reserva;
@@ -183,13 +207,27 @@ public class ReservaService extends BaseService {
         if (reservaOriginalOptional.isEmpty()) throw new EntityNotFoundException("Reserva id " + id + " no encontrado");
 
         reservaRepository.deleteById(id);
-        restTemplate.delete(RACK_SEMANAL_ENDPOINT + id);
+        restTemplate.delete(RACK_RESERVA_ENDPOINT + id);
         return true;
     }
 
 
 
     //  Métodos privados. Lógica interna
+
+    // Crea el formato de ReservasDTO según reservas (Evita código duplicado)
+    private List<ReservaDTO> createReservasConFormatoDTO(List<Reserva> reservas) {
+        List<ReservaDTO> reservasDTO = new ArrayList<>();
+        for (Reserva reservaActual : reservas) {
+            ClienteDTO cliente = obtenerCliente(reservaActual.getIdReservante());
+            PlanDTO plan = obtenerPlan(reservaActual.getIdPlan());
+
+            ReservaDTO reservaDTO = new ReservaDTO(reservaActual, plan, cliente);
+
+            reservasDTO.add(reservaDTO);
+        }
+        return reservasDTO;
+    }
 
     // Obtener reservas existentes entre dos horas de un día. Condición para crear reservas
     private boolean existeReservaEntreDosHoras(LocalDate fecha, LocalTime horaInicio, LocalTime horaFinal) {
@@ -235,7 +273,16 @@ public class ReservaService extends BaseService {
 
             HttpEntity<RackReservaRequest> rackReservaBody = new HttpEntity<>(rackReservaRequest);
 
-            restTemplate.postForObject(RACK_SEMANAL_ENDPOINT, rackReservaBody, RackReservaRequest.class);
+            try {
+                restTemplate.postForEntity(RACK_RESERVA_ENDPOINT, rackReservaBody, String.class);
+
+            } catch (HttpClientErrorException e) {
+                throw new ReservaCreationException("Error del microservicio de Rack Semanal: " + e.getResponseBodyAsString(), e);
+            } catch (HttpServerErrorException e) {
+                throw new ReservaCreationException("Error interno en el microservicio de Rack Semanal: " + e.getResponseBodyAsString(), e);
+            } catch (Exception e) {
+                throw new ServiceIntegrationException("Error desconocido al integrar con Rack Semanal.", e);
+            }
         }
     }
 

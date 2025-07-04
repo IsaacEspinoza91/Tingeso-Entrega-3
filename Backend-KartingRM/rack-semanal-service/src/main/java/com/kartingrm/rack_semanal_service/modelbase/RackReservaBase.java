@@ -8,6 +8,8 @@ import java.time.LocalTime;
 @MappedSuperclass
 public abstract class RackReservaBase {
 
+    @Column(name = "id_reserva")
+    protected Long idReserva;
 
     @Column(name = "id_cliente")
     protected Long idCliente;
@@ -24,6 +26,14 @@ public abstract class RackReservaBase {
     @Column(name = "hora_fin")
     protected LocalTime horaFin;
 
+
+    public Long getIdReserva() {
+        return idReserva;
+    }
+
+    public void setIdReserva(Long idReserva) {
+        this.idReserva = idReserva;
+    }
 
     public Long getIdCliente() {
         return idCliente;

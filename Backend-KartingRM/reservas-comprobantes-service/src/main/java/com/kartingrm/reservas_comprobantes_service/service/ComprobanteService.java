@@ -28,18 +28,15 @@ public class ComprobanteService extends BaseService {
 
     private final ComprobanteRepository comprobanteRepository;
     private final DetalleComprobanteRepository detalleComprobanteRepository;      // Entidad débil depende de comprobante
-    private final ReservaService reservaService;
     private final ClienteReservaService clienteReservaService;
 
     public ComprobanteService(ComprobanteRepository comprobanteRepository,
                               DetalleComprobanteRepository detalleComprobanteRepository,
-                              ReservaService reservaService,
                               ClienteReservaService clienteReservaService,
                               RestTemplate restTemplate) {
         super(restTemplate);
         this.comprobanteRepository = comprobanteRepository;
         this.detalleComprobanteRepository = detalleComprobanteRepository;
-        this.reservaService = reservaService;
         this.clienteReservaService = clienteReservaService;
     }
 
@@ -59,7 +56,7 @@ public class ComprobanteService extends BaseService {
             detalles.add(new DetalleComprobanteConClienteDTO(detalleActual,integranteObjeto));
         }
 
-        Reserva reserva = reservaService.getReservaById(comprobante.getIdReserva());
+        Reserva reserva = obtenerReserva(comprobante.getIdReserva());
         ClienteDTO cliente = obtenerCliente(reserva.getIdReservante());
         PlanDTO plan = obtenerPlan(reserva.getIdPlan());
         ReservaDTO reservaDTO = new ReservaDTO(reserva, plan, cliente);
@@ -83,7 +80,7 @@ public class ComprobanteService extends BaseService {
             detalles.add(new DetalleComprobanteConClienteDTO(detalleActual,integranteObjeto));
         }
 
-        Reserva reserva = reservaService.getReservaById(idReserva);
+        Reserva reserva = obtenerReserva(idReserva);
         ClienteDTO cliente = obtenerCliente(reserva.getIdReservante());
         PlanDTO plan = obtenerPlan(reserva.getIdPlan());
         ReservaDTO reservaDTO = new ReservaDTO(reserva, plan, cliente);
@@ -108,7 +105,7 @@ public class ComprobanteService extends BaseService {
         }
 
         // Obtener datos principales
-        Reserva reserva = reservaService.getReservaById(reservaId);
+        Reserva reserva = obtenerReserva(reservaId);
         if (reserva == null) {
             throw new EntityNotFoundException("Reserva no encontrada");
         }
@@ -206,7 +203,7 @@ public class ComprobanteService extends BaseService {
 
         comprobante.setPagado(pagado);
 
-        Reserva reserva = reservaService.getReservaById(comprobante.getIdReserva());
+        Reserva reserva = obtenerReserva(comprobante.getIdReserva());
         PlanDTO plan = obtenerPlan(reserva.getIdPlan());
 
         // Actualización de reporte según estado de reserva
@@ -223,7 +220,7 @@ public class ComprobanteService extends BaseService {
 
         Comprobante comprobante = comprobanteRepository.findById(idComprobante)
                 .orElseThrow(() -> new EntityNotFoundException("Comprobante no encontrado"));
-        Reserva reserva = reservaService.getReservaById(comprobante.getIdReserva());
+        Reserva reserva = obtenerReserva(comprobante.getIdReserva());
         PlanDTO plan = obtenerPlan(reserva.getIdPlan());
 
         comprobanteRepository.deleteById(idComprobante);

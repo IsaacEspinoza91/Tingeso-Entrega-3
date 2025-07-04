@@ -11,4 +11,6 @@ public interface RackReservaRepository extends JpaRepository<RackReserva, Long> 
 
     // Obtener todos los elementos reserva en la tabla rack_semana entre dos fechas de inicio y fin de semana
     List<RackReserva> findByFechaBetween(LocalDate fechaInicio, LocalDate fechaFin);
+
+    RackReserva findRackReservaByIdReserva(Long idReserva);
 }

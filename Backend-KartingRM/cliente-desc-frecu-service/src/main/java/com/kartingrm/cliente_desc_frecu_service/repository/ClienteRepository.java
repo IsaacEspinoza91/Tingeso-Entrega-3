@@ -23,6 +23,11 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
             "LOWER(CONCAT(c.apellido, ' ', c.nombre)) LIKE LOWER(CONCAT('%', :busqueda, '%'))")
     List<Cliente> buscarPorNombreApellidoParcial(@Param("busqueda") String busqueda);
 
+    @Query("SELECT CAST(c.id AS long) FROM Cliente c WHERE " +
+            "LOWER(CONCAT(c.nombre, ' ', c.apellido)) LIKE LOWER(CONCAT('%', :busqueda, '%')) OR " +
+            "LOWER(CONCAT(c.apellido, ' ', c.nombre)) LIKE LOWER(CONCAT('%', :busqueda, '%'))")
+    List<Long> findIdClientebuscarPorNombreApellidoParcial(@Param("busqueda") String busqueda);
+
 
     @Query("SELECT c FROM Cliente c WHERE " +
             "REPLACE(SUBSTRING_INDEX(c.rut, '-', 1), '.', '') LIKE " +

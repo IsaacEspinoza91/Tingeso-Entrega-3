@@ -3,6 +3,7 @@ package com.kartingrm.rack_semanal_service.controller;
 import com.kartingrm.rack_semanal_service.dto.RackReservaDTO;
 import com.kartingrm.rack_semanal_service.entity.RackReserva;
 import com.kartingrm.rack_semanal_service.service.RackReservaService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,12 +31,12 @@ public class RackReservaController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<RackReserva> createRackReserva(@RequestBody RackReservaDTO rackReserva) {
+    public ResponseEntity<String> createRackReserva(@RequestBody RackReservaDTO rackReserva) {
         try {
-            RackReserva rack = rackReservaService.createRackReserva(rackReserva);
-            return ResponseEntity.ok(rack);
+            rackReservaService.createRackReserva(rackReserva);
+            return ResponseEntity.ok("Rack Reserva creada exitosamente.");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error en Rack Semanal: " + e.getMessage());
         }
     }
 

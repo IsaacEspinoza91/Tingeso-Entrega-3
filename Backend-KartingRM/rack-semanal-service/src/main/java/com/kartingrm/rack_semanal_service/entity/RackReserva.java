@@ -9,14 +9,16 @@ import java.time.LocalTime;
 @Entity
 @Table(name = "rack_reservas")
 public class RackReserva extends RackReservaBase {
+
     @Id
-    @Column(name = "id_reserva")
-    private Long idReserva;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     // Constructores
     public RackReserva() {}
 
-    public RackReserva(Long idReserva, Long idCliente, String nombreReservante, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) {
+    public RackReserva(Long id, Long idReserva, Long idCliente, String nombreReservante, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) {
+        this.id = id;
         this.idReserva = idReserva;
         this.idCliente = idCliente;
         this.nombreReservante = nombreReservante;
@@ -26,12 +28,11 @@ public class RackReserva extends RackReservaBase {
     }
 
     // Getters y setters
-    public Long getIdReserva() {
-        return idReserva;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdReserva(Long idReserva) {
-        this.idReserva = idReserva;
+    public void setId(Long id) {
+        this.id = id;
     }
-
 }

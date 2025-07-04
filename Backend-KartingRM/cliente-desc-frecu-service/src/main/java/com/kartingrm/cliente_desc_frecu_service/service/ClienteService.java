@@ -70,6 +70,10 @@ public class ClienteService {
         return clienteRepository.buscarPorNombreApellidoParcial(nombre);
     }
 
+    public List<Long> getIdClientesByBusquedaParcialNombre(String nombre) {
+        return clienteRepository.findIdClientebuscarPorNombreApellidoParcial(nombre);
+    }
+
     public Cliente createCliente(ClienteDTO clienteDTO) {
         if (clienteDTO == null) throw new EntityNotFoundException("Cliente nulo");
 

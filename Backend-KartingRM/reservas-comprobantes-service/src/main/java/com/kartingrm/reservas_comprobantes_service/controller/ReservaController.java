@@ -1,10 +1,12 @@
 package com.kartingrm.reservas_comprobantes_service.controller;
 
 import com.kartingrm.reservas_comprobantes_service.entity.Reserva;
+import com.kartingrm.reservas_comprobantes_service.model.ReservaCreateRequest;
 import com.kartingrm.reservas_comprobantes_service.model.ReservaDTO;
 import com.kartingrm.reservas_comprobantes_service.model.ReservaRequest;
 import com.kartingrm.reservas_comprobantes_service.model.ReservasDiariasDTO;
 import com.kartingrm.reservas_comprobantes_service.service.ReservaService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,6 +58,11 @@ public class ReservaController {
         return ResponseEntity.ok(reservas);
     }
 
+    @GetMapping("/DTO/busqueda-nombre/{nombre}")
+    public ResponseEntity<List<ReservaDTO>> getReservasDTOByBusquedaParcialNombre(@PathVariable String nombre) {
+        List<ReservaDTO> reservas = reservaService.getReservasDTOByNombreParcialCliente(nombre);
+        return ResponseEntity.ok(reservas);
+    }
 
     @PostMapping("/")
     public ResponseEntity<Reserva> createReserva(@RequestBody ReservaRequest reserva) {
@@ -67,6 +74,17 @@ public class ReservaController {
         }
     }
 
+    @PostMapping("/crear-completa/")
+    public ResponseEntity<String> createReservaCompleta(@RequestBody ReservaCreateRequest request) {
+        try {
+            reservaService.createReservaCompleta(request);
+            return ResponseEntity.ok("Reserva creada exitosamente.");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error de estado ilegal al crear reserva: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al procesar la solicitud: " + e.getMessage());
+        }
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Reserva> updateReserva(@PathVariable Long id, @RequestBody ReservaRequest reserva) {

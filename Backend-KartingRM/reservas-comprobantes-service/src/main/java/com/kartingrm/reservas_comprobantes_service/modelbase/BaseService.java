@@ -1,5 +1,6 @@
 package com.kartingrm.reservas_comprobantes_service.modelbase;
 
+import com.kartingrm.reservas_comprobantes_service.entity.Reserva;
 import com.kartingrm.reservas_comprobantes_service.model.ClienteDTO;
 import com.kartingrm.reservas_comprobantes_service.model.PlanDTO;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
+import java.util.List;
 
 public abstract class BaseService {
 
@@ -28,7 +30,7 @@ public abstract class BaseService {
 
     public static final String URL_RACK_SEMANAL_MS = "http://rack-semanal-service";
     public static final String RACK_SEMANAL_BASE = "/api/rack-semanal-service";
-    public static final String RACK_SEMANAL_ENDPOINT = URL_RACK_SEMANAL_MS + RACK_SEMANAL_BASE + "/rack-reserva/";
+    public static final String RACK_RESERVA_ENDPOINT = URL_RACK_SEMANAL_MS + RACK_SEMANAL_BASE + "/rack-reserva/";
 
     public static final String URL_DESCUENTO_GRUPO_MS = "http://descuento-grupo-service";
     public static final String DESCUENTO_GRUPO_BASE = "/api/descuento-grupo-service";
@@ -38,6 +40,10 @@ public abstract class BaseService {
     public static final String REPORTES_BASE = "/api/reportes-service";
     public static final String REPORTES_RANGO_ENDPOINT = URL_REPORTES_MS + REPORTES_BASE + "/segun-rango-personas/";
     public static final String REPORTES_PLAN_ENDPOINT = URL_REPORTES_MS + REPORTES_BASE + "/segun-plan/";
+
+    public static final String URL_RESERVA_MS = "http://reservas-comprobantes-service";
+    public static final String RESERVA_BASE = "/api/reservas-comprobantes-service";
+    public static final String RESERVAS_ENDPOINT = URL_RESERVA_MS + RESERVA_BASE + "/reservas/";
 
 
     protected final RestTemplate restTemplate;
@@ -66,6 +72,30 @@ public abstract class BaseService {
             if (cliente == null) throw new EntityNotFoundException("No se encontró cliente con id: " + idCliente);
 
             return cliente;
+        } catch (ResourceAccessException ex) {
+            throw new HttpServerErrorException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "Servicio de clientes no disponible: " + ex.getMessage());
+        }
+    }
+
+    protected Reserva obtenerReserva(Long idReserva) {
+        try {
+            Reserva reserva = restTemplate.getForObject(RESERVAS_ENDPOINT + idReserva, Reserva.class);
+            if (reserva == null) throw new EntityNotFoundException("No se encontró reserva con id: " + idReserva);
+
+            return reserva;
+        } catch (ResourceAccessException ex) {
+            throw new HttpServerErrorException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "Servicio de clientes no disponible: " + ex.getMessage());
+        }
+    }
+
+    protected List<Integer> obtenerIdsClientes(String nombre) {
+        try{
+            List<Integer> ids = restTemplate.getForObject(CLIENTE_ENDPOINT +"ids-busqueda-nombre/" + nombre, List.class);
+            if (ids == null) throw new EntityNotFoundException("Error al buscar clientes.");
+
+            return ids;
         } catch (ResourceAccessException ex) {
             throw new HttpServerErrorException(HttpStatus.SERVICE_UNAVAILABLE,
                     "Servicio de clientes no disponible: " + ex.getMessage());
