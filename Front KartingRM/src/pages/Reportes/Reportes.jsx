@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { 
-  getReporteIngresosPorVueltas, 
-  getReporteIngresosPorPersonas 
+import {
+  getReporteIngresosPorVueltas,
+  getReporteIngresosPorPersonas
 } from '../../services/reporteService';
 import ReportesForm from '../../components/reportes/ReportesForm';
 import ReportesTable from '../../components/reportes/ReportesTable';
+import { FaHome, FaExclamationTriangle } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import './Reportes.css';
 
 const Reportes = () => {
@@ -12,6 +14,7 @@ const Reportes = () => {
   const [tipoReporte, setTipoReporte] = useState('vueltas');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const generarReporte = async (formData) => {
     setLoading(true);
@@ -44,21 +47,50 @@ const Reportes = () => {
 
   return (
     <div className="reportes-page">
-      <h1>Reportes</h1>
-      
-      <ReportesForm 
-        onGenerarReporte={generarReporte} 
-        loading={loading} 
-      />
+      <div className="reportes-container">
+        <div className="reportes-header">
+          <div className="content-header">
+            <h1>Reportes de Ingresos</h1>
+            <button
+              onClick={() => navigate('/')}
+              className="floating-home-btn"
+              aria-label="Volver al inicio"
+            >
+              <FaHome />
+              <span>Inicio</span>
+            </button>
+          </div>
+        </div>
 
-      {error && <div className="error-message">{error}</div>}
+        <div className="reportes-content">
+          <ReportesForm
+            onGenerarReporte={generarReporte}
+            loading={loading}
+          />
 
-      {reporteData.length > 0 && (
-        <ReportesTable 
-          data={reporteData} 
-          tipoReporte={tipoReporte} 
-        />
-      )}
+          {error && (
+            <div className="error-feedback">
+              <FaExclamationTriangle className="error-icon" />
+              {error}
+            </div>
+          )}
+
+          {loading ? (
+            <div className="loading-message">Generando reporte...</div>
+          ) : reporteData.length > 0 ? (
+            <div className="reportes-list-container">
+              <ReportesTable
+                data={reporteData}
+                tipoReporte={tipoReporte}
+              />
+            </div>
+          ) : (
+            <div className="no-results">
+              No hay datos para mostrar. Genere un reporte para ver los resultados.
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
