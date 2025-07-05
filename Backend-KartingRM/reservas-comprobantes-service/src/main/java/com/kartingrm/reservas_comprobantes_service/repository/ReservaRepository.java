@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
@@ -21,9 +22,13 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     @Query("SELECT COUNT(*) > 0 " +
             "FROM Reserva r " +
             "WHERE r.fecha = :fecha AND (:horaInicio < r.horaFin AND :horaFin > r.horaInicio) AND r.estado = 'confirmada'")
-    boolean existeReservaEntreDosHoras(@Param("fecha") LocalDate fecha,
-                                                @Param("horaInicio") LocalTime horaInicio,
-                                                @Param("horaFin") LocalTime horaFin);
+    boolean existeReservaEntreDosHoras(@Param("fecha") LocalDate fecha, @Param("horaInicio") LocalTime horaInicio, @Param("horaFin") LocalTime horaFin);
+
+
+    @Query("SELECT r " +
+            "FROM Reserva r " +
+            "WHERE r.fecha = :fecha AND (:horaInicio < r.horaFin AND :horaFin > r.horaInicio) AND r.estado = 'confirmada'")
+    Optional<Reserva> encontrarReservaEntreDosHoras(@Param("fecha") LocalDate fecha, @Param("horaInicio") LocalTime horaInicio, @Param("horaFin") LocalTime horaFin);
 
 
     @Query("SELECT " +
@@ -32,4 +37,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
             "COUNT(CASE WHEN r.fecha = :fechaAyer AND (r.estado = 'CONFIRMADA' OR r.estado = 'COMPLETADA') THEN 1 END)) " +
             "FROM Reserva r")
     ReservasDiariasDTO countReservasConfirmadasOCompletadasDiarias(@Param("fechaHoy") LocalDate fechaHoy, @Param("fechaAyer") LocalDate fechaAyer);
+
+    List<Reserva> findByFecha(LocalDate fecha);
 }

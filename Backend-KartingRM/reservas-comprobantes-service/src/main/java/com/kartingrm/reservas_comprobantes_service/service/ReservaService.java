@@ -14,6 +14,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -46,6 +47,11 @@ public class ReservaService extends BaseService {
 
     public List<ReservaDTO> getReservasDTO() {
         List<Reserva> reservas = reservaRepository.findAll();
+        return createReservasConFormatoDTO(reservas);
+    }
+
+    public List<ReservaDTO> getReservasDTOByFecha(LocalDate fecha) {
+        List<Reserva> reservas = reservaRepository.findByFecha(fecha);
         return createReservasConFormatoDTO(reservas);
     }
 
@@ -143,27 +149,39 @@ public class ReservaService extends BaseService {
         }
     }
 
+    @Transactional
     public void updateReservaCompleta(Long idReserva, ReservaCreateRequest req) {
         ReservaRequest reservaRequest = new ReservaRequest(req.getFecha(), req.getHoraInicio(), req.getEstado(), req.getTotalPersonas(), req.getIdPlan(), req.getIdReservante());
         Reserva reserva = null;
 
         try {
+
+            System.out.println("antes de update reserva");
             reserva = updateReserva(idReserva, reservaRequest);
+
+            System.out.println("reserva actualizada");
 
             // Gestión de integrantes
             List<ClienteReserva> relacionesClienteReserva = clienteReservaService.obtenerIntegrantesByIdReserva(idReserva);
+            System.out.println("Integrantes actuales: " + relacionesClienteReserva);
             for (ClienteReserva relacionActual : relacionesClienteReserva) {
                 clienteReservaService.quitarIntegrante(relacionActual.getIdCliente(), idReserva);
             }
+            System.out.println("Agregando nuevos integrantes: " + req.getIdsIntegrantes());
             for (Long idIntegrante : req.getIdsIntegrantes()) {
                 clienteReservaService.agregarIntegrante(idIntegrante, idReserva);
             }
 
+            System.out.println("Procesando comprobante...");
             // Gestión de comprobante
             ComprobanteConDetallesDTO comprobante = comprobanteService.getComprobanteConDetallesByIdReserva(idReserva);
+            System.out.println("Comprobante obtenido: " + comprobante);
             comprobanteService.deleteComprobante(comprobante.getId());
+            System.out.println("Comprobante eliminado: ");
             ComprobanteConDetallesDTO nuevoComprobante = comprobanteService.createComprobante(reserva.getId(), req.getDescuentoExtra());
+            System.out.println("Comprobante creado: " + nuevoComprobante);
             comprobanteService.updateEstadoPagadoDeComprobante(nuevoComprobante.getId(), req.isPagado());
+            System.out.println("Comprobante actualizado: " + nuevoComprobante);
         } catch (IllegalStateException e) {
             throw e;
         } catch (Exception e) {
@@ -189,7 +207,15 @@ public class ReservaService extends BaseService {
         LocalTime horaFinalCalculada = determinarHoraFin(reserva, plan);
         reserva.setHoraFin(horaFinalCalculada);
 
-        if (existeReservaEntreDosHoras(reserva.getFecha(), reserva.getHoraInicio(), horaFinalCalculada)) throw new IllegalStateException("Ya existe una reserva con ese horario");
+        System.out.println("sdafjhklsdafkjlsd");
+
+        if (existeReservaEntreDosHoras(reserva.getFecha(), reserva.getHoraInicio(), horaFinalCalculada)
+                && reservaOriginalOptional.get().getId() != getReservaEntreDosHoras(reserva.getFecha(), reserva.getHoraInicio(), horaFinalCalculada).getId()) {
+            System.out.println("Reserva ya existe en horario");
+            throw new IllegalStateException("Ya existe una reserva con ese horario");
+        };
+
+        System.out.println("\n\n no entro al a el if");
 
         // Verificar horario válido de atención
         Boolean esFinDeSemana = reserva.getFecha().getDayOfWeek().getValue() >= 6;// Determina fin de semana o no
@@ -197,10 +223,15 @@ public class ReservaService extends BaseService {
         esHorarioValido(esFeriado, esFinDeSemana, reserva);
 
         reservaRepository.save(reserva);
+        System.out.println("Reserva paso el save");
 
 
         // Si no cambia el estado (solo se actualizó horario/fecha)
-        if (reserva.getEstado().equals(estadoAnterior)) {
+        if (reserva.getEstado().equals(estadoAnterior) ||
+                (reserva.getEstado().equals(ESTADO_COMPLETADA) && estadoAnterior.equals(ESTADO_CONFIRMADA)) ||
+                (reserva.getEstado().equals(ESTADO_CONFIRMADA) && estadoAnterior.equals(ESTADO_COMPLETADA)) ) {
+
+            System.out.println("Reserva no cambia estado, o sigue siendo valida reserva");
 
             RackReservaRequest rackReservaRequest = new RackReservaRequest(
                     reserva.getId(),
@@ -214,7 +245,11 @@ public class ReservaService extends BaseService {
         }
         // Si hubo cambio de estado
         else {
+            System.out.println("\n\nSi cambia estado");
+            System.out.println("actual  " + reserva.getEstado() + " ,  estado anterior" + estadoAnterior);
             if (reserva.getEstado().equals(ESTADO_COMPLETADA) || reserva.getEstado().equals(ESTADO_CONFIRMADA)) {
+
+                System.out.println("if 1");
 
                 RackReservaRequest rackReservaRequest = new RackReservaRequest(
                         reserva.getId(),
@@ -224,13 +259,18 @@ public class ReservaService extends BaseService {
                         reserva.getHoraInicio(),
                         reserva.getHoraFin()
                 );
-                restTemplate.postForObject(RACK_RESERVA_ENDPOINT, new HttpEntity<>(rackReservaRequest), RackReservaRequest.class);
+                HttpEntity<RackReservaRequest> rackReservaBody = new HttpEntity<>(rackReservaRequest);
+                restTemplate.postForObject(RACK_RESERVA_ENDPOINT, rackReservaBody, String.class);
             }
             else if (reserva.getEstado().equals(ESTADO_CANCELADA) &&
                     (estadoAnterior.equals(ESTADO_COMPLETADA) || estadoAnterior.equals(ESTADO_CONFIRMADA))) {
+
+                System.out.println("if 2");
                 restTemplate.delete(RACK_RESERVA_ENDPOINT + reserva.getId());
             }
         }
+
+        System.out.println("Reserva avisa a rack semanal");
 
         return reserva;
     }
@@ -329,4 +369,8 @@ public class ReservaService extends BaseService {
         return reservaRepository.countReservasConfirmadasOCompletadasDiarias(fechaHoy, fechaAyer);
     }
 
+    public Reserva getReservaEntreDosHoras(LocalDate fecha, LocalTime horaInicio, LocalTime horaFinal) {
+        Optional<Reserva> reserva = reservaRepository.encontrarReservaEntreDosHoras(fecha,horaInicio, horaFinal);
+        return reserva.get();
+    }
 }

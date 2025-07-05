@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -31,6 +32,13 @@ public class ReservaController {
     @GetMapping("/DTO/")
     public ResponseEntity<List<ReservaDTO>> getReservasDTO() {
         List<ReservaDTO> reservaDTOS = reservaService.getReservasDTO();
+        return ResponseEntity.ok(reservaDTOS);
+    }
+
+    @GetMapping("/DTO/fecha")
+    public ResponseEntity<List<ReservaDTO>> getReservasDTOFecha(@RequestParam("fecha") String fechaStr) {
+        LocalDate fecha = LocalDate.parse(fechaStr);
+        List<ReservaDTO> reservaDTOS = reservaService.getReservasDTOByFecha(fecha);
         return ResponseEntity.ok(reservaDTOS);
     }
 

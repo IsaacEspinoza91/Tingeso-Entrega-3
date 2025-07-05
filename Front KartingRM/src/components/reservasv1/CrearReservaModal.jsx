@@ -1,27 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import './CrearReservaModal.css';
-import { FaCalendarAlt, FaClock, FaClipboardList, FaUsers, FaCalendarPlus, FaUser, FaUserPlus, FaExclamationTriangle, FaTrash, FaExclamationCircle, FaTimes } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock, FaClipboardList, FaUsers, FaCalendarPlus, FaUser, FaUserPlus, FaExclamationTriangle, FaTrash, FaExclamationCircle, FaCheckCircle, FaTimes, FaMoneyBillWave } from 'react-icons/fa';
 import { getPlanes, getPlanesBuscadosByTexto } from '../../services/planService';
 import { getClientesActivos, getClientesByNombreParcial } from '../../services/clienteService';
-import { createReservaCompleta } from '../../services/reservaService';
+import { createReservaCompleta, updateReservaCompleta, getIntegrantes, getReservaById } from '../../services/reservaService';
 import ClientesForm from '../clientesv1/ClientesForm';
-import Notification from '../notificaciones/Notification'
+import Notification from '../notificaciones/Notification';
+import Spinner from '../spinner/Spinner';
 
-const CrearReservaModal = ({ onClose, onReservaCreada }) => {
+const CrearReservaModal = ({ onClose, onReservaCreada, reserva = null }) => {
     const [fecha, setFecha] = useState('');
     const [horaInicio, setHoraInicio] = useState('');
     const [estado, setEstado] = useState('confirmada');
     const [totalPersonas, setTotalPersonas] = useState(1);
     const [planes, setPlanes] = useState([]);
     const [clientes, setClientes] = useState([]);
+    const [pagado, setPagado] = useState(false);
     const [planSeleccionado, setPlanSeleccionado] = useState(null);
     const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
     const [integrantesSeleccionados, setIntegrantesSeleccionados] = useState([]);
     const [descuentoExtra, setDescuentoExtra] = useState(0);
     const [inputIntegrante, setInputIntegrante] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [notification, setNotification] = useState({ show: false, message: '', type: '' })
+    const [notification, setNotification] = useState({
+        id: Date.now(),
+        show: false,
+        message: '',
+        type: ''
+    });
     const [showNuevoCliente, setShowNuevoCliente] = useState(false);
     const [inputErrors, setInputErrors] = useState({
         horaInicio: '',
@@ -30,30 +37,93 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
         totalPersonas: '',
     });
 
+    const [isFormReady, setIsFormReady] = useState(false);
+
 
 
     useEffect(() => {
-        const fetchData = async () => {
+        const cargarDatosReserva = async () => {
+            if (!reserva) return;
+
             try {
-                const allPlanes = await getPlanes();
-                setPlanes(allPlanes);
-                const allClientes = await getClientesActivos();
-                setClientes(allClientes);
+                const data = await getReservaById(reserva.id);
+                const integrantesData = await getIntegrantes(reserva.id);
+
+                setFecha(data.fecha);
+                setHoraInicio(data.horaInicio?.slice(0, 5));
+                setEstado(data.estado);
+                setTotalPersonas(data.totalPersonas);
+                setDescuentoExtra(data.descuentoExtra || 0);
+                setPagado(data.pagado || false);
+
+                const planMatch = planes.find(p => p.id === data.plan?.id);
+                const clienteMatch = clientes.find(c => c.id === data.reservante?.id);
+
+                if (planMatch) {
+                    setPlanSeleccionado({
+                        value: planMatch.id,
+                        label: `${planMatch.id} - ${planMatch.descripcion}`
+                    });
+                }
+
+                if (clienteMatch) {
+                    setClienteSeleccionado({
+                        value: clienteMatch.id,
+                        label: `${clienteMatch.id} - ${clienteMatch.nombre} ${clienteMatch.apellido}`
+                    });
+                }
+
+                const integrantesConvertidos = integrantesData.map(cli => ({
+                    id: cli.id,
+                    nombre: cli.nombre,
+                    apellido: cli.apellido,
+                    rut: cli.rut
+                }));
+
+                setIntegrantesSeleccionados(integrantesConvertidos);
+                setIsFormReady(true);
+
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error al cargar datos de reserva:', error);
             }
         };
-        fetchData();
-    }, []);
+
+        cargarDatosReserva();
+    }, [reserva, planes, clientes]);
+
+
+
+    useEffect(() => {
+        if (!reserva) {
+            // Reinicia el formulario para creación nueva
+            setPlanSeleccionado(null);
+            setClienteSeleccionado(null);
+            setFecha('');
+            setHoraInicio('');
+            setEstado('confirmada');
+            setTotalPersonas(1);
+            setDescuentoExtra(0);
+            setPagado(false);
+            setIntegrantesSeleccionados([]);
+            setIsFormReady(true); // Si es creación nueva, no hay que esperar carga
+        }
+    }, [reserva]);
+
+
+
 
     const showNotification = (message, type) => {
-        setNotification({ show: true, message, type })
-    }
+        setNotification({
+            id: Date.now(), // Nuevo ID cada vez
+            show: true,
+            message,
+            type
+        });
+    };
 
     const closeNotification = () => {
-        setNotification({ ...notification, show: false })
-    }
-
+        setNotification(prev => ({ ...prev, show: false }));
+    };
     const mostrarError = (campo, mensaje) => {
         setInputErrors(prev => ({
             ...prev,
@@ -151,16 +221,16 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
 
 
     const getPlanOptions = () => {
-        return planes.map((plan) => ({
-            value: plan.id,
-            label: `${plan.descripcion} (ID: ${plan.id})`
+        return planes.map(p => ({
+            value: p.id,
+            label: `${p.id} - ${p.descripcion}`
         }));
     };
 
     const getClienteOptions = () => {
-        return clientes.map((cliente) => ({
-            value: cliente.id,
-            label: `${cliente.nombre} ${cliente.apellido} (ID: ${cliente.id})`
+        return clientes.map(c => ({
+            value: c.id,
+            label: `${c.id} - ${c.nombre} ${c.apellido}`
         }));
     };
 
@@ -248,7 +318,7 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                 return;
             }
 
-            const response = await createReservaCompleta({
+            const reservaData = {
                 fecha,
                 horaInicio,
                 estado,
@@ -257,34 +327,48 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                 idReservante: clienteSeleccionado.value,
                 idsIntegrantes: integrantesSeleccionados.map(i => i.id),
                 descuentoExtra: descuentoExtra || 0,
-            });
+                pagado: reserva ? pagado : undefined,
+            };
 
-            if (typeof response === 'string') {
-                showNotification(response, 'success');
-            }
-
-            if (typeof onReservaCreada === 'function') {
-                onReservaCreada();
+            let response;
+            if (reserva) {
+                response = await updateReservaCompleta(reserva.id, reservaData);
+                showNotification('Reserva actualizada exitosamente', 'success');
             } else {
-                onClose();
+                response = await createReservaCompleta(reservaData);
+                showNotification('Reserva creada exitosamente', 'success');
             }
+
+            // Forzar re-renderizado de la notificación
+            setNotification(prev => ({ ...prev, id: Date.now() }));
+
+
 
             setTimeout(() => {
                 onClose();
             }, 2000);
-
         } catch (error) {
             console.error('Error:', error);
-            showNotification(error.response?.data || error.message, 'error');
+            showNotification(
+                error.response?.data ||
+                error.message ||
+                'Error al procesar la reserva',
+                'error'
+            );
         } finally {
             setIsLoading(false);
         }
     };
 
+    if (reserva && !isFormReady) {
+        return <Spinner mensaje="Cargando datos de la reserva..." />;
+    }
+
     return (
         <div className="modal-overlay">
             {notification.show && (
                 <Notification
+                    key={notification.id}
                     message={notification.message}
                     type={notification.type}
                     onClose={closeNotification}
@@ -292,7 +376,7 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
             )}
             <div className="crear-reserva-modal">
                 <button className="close-btn" onClick={onClose}><FaTimes /></button>
-                <h2><FaClipboardList /> Crear Nueva Reserva</h2>
+                <h2><FaClipboardList /> {reserva ? 'Editar Reserva' : 'Crear Nueva Reserva'}</h2>
 
                 <div className="form-grid">
                     <div className="form-row">
@@ -346,7 +430,7 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                         </div>
 
                         <div className="form-group">
-                            <label>Descuento Extra:</label>
+                            <label><FaMoneyBillWave /> Descuento Extra:</label>
                             <input
                                 type="number"
                                 min="0"
@@ -355,14 +439,29 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                             />
                             {inputErrors.descuentoExtra && <div className="error-tooltip"><FaExclamationTriangle className="error-icon" />{inputErrors.descuentoExtra}</div>}
                         </div>
+
+                        {reserva && (
+                            <div className="form-group form-checkbox">
+                                <label htmlFor="pagadoCheckbox">¿Pagado?</label>
+                                <input
+                                    id="pagadoCheckbox"
+                                    type="checkbox"
+                                    checked={pagado}
+                                    onChange={(e) => setPagado(e.target.checked)}
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
-
+                {reserva && (
+                    <h5>Nota: Antes de editar, debe seleccionar los elementos de plan y cliente. Automáticamente se selecionarán los previos en la reserva.</h5>
+                )}
                 <div className="form-group">
                     <label><FaClipboardList /> Plan:</label>
                     <Select
+                        key={planSeleccionado?.value || 'plan-select'}
                         options={getPlanOptions()}
-                        value={planSeleccionado}
+                        value={getPlanOptions().find(opt => opt.value === planSeleccionado?.value) || null}
                         onChange={setPlanSeleccionado}
                         onInputChange={handlePlanInputChange}
                         onMenuOpen={() => handlePlanSearch('')}
@@ -386,8 +485,9 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                 <div className="form-group">
                     <label><FaUser /> Cliente Reservante:</label>
                     <Select
+                        key={clienteSeleccionado?.value || 'cliente-select'}
                         options={getClienteOptions()}
-                        value={clienteSeleccionado}
+                        value={getClienteOptions().find(opt => opt.value === clienteSeleccionado?.value) || null}
                         onChange={setClienteSeleccionado}
                         onInputChange={handleClienteInputChange}
                         onMenuOpen={() => handleClienteSearch('')}
@@ -487,7 +587,8 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                         onClick={handleCrearReserva}
                         disabled={isLoading}
                     >
-                        <FaCalendarPlus /> {isLoading ? 'Creando...' : 'Crear Reserva'}
+                        <FaCheckCircle />
+                        {isLoading ? 'Procesando...' : reserva ? 'Actualizar Reserva' : 'Crear Reserva'}
                     </button>
                 </div>
             </div>

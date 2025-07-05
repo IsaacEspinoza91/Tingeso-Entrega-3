@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import './TablaReservas.css';
-import { FaEye, FaEdit, FaTrash } from 'react-icons/fa';
+import DeleteReservaModal from './DeleteReservaModal'
+import { FaEye, FaEdit, FaTrash, FaCalendarTimes } from 'react-icons/fa';
 
-const TablaReservas = ({ reservas, onSeleccionar }) => {
+const TablaReservas = ({ reservas, onSeleccionar, onEditar, refreshReservas }) => {
     const obtenerClaseEstado = (estado) => {
         switch (estado) {
             case 'confirmada':
@@ -14,6 +16,16 @@ const TablaReservas = ({ reservas, onSeleccionar }) => {
                 return '';
         }
     };
+    const [reservaToDelete, setReservaToDelete] = useState(null);
+
+    if (reservas.length === 0) {
+        return (
+            <div className="sin-resultados-mensaje">
+                <FaCalendarTimes className="mensaje-icono" />
+                <p>No se encontraron reservas con los criterios de búsqueda</p>
+            </div>
+        );
+    }
 
     return (
         <div className="tabla-reservas">
@@ -47,14 +59,29 @@ const TablaReservas = ({ reservas, onSeleccionar }) => {
                             <td>
                                 <div className="acciones">
                                     <button onClick={() => onSeleccionar(res)} title="Ver"><FaEye /></button>
-                                    <button onClick={() => alert('Abrir modal editar')} title="Editar"><FaEdit /></button>
-                                    <button onClick={() => alert('Abrir modal eliminar')} title="Eliminar"><FaTrash /></button>
+                                    <button onClick={() => onEditar(res)} title="Editar"><FaEdit /></button>
+                                    <button
+                                        onClick={() => setReservaToDelete(res)}
+                                        className="delete-btn"
+                                        aria-label="Eliminar plan"
+                                    >
+                                        <FaTrash />
+                                        <span className="tooltip-text">Eliminar</span>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+
+            {reservaToDelete && (
+                <DeleteReservaModal
+                    reserva={reservaToDelete}
+                    onClose={() => setReservaToDelete(null)}
+                    onSuccess={refreshReservas}
+                />
+            )}
         </div>
     );
 };

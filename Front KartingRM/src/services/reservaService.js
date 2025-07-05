@@ -46,6 +46,16 @@ export const getReservasByNombreParcialCliente = async (nombre) => {
   }
 };
 
+export const getReservasByFecha = async (fecha) => {
+  try {
+    const response = await httpClient.get(`${URL_LOCAL}/reservas/DTO/fecha?fecha=${fecha}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al obtener reservas del cliente ${fecha}:`, error);
+    throw error;
+  }
+};
+
 // Peticion POST para crear reserva
 export const createReserva = async (reservaData) => {
   try {
@@ -75,6 +85,17 @@ export const updateReserva = async (idReserva, reservaData) => {
     return response.data;
   } catch (error) {
     console.error(`Error al actualizar reserva con ID ${idReserva}:`, error);
+    throw error;
+  }
+};
+
+// Peticion PUT para update de reserva completa, considerando update de rack semanal
+export const updateReservaCompleta = async (idReserva, reservaData) => {
+  try {
+    const response = await httpClient.put(`${URL_LOCAL}/reservas/update-completa/${idReserva}`, reservaData);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al actualizar reserva completa con ID ${idReserva}:`, error);
     throw error;
   }
 };

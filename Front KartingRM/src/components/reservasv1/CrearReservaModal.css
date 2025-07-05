@@ -286,3 +286,18 @@
 .form-group label svg {
     color: #00b4d8;
 }
+
+.form-checkbox {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+}
+
+
+.form-checkbox input[type="checkbox"] {
+    accent-color: green;
+    cursor: pointer;
+    opacity: 1;
+}

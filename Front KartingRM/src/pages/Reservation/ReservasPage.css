@@ -52,25 +52,27 @@
     border-radius: 3px;
 }
 
-.busqueda-section {
+.sin-resultados-mensaje {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    margin: 1rem 0;
+    background-color: #f8f9fa;
+    border: 1px dashed #ced4da;
+    border-radius: 0.5rem;
+    text-align: center;
+    color: #6c757d;
 }
 
-.busqueda-section input {
-    padding: 0.5rem;
-    flex-grow: 1;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+.mensaje-icono {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #adb5bd;
 }
 
-.busqueda-section button {
-    padding: 0.5rem 1rem;
-    background-color: #00b4d8;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+.sin-resultados-mensaje p {
+    margin: 0;
+    font-size: 1.1rem;
 }

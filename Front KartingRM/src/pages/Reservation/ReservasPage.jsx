@@ -4,13 +4,15 @@ import { FaSearch, FaPlus, FaHome, FaListUl } from 'react-icons/fa';
 import {
     getReservas,
     getReservaById,
-    getReservasByNombreParcialCliente
+    getReservasByNombreParcialCliente,
+    getReservasByFecha
 } from '../../services/reservaService';
 import ReservaDetalle from '../../components/reservasv1/ReservaDetalle';
 import TablaReservas from '../../components/reservasv1//TablaReservas';
 import CrearReservaModal from '../../components/reservasv1/CrearReservaModal';
 import { getPlanes } from '../../services/planService';
 import { getClientes } from '../../services/clienteService';
+import ReservaBusqueda from '../../components/reservasv1/ReservaBusqueda';
 import './ReservasPage.css';
 
 
@@ -18,12 +20,16 @@ import './ReservasPage.css';
 const ReservasPage = () => {
     const navigate = useNavigate();
     const [reservas, setReservas] = useState([]);
-    const [filtro, setFiltro] = useState('');
-    const [tipoBusqueda, setTipoBusqueda] = useState('id');
+
     const [reservaSeleccionada, setReservaSeleccionada] = useState(null);
     const [mostrarModalCrear, setMostrarModalCrear] = useState(false);
+
+    const [reservaParaEditar, setReservaParaEditar] = useState(null);
     const [planes, setPlanes] = useState([]);
     const [clientes, setClientes] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchType, setSearchType] = useState('id');
+    const [mostrarMensajeSinResultados, setMostrarMensajeSinResultados] = useState(false);
 
 
     useEffect(() => {
@@ -44,35 +50,57 @@ const ReservasPage = () => {
             const [planesData, clientesData] = await Promise.all([getPlanes(), getClientes()]);
             setPlanes(planesData);
             setClientes(clientesData);
+            setReservaParaEditar(null); // importante para evitar reuso
             setMostrarModalCrear(true);
         } catch (error) {
             console.error('Error al cargar datos para crear reserva:', error);
         }
     };
 
+    const abrirModalEditarReserva = async (reserva) => {
+        try {
+            const [planesData, clientesData] = await Promise.all([getPlanes(), getClientes()]);
+            setPlanes(planesData);
+            setClientes(clientesData);
+            setReservaParaEditar(reserva);
+            setMostrarModalCrear(true);
+        } catch (error) {
+            console.error('Error al cargar datos para editar reserva:', error);
+        }
+    };
 
     const handleBuscar = async () => {
-        if (!filtro) return;
+        if (!searchTerm) return;
 
         try {
-            if (tipoBusqueda === 'id') {
-                const id = parseInt(filtro);
+            setMostrarMensajeSinResultados(false);
+
+            if (searchType === 'id') {
+                const id = parseInt(searchTerm);
                 if (!isNaN(id)) {
                     const reserva = await getReservaById(id);
                     setReservas([reserva]);
+                    setMostrarMensajeSinResultados(!reserva);
                 }
-            } else if (tipoBusqueda === 'nombre') {
-                const resultados = await getReservasByNombreParcialCliente(filtro);
+            } else if (searchType === 'nombre') {
+                const resultados = await getReservasByNombreParcialCliente(searchTerm);
                 setReservas(resultados);
+                setMostrarMensajeSinResultados(resultados.length === 0);
+            } else if (searchType === 'fecha') {
+                const resultados = await getReservasByFecha(searchTerm);
+                setReservas(resultados);
+                setMostrarMensajeSinResultados(resultados.length === 0);
             }
         } catch (error) {
             console.error('Error en búsqueda de reservas:', error);
             setReservas([]);
+            setMostrarMensajeSinResultados(true);
         }
     };
 
     const handleMostrarTodas = async () => {
-        setFiltro('');
+        setSearchTerm('');
+        setMostrarMensajeSinResultados(false);
         cargarReservas();
     };
 
@@ -92,56 +120,47 @@ const ReservasPage = () => {
                         <h1>Gestión de Reservas</h1>
                     </div>
 
-                    <div className="search-container">
-                        <div className="search-bar">
-                            <div className="search-group">
-                                <label htmlFor="reservaSearch" className="search-label">Buscar Reserva:</label>
-                                <select
-                                    value={tipoBusqueda}
-                                    onChange={(e) => setTipoBusqueda(e.target.value)}
-                                    className="busqueda-select"
-                                >
-                                    <option value="id">Por ID</option>
-                                    <option value="nombre">Por Nombre</option>
-                                </select>
-                                <input
-                                    id="reservaSearch"
-                                    type="text"
-                                    placeholder={tipoBusqueda === 'id' ? 'Ingrese ID...' : 'Ingrese nombre del cliente...'}
-                                    value={filtro}
-                                    onChange={(e) => setFiltro(e.target.value)}
-                                />
-                                <div className="search-actions">
-                                    <button onClick={handleBuscar} className="search-btn">
-                                        <FaSearch className="btn-icon" /> Buscar
-                                    </button>
-                                    {filtro && (
-                                        <button onClick={handleMostrarTodas} className="show-all-btn">
-                                            <FaListUl className="btn-icon" /> Ver Todos
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                            <button onClick={abrirModalCrearReserva} className="add-btn">
-                                <FaPlus className="btn-icon" /> Crear Reserva
-                            </button>
-                        </div>
-                    </div>
+                    <ReservaBusqueda
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        searchType={searchType}
+                        setSearchType={setSearchType}
+                        onBuscar={handleBuscar}
+                        onReset={handleMostrarTodas}
+                        onNuevaReserva={abrirModalCrearReserva}
+                    />
                 </div>
 
-                <TablaReservas reservas={reservas} onSeleccionar={setReservaSeleccionada} />
+                <TablaReservas
+                    reservas={reservas}
+                    onSeleccionar={setReservaSeleccionada}
+                    onEditar={(reserva) => abrirModalEditarReserva(reserva)}
+                    refreshReservas={cargarReservas}
+                />
+
+
+
 
                 {reservaSeleccionada && (
-                    <ReservaDetalle reserva={reservaSeleccionada} onClose={() => setReservaSeleccionada(null)} />
+                    <ReservaDetalle
+                        reserva={reservaSeleccionada}
+                        onClose={() => setReservaSeleccionada(null)}
+                    />
                 )}
-                {mostrarModalCrear && (
+
+                {mostrarModalCrear && planes.length > 0 && clientes.length > 0 && (
                     <CrearReservaModal
+                        reserva={reservaParaEditar}
                         planes={planes}
                         clientes={clientes}
-                        onClose={() => setMostrarModalCrear(false)}
+                        onClose={() => {
+                            setMostrarModalCrear(false);
+                            setReservaParaEditar(null);
+                        }}
                         onReservaCreada={() => {
                             cargarReservas();
                             setMostrarModalCrear(false);
+                            setReservaParaEditar(null);
                         }}
                     />
                 )}

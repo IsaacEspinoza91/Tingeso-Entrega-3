@@ -1,0 +1,197 @@
+.reserva-busqueda-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.busqueda-superior {
+    display: flex;
+    width: 100%;
+}
+
+.busqueda-input-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.search-label {
+    font-weight: 500;
+    color: #2c3e50;
+    white-space: nowrap;
+}
+
+.busqueda-select {
+    padding: 0.6rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    min-width: 120px;
+}
+
+.input-with-error-container {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+}
+
+.busqueda-input {
+    padding: 0.6rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.error-tooltip {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background-color: #ffecec;
+    color: #ff3333;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    z-index: 10;
+}
+
+.error-icon {
+    color: #ff3333;
+    font-size: 0.9rem;
+}
+
+.buscar-btn {
+    background-color: #00b4d8;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.buscar-btn:hover {
+    background-color: #0096c7;
+}
+
+.buscar-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.busqueda-inferior {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.botones-derecha {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.ver-todos-btn {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    border: 1px solid #ddd;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.ver-todos-btn:hover {
+    background-color: #e9ecef;
+    border-color: #00b4d8;
+    color: #00b4d8;
+}
+
+.nuevo-btn {
+    background-color: #2ecc71;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.nuevo-btn:hover {
+    background-color: #27ae60;
+}
+
+.ver-todos-btn {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    border: 1px solid #ddd;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.ver-todos-btn:hover {
+    background-color: #e9ecef;
+    border-color: #00b4d8;
+    color: #00b4d8;
+}
+
+@media (max-width: 768px) {
+    .busqueda-input-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .search-label {
+        width: 100%;
+    }
+
+    .busqueda-select,
+    .busqueda-input,
+    .buscar-btn {
+        width: 100%;
+    }
+
+    .busqueda-inferior {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .botones-derecha {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .ver-todos-btn,
+    .nuevo-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

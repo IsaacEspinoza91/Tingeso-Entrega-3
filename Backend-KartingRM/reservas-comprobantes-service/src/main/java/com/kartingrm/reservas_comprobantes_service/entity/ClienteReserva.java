@@ -38,4 +38,12 @@ public class ClienteReserva {
     public void setIdReserva(Long idReserva) {
         this.idReserva = idReserva;
     }
+
+    @Override
+    public String toString() {
+        return "ClienteReserva{" +
+                "idCliente=" + idCliente +
+                ", idReserva=" + idReserva +
+                '}';
+    }
 }
