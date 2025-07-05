@@ -14,18 +14,11 @@ public class ReservaCreateRequest {
     private Long idReservante;
     private List<Long> idsIntegrantes;
     private Integer descuentoExtra;
+    private Boolean pagado;
 
 
-    public ReservaCreateRequest() {}
-    public ReservaCreateRequest(LocalDate fecha, LocalTime horaInicio, String estado, Integer totalPersonas, Long idPlan, Long idReservante, List<Long> idsIntegrantes, Integer descuentoExtra) {
-        this.fecha = fecha;
-        this.horaInicio = horaInicio;
-        this.estado = estado;
-        this.totalPersonas = totalPersonas;
-        this.idPlan = idPlan;
-        this.idReservante = idReservante;
-        this.idsIntegrantes = idsIntegrantes;
-        this.descuentoExtra = descuentoExtra;
+    public ReservaCreateRequest() {
+        // Constructor vacío para mapeo
     }
 
 
@@ -93,6 +86,14 @@ public class ReservaCreateRequest {
         this.descuentoExtra = descuentoExtra;
     }
 
+    public Boolean isPagado() {
+        return pagado;
+    }
+
+    public void setPagado(Boolean pagado) {
+        this.pagado = pagado;
+    }
+
     @Override
     public String toString() {
         return "ReservaCreateRequest{" +
@@ -104,6 +105,7 @@ public class ReservaCreateRequest {
                 ", idReservante=" + idReservante +
                 ", idsIntegrantes=" + idsIntegrantes +
                 ", descuentoExtra=" + descuentoExtra +
+                ", pagado=" + pagado +
                 '}';
     }
 }

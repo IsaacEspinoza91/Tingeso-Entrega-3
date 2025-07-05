@@ -80,7 +80,7 @@ public class ReservaController {
             reservaService.createReservaCompleta(request);
             return ResponseEntity.ok("Reserva creada exitosamente.");
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error de estado ilegal al crear reserva: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al procesar la solicitud: " + e.getMessage());
         }
@@ -93,6 +93,18 @@ public class ReservaController {
             return ResponseEntity.ok(reservaActualizada);
         } catch (Exception e){
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/update-completa/{idReserva}")
+    public ResponseEntity<String> updateReservaCompleta(@PathVariable Long idReserva, @RequestBody ReservaCreateRequest request) {
+        try {
+            reservaService.updateReservaCompleta(idReserva, request);
+            return ResponseEntity.ok("Reserva actualizada exitosamente.");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al procesar la solicitud: " + e.getMessage());
         }
     }
 

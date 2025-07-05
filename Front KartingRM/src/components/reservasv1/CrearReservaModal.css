@@ -286,17 +286,3 @@
 .form-group label svg {
     color: #00b4d8;
 }
-
-
-
-
-.input-tooltip {
-    background-color: #ffcccb;
-    color: #333;
-    padding: 0.3rem 0.6rem;
-    font-size: 0.85rem;
-    border-radius: 4px;
-    margin-top: 0.3rem;
-    border: 1px solid #f5c2c2;
-    max-width: 300px;
-}

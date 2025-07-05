@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import './CrearReservaModal.css';
-import { FaCalendarAlt, FaClock, FaClipboardList, FaUsers, FaCalendarPlus, FaUser, FaUserPlus, FaPlus, FaTrash, FaExclamationCircle, FaTimes } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock, FaClipboardList, FaUsers, FaCalendarPlus, FaUser, FaUserPlus, FaExclamationTriangle, FaTrash, FaExclamationCircle, FaTimes } from 'react-icons/fa';
 import { getPlanes, getPlanesBuscadosByTexto } from '../../services/planService';
 import { getClientesActivos, getClientesByNombreParcial } from '../../services/clienteService';
 import { createReservaCompleta } from '../../services/reservaService';
 import ClientesForm from '../clientesv1/ClientesForm';
+import Notification from '../notificaciones/Notification'
 
 const CrearReservaModal = ({ onClose, onReservaCreada }) => {
     const [fecha, setFecha] = useState('');
@@ -20,8 +21,7 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
     const [descuentoExtra, setDescuentoExtra] = useState(0);
     const [inputIntegrante, setInputIntegrante] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [tocadoFecha, setTocadoFecha] = useState(false);
-    const [tocadoHora, setTocadoHora] = useState(false);
+    const [notification, setNotification] = useState({ show: false, message: '', type: '' })
     const [showNuevoCliente, setShowNuevoCliente] = useState(false);
     const [inputErrors, setInputErrors] = useState({
         horaInicio: '',
@@ -29,6 +29,7 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
         descuentoExtra: '',
         totalPersonas: '',
     });
+
 
 
     useEffect(() => {
@@ -45,72 +46,108 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
         fetchData();
     }, []);
 
-    const mostrarTooltip = (campo, mensaje) => {
+    const showNotification = (message, type) => {
+        setNotification({ show: true, message, type })
+    }
+
+    const closeNotification = () => {
+        setNotification({ ...notification, show: false })
+    }
+
+    const mostrarError = (campo, mensaje) => {
         setInputErrors(prev => ({
             ...prev,
             [campo]: mensaje
         }));
-        setTimeout(() => {
-            setInputErrors(prev => ({
-                ...prev,
-                [campo]: ''
-            }));
-        }, 3000);
+    };
+
+    const limpiarError = (campo) => {
+        setInputErrors(prev => ({
+            ...prev,
+            [campo]: ''
+        }));
     };
 
     const handleHoraChange = (e) => {
         const value = e.target.value;
-        const [horas] = value.split(':').map(Number);
 
-        if (isNaN(horas)) {
-            mostrarTooltip('horaInicio', 'Solo se permiten números positivos');
-            return;
-        }
-
-        if (horas < 9 || horas > 23) {
-            mostrarTooltip('horaInicio', 'Solo se permiten horas entre 9 y 23');
+        if (!/^\d{2}:\d{2}$/.test(value)) {
+            mostrarError('horaInicio', 'Solo se permiten números en formato HH:mm');
             return;
         }
 
         setHoraInicio(value);
+        limpiarError('horaInicio');
+    };
+
+    const handleHoraBlur = () => {
+        if (!horaInicio) return;
+
+        const [hh, mm] = horaInicio.split(':').map(Number);
+        if (hh < 9 || hh > 23) {
+            mostrarError('horaInicio', 'Hora debe ser entre 09:00 y 23:00');
+        } else {
+            limpiarError('horaInicio');
+        }
     };
 
     const handleFechaChange = (e) => {
         const value = e.target.value;
-        const seleccionada = new Date(value);
-        const limite = new Date('2025-01-01');
 
-        if (seleccionada < limite) {
-            mostrarTooltip('fecha', 'Solo fechas después del año 2025');
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+            mostrarError('fecha', 'Solo se permiten números en formato DD-MM-AAA');
             return;
         }
 
         setFecha(value);
+        limpiarError('fecha');
     };
+
+    const handleFechaBlur = () => {
+        if (!fecha) return;
+
+        const seleccionada = new Date(fecha);
+        const limite = new Date('2025-01-01');
+
+        if (seleccionada < limite) {
+            mostrarError('fecha', 'Solo fechas desde el 2025 en adelante');
+        } else {
+            limpiarError('fecha');
+        }
+    };
+
 
     const handleTotalPersonasChange = (e) => {
         const value = e.target.value;
         if (!/^\d*$/.test(value)) {
-            mostrarTooltip('totalPersonas', 'Solo se permiten números positivos');
+            mostrarError('totalPersonas', 'Solo se permiten números');
             return;
         }
 
-        const numero = Number(value);
-        setTotalPersonas(numero);
+        setTotalPersonas(Number(value));
+        limpiarError('totalPersonas');
+    };
+
+    const handleTotalPersonasBlur = () => {
+        if (totalPersonas > 15) {
+            mostrarError('totalPersonas', 'Máximo permitido: 15 personas');
+        } else if (totalPersonas == 0) {
+            mostrarError('totalPersonas', 'Mínimimo permitido: 1 persona');
+        } else {
+            limpiarError('totalPersonas');
+        }
     };
 
     const handleDescuentoChange = (e) => {
         const value = e.target.value;
         if (!/^\d*$/.test(value)) {
-            mostrarTooltip('descuentoExtra', 'Solo se permiten números positivos');
+            mostrarError('descuentoExtra', 'Solo se permiten números');
             return;
         }
 
         setDescuentoExtra(Number(value));
+        limpiarError('descuentoExtra');
     };
-
-
-
 
 
     const getPlanOptions = () => {
@@ -184,7 +221,7 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                 setInputIntegrante('');
             }
         } else if (integrantesSeleccionados.length >= totalPersonas) {
-            alert('Ya se alcanzó el número máximo de integrantes.');
+            showNotification('Ya se alcanzó el número máximo de integrantes.', 'warning')
         }
     };
 
@@ -195,46 +232,64 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
     const handleCrearReserva = async () => {
         setIsLoading(true);
         try {
-            if (!fecha || !horaInicio || !planSeleccionado || !clienteSeleccionado) {
-                alert('Complete los campos requeridos');
+            const errores = [];
+
+            if (!fecha) errores.push("fecha");
+            if (!horaInicio) errores.push("hora de inicio");
+            if (!planSeleccionado) errores.push("plan");
+            if (!clienteSeleccionado) errores.push("cliente reservante");
+
+            if (errores.length > 0) {
+                showNotification(
+                    `Complete los campos requeridos: ${errores.join(', ')}`,
+                    'warning'
+                );
+                setIsLoading(false);
                 return;
             }
 
-            try {
-                const response = await createReservaCompleta({
-                    fecha,
-                    horaInicio,
-                    estado,
-                    totalPersonas,
-                    idPlan: planSeleccionado.value,
-                    idReservante: clienteSeleccionado.value,
-                    idsIntegrantes: integrantesSeleccionados.map(i => i.id),
-                    descuentoExtra: descuentoExtra || 0,
-                });
+            const response = await createReservaCompleta({
+                fecha,
+                horaInicio,
+                estado,
+                totalPersonas,
+                idPlan: planSeleccionado.value,
+                idReservante: clienteSeleccionado.value,
+                idsIntegrantes: integrantesSeleccionados.map(i => i.id),
+                descuentoExtra: descuentoExtra || 0,
+            });
 
-                // Muestra el mensaje de la API si existe
-                if (typeof response === 'string') {
-                    alert(response); // "Reserva creada exitosamente"
-                }
-
-                if (typeof onReservaCreada === 'function') {
-                    onReservaCreada();
-                } else {
-                    onClose();
-                }
-
-            } catch (error) {
-                console.error('Error:', error);
-                alert(error.response?.data || error.message);
+            if (typeof response === 'string') {
+                showNotification(response, 'success');
             }
+
+            if (typeof onReservaCreada === 'function') {
+                onReservaCreada();
+            } else {
+                onClose();
+            }
+
+            setTimeout(() => {
+                onClose();
+            }, 2000);
+
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification(error.response?.data || error.message, 'error');
         } finally {
             setIsLoading(false);
         }
-
     };
 
     return (
         <div className="modal-overlay">
+            {notification.show && (
+                <Notification
+                    message={notification.message}
+                    type={notification.type}
+                    onClose={closeNotification}
+                />
+            )}
             <div className="crear-reserva-modal">
                 <button className="close-btn" onClick={onClose}><FaTimes /></button>
                 <h2><FaClipboardList /> Crear Nueva Reserva</h2>
@@ -246,13 +301,10 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                             <input
                                 type="date"
                                 value={fecha}
-                                onChange={(e) => setFecha(e.target.value)}
-                                onBlur={() => setTocadoFecha(true)}
-                                className={tocadoFecha && !fecha ? 'input-error' : ''}
+                                onChange={handleFechaChange}
+                                onBlur={handleFechaBlur}
                             />
-                            {inputErrors.fecha && (
-                                <div className="input-tooltip">{inputErrors.fecha}</div>
-                            )}
+                            {inputErrors.fecha && <div className="error-tooltip"><FaExclamationTriangle className="error-icon" />{inputErrors.fecha}</div>}
                         </div>
 
                         <div className="form-group">
@@ -260,13 +312,10 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                             <input
                                 type="time"
                                 value={horaInicio}
-                                onChange={(e) => setHoraInicio(e.target.value)}
-                                onBlur={() => setTocadoHora(true)}
-                                className={tocadoHora && !horaInicio ? 'input-error' : ''}
+                                onChange={handleHoraChange}
+                                onBlur={handleHoraBlur}
                             />
-                            {inputErrors.horaInicio && (
-                                <div className="input-tooltip">{inputErrors.horaInicio}</div>
-                            )}
+                            {inputErrors.horaInicio && <div className="error-tooltip"><FaExclamationTriangle className="error-icon" />{inputErrors.horaInicio}</div>}
                         </div>
 
                         <div className="form-group">
@@ -290,11 +339,10 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                                 min="1"
                                 max="15"
                                 value={totalPersonas}
-                                onChange={(e) => setTotalPersonas(Number(e.target.value))}
+                                onChange={handleTotalPersonasChange}
+                                onBlur={handleTotalPersonasBlur}
                             />
-                            {inputErrors.totalPersonas && (
-                                <div className="input-tooltip">{inputErrors.totalPersonas}</div>
-                            )}
+                            {inputErrors.totalPersonas && <div className="error-tooltip"><FaExclamationTriangle className="error-icon" />{inputErrors.totalPersonas}</div>}
                         </div>
 
                         <div className="form-group">
@@ -303,11 +351,9 @@ const CrearReservaModal = ({ onClose, onReservaCreada }) => {
                                 type="number"
                                 min="0"
                                 value={descuentoExtra}
-                                onChange={(e) => setDescuentoExtra(Number(e.target.value))}
+                                onChange={handleDescuentoChange}
                             />
-                            {inputErrors.descuentoExtra && (
-                                <div className="input-tooltip">{inputErrors.descuentoExtra}</div>
-                            )}
+                            {inputErrors.descuentoExtra && <div className="error-tooltip"><FaExclamationTriangle className="error-icon" />{inputErrors.descuentoExtra}</div>}
                         </div>
                     </div>
                 </div>

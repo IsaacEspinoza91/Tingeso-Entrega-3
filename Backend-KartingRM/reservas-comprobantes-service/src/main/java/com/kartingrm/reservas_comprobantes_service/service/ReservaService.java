@@ -1,5 +1,6 @@
 package com.kartingrm.reservas_comprobantes_service.service;
 
+import com.kartingrm.reservas_comprobantes_service.entity.ClienteReserva;
 import com.kartingrm.reservas_comprobantes_service.entity.Reserva;
 import com.kartingrm.reservas_comprobantes_service.model.*;
 import com.kartingrm.reservas_comprobantes_service.modelbase.BaseService;
@@ -25,6 +26,7 @@ public class ReservaService extends BaseService {
     // Constantes
     private static final String ESTADO_COMPLETADA = "completada";
     private static final String ESTADO_CONFIRMADA = "confirmada";
+    private static final String ESTADO_CANCELADA = "cancelada";
 
 
     private final ReservaRepository reservaRepository;
@@ -141,6 +143,34 @@ public class ReservaService extends BaseService {
         }
     }
 
+    public void updateReservaCompleta(Long idReserva, ReservaCreateRequest req) {
+        ReservaRequest reservaRequest = new ReservaRequest(req.getFecha(), req.getHoraInicio(), req.getEstado(), req.getTotalPersonas(), req.getIdPlan(), req.getIdReservante());
+        Reserva reserva = null;
+
+        try {
+            reserva = updateReserva(idReserva, reservaRequest);
+
+            // Gestión de integrantes
+            List<ClienteReserva> relacionesClienteReserva = clienteReservaService.obtenerIntegrantesByIdReserva(idReserva);
+            for (ClienteReserva relacionActual : relacionesClienteReserva) {
+                clienteReservaService.quitarIntegrante(relacionActual.getIdCliente(), idReserva);
+            }
+            for (Long idIntegrante : req.getIdsIntegrantes()) {
+                clienteReservaService.agregarIntegrante(idIntegrante, idReserva);
+            }
+
+            // Gestión de comprobante
+            ComprobanteConDetallesDTO comprobante = comprobanteService.getComprobanteConDetallesByIdReserva(idReserva);
+            comprobanteService.deleteComprobante(comprobante.getId());
+            ComprobanteConDetallesDTO nuevoComprobante = comprobanteService.createComprobante(reserva.getId(), req.getDescuentoExtra());
+            comprobanteService.updateEstadoPagadoDeComprobante(nuevoComprobante.getId(), req.isPagado());
+        } catch (IllegalStateException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ReservaCreationException("Error interno al procesar la reserva", e);
+        }
+    }
+
 
     // Update de valor de reserva. Permite cambio de plan y de cliente reservante
     public Reserva updateReserva(Long id, ReservaRequest reservaRequest) {
@@ -150,7 +180,6 @@ public class ReservaService extends BaseService {
         if (reservaOriginalOptional.isEmpty()) throw new EntityNotFoundException("Reserva id " + id + " no encontrado");
 
         String estadoAnterior = reservaOriginalOptional.get().getEstado();
-        // Reserva actualizada conserva id de la reserva original
         reserva.setId(id);
 
         PlanDTO plan = obtenerPlan(reserva.getIdPlan());
@@ -160,19 +189,32 @@ public class ReservaService extends BaseService {
         LocalTime horaFinalCalculada = determinarHoraFin(reserva, plan);
         reserva.setHoraFin(horaFinalCalculada);
 
+        if (existeReservaEntreDosHoras(reserva.getFecha(), reserva.getHoraInicio(), horaFinalCalculada)) throw new IllegalStateException("Ya existe una reserva con ese horario");
+
         // Verificar horario válido de atención
         Boolean esFinDeSemana = reserva.getFecha().getDayOfWeek().getValue() >= 6;// Determina fin de semana o no
         Boolean esFeriado = restTemplate.getForObject(DIAS_FERIADOS_ENDPOINT + "esFeriado?fecha=" + reserva.getFecha(),Boolean.class);
         esHorarioValido(esFeriado, esFinDeSemana, reserva);
 
-        // Se guarda reserva en base de datos
         reservaRepository.save(reserva);
 
-        // Guardar relación de reserva en la tabla rack_reserva, para obtener el rack semanal desde el MC6
-        // Estado nuevo es completada o confirmada
-        if (reserva.getEstado().equals(ESTADO_COMPLETADA) || reserva.getEstado().equals(ESTADO_CONFIRMADA)) {
-            // Estado anterior era cancelada
-            if (!estadoAnterior.equals(ESTADO_COMPLETADA) && !estadoAnterior.equals(ESTADO_CONFIRMADA)) {
+
+        // Si no cambia el estado (solo se actualizó horario/fecha)
+        if (reserva.getEstado().equals(estadoAnterior)) {
+
+            RackReservaRequest rackReservaRequest = new RackReservaRequest(
+                    reserva.getId(),
+                    cliente.getId(),
+                    cliente.getNombre() + " " + cliente.getApellido(),
+                    reserva.getFecha(),
+                    reserva.getHoraInicio(),
+                    reserva.getHoraFin()
+            );
+            restTemplate.put(RACK_RESERVA_ENDPOINT + reserva.getId(), rackReservaRequest);
+        }
+        // Si hubo cambio de estado
+        else {
+            if (reserva.getEstado().equals(ESTADO_COMPLETADA) || reserva.getEstado().equals(ESTADO_CONFIRMADA)) {
 
                 RackReservaRequest rackReservaRequest = new RackReservaRequest(
                         reserva.getId(),
@@ -182,19 +224,12 @@ public class ReservaService extends BaseService {
                         reserva.getHoraInicio(),
                         reserva.getHoraFin()
                 );
-
-                HttpEntity<RackReservaRequest> rackReservaBody = new HttpEntity<>(rackReservaRequest);
-
-                restTemplate.postForObject(RACK_RESERVA_ENDPOINT, rackReservaBody, RackReservaRequest.class);
-
+                restTemplate.postForObject(RACK_RESERVA_ENDPOINT, new HttpEntity<>(rackReservaRequest), RackReservaRequest.class);
             }
-            // Else, Caso mantiene estado era completada o confirmada. No realiza petición http
-        } else {// Estado nuevo es cancelada
-            // Caso estado anterior era completada o confirmada
-            if (estadoAnterior.equals(ESTADO_COMPLETADA) || estadoAnterior.equals(ESTADO_CONFIRMADA)) {
+            else if (reserva.getEstado().equals(ESTADO_CANCELADA) &&
+                    (estadoAnterior.equals(ESTADO_COMPLETADA) || estadoAnterior.equals(ESTADO_CONFIRMADA))) {
                 restTemplate.delete(RACK_RESERVA_ENDPOINT + reserva.getId());
             }
-            // Else, Caso mantiene estado cancelado. No hace petición http
         }
 
         return reserva;
