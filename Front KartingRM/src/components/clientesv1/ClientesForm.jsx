@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
 import { createCliente, updateCliente } from '../../services/clienteService'
-import { FaSave, FaUserPlus, FaUserEdit, FaTimes, FaIdCard, FaEnvelope, FaPhone, FaCalendarAlt, FaExclamationTriangle } from 'react-icons/fa'
+import { FaSave, FaUserPlus, FaTimes, FaIdCard, FaEnvelope, FaPhone, FaCalendarAlt, FaExclamationTriangle } from 'react-icons/fa'
 import Notification from '../notificaciones/Notification'
 
-export default function ClientesForm({ cliente, onClose, modoCompacto = false }) {
+const ClientesForm = ({ cliente, onClose, modoCompacto = false }) => {
     const [formData, setFormData] = useState({
         nombre: '',
         apellido: '',
@@ -12,11 +13,10 @@ export default function ClientesForm({ cliente, onClose, modoCompacto = false })
         telefono: '+569', // Valor inicial con +569
         activo: true,
         fechaNacimiento: ''
-    })
-    const [errors, setErrors] = useState({})
-    const [touched, setTouched] = useState({})
-    const [loading, setLoading] = useState(false)
-    const [notification, setNotification] = useState({ show: false, message: '', type: '' })
+    });
+    const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
+    const [notification, setNotification] = useState({ show: false, message: '', type: '' });
 
     useEffect(() => {
         if (cliente) {
@@ -28,9 +28,9 @@ export default function ClientesForm({ cliente, onClose, modoCompacto = false })
                 telefono: cliente.telefono.startsWith('+569') ? cliente.telefono : '+569' + cliente.telefono.replace(/\D/g, '').slice(0, 8),
                 activo: cliente.activo,
                 fechaNacimiento: cliente.fechaNacimiento?.split('T')[0] || ''
-            })
+            });
         }
-    }, [cliente])
+    }, [cliente]);
 
     const handleTelefonoChange = (e) => {
         const value = e.target.value;
@@ -69,7 +69,6 @@ export default function ClientesForm({ cliente, onClose, modoCompacto = false })
 
     const handleBlur = (e) => {
         const { name, value } = e.target
-        setTouched(prev => ({ ...prev, [name]: true }))
 
         // Validación específica al perder foco
         switch (name) {
@@ -357,5 +356,26 @@ export default function ClientesForm({ cliente, onClose, modoCompacto = false })
                 </form>
             </div>
         </div>
-    )
-}
+    );
+};
+
+ClientesForm.propTypes = {
+    cliente: PropTypes.shape({
+        id: PropTypes.number,
+        nombre: PropTypes.string,
+        apellido: PropTypes.string,
+        rut: PropTypes.string,
+        correo: PropTypes.string,
+        telefono: PropTypes.string,
+        activo: PropTypes.bool,
+        fechaNacimiento: PropTypes.string
+    }),
+    onClose: PropTypes.func.isRequired,
+    modoCompacto: PropTypes.bool
+};
+
+ClientesForm.defaultProps = {
+    modoCompacto: false
+};
+
+export default ClientesForm;

@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
-import './ClienteBusqueda.css'
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import './ClienteBusqueda.css';
 import {
     FaSearch,
     FaListUl,
@@ -7,9 +8,9 @@ import {
     FaUsers,
     FaUserSlash,
     FaExclamationTriangle
-} from 'react-icons/fa'
+} from 'react-icons/fa';
 
-export default function ClienteBusqueda({
+const ClienteBusqueda = ({
     searchTerm,
     setSearchTerm,
     searchType,
@@ -21,9 +22,8 @@ export default function ClienteBusqueda({
     mostrarBotonVerTodos = true,
     mostrarInactivos = false,
     hayResultadosFiltrados
-}) {
-    const [error, setError] = useState(null)
-    const [inputRef, setInputRef] = useState(null)
+}) => {
+    const [error, setError] = useState(null);
 
     const mostrarVerTodos = mostrarBotonVerTodos &&
         (!mostrarInactivos || hayResultadosFiltrados || searchTerm.trim() !== '');
@@ -40,7 +40,7 @@ export default function ClienteBusqueda({
                 break;
 
             case 'rut':
-                if (!/^[\d\.-]*$/.test(value)) {
+                if (!/^[\d.-]*$/.test(value)) {
                     newError = 'Solo se permiten números, punto y guión';
                 } else if (value.length > 12) {
                     newError = 'Máximo 12 caracteres';
@@ -154,5 +154,26 @@ export default function ClienteBusqueda({
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
+
+ClienteBusqueda.propTypes = {
+    searchTerm: PropTypes.string.isRequired,
+    setSearchTerm: PropTypes.func.isRequired,
+    searchType: PropTypes.oneOf(['nombre', 'rut', 'id']).isRequired,
+    setSearchType: PropTypes.func.isRequired,
+    onBuscar: PropTypes.func.isRequired,
+    onReset: PropTypes.func.isRequired,
+    onToggleInactivos: PropTypes.func.isRequired,
+    onNuevoCliente: PropTypes.func.isRequired,
+    mostrarBotonVerTodos: PropTypes.bool,
+    mostrarInactivos: PropTypes.bool,
+    hayResultadosFiltrados: PropTypes.bool
+};
+
+ClienteBusqueda.defaultProps = {
+    mostrarBotonVerTodos: true,
+    mostrarInactivos: false
+};
+
+export default ClienteBusqueda;

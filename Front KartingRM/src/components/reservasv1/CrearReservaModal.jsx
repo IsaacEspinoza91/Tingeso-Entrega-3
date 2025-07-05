@@ -153,7 +153,7 @@ const CrearReservaModal = ({ onClose, onReservaCreada, reserva = null }) => {
     const handleHoraBlur = () => {
         if (!horaInicio) return;
 
-        const [hh, mm] = horaInicio.split(':').map(Number);
+        const [hh] = horaInicio.split(':').map(Number);
         if (hh < 9 || hh > 23) {
             mostrarError('horaInicio', 'Hora debe ser entre 09:00 y 23:00');
         } else {
@@ -333,10 +333,10 @@ const CrearReservaModal = ({ onClose, onReservaCreada, reserva = null }) => {
             let response;
             if (reserva) {
                 response = await updateReservaCompleta(reserva.id, reservaData);
-                showNotification('Reserva actualizada exitosamente', 'success');
+                showNotification(response, 'success');
             } else {
                 response = await createReservaCompleta(reservaData);
-                showNotification('Reserva creada exitosamente', 'success');
+                showNotification(response, 'success');
             }
 
             // Forzar re-renderizado de la notificación

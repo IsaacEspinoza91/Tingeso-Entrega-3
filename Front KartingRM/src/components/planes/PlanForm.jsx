@@ -85,7 +85,6 @@ export default function PlanForm({ plan, onClose }) {
 
     const validateForm = () => {
         let valid = true;
-        const newErrors = {};
 
         Object.keys(formData).forEach(field => {
             if (!validateField(field, formData[field])) {

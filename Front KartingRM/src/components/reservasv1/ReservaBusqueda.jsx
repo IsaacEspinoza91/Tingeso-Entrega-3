@@ -17,7 +17,6 @@ export default function ReservaBusqueda({
     onNuevaReserva
 }) {
     const [error, setError] = useState(null)
-    const [inputRef, setInputRef] = useState(null)
 
 
     const handleInputChange = (e) => {

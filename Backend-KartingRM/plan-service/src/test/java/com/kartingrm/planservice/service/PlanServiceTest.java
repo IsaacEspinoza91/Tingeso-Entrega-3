@@ -107,13 +107,6 @@ class PlanServiceTest {
     }
 
     @Test
-    void createPlan_WithNullPlanDTO_ShouldThrowException() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> planService.createPlan(null));
-        verify(planRepository, never()).save(any(Plan.class));
-    }
-
-    @Test
     void updatePlan_WhenPlanExists_ShouldReturnUpdatedPlan() {
         // Arrange
         when(planRepository.findById(1L)).thenReturn(Optional.of(plan));

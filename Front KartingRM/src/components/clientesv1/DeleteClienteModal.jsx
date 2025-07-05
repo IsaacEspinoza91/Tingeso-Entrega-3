@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { deleteCliente, desactivarCliente, activarCliente } from '../../services/clienteService'
-import { FaTrash, FaTimes, FaUserCheck } from 'react-icons/fa'
+import { FaTrash, FaUserCheck } from 'react-icons/fa'
 import Notification from '../Notification'
 
 export default function DeleteClienteModal({ cliente, onClose, onSuccess }) {
