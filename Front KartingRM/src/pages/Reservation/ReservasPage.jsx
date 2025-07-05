@@ -148,7 +148,7 @@ const ReservasPage = () => {
                     />
                 )}
 
-                {mostrarModalCrear && planes.length > 0 && clientes.length > 0 && (
+                {mostrarModalCrear && (
                     <CrearReservaModal
                         reserva={reservaParaEditar}
                         planes={planes}

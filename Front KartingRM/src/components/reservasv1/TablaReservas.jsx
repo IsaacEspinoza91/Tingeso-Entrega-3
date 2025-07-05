@@ -57,17 +57,29 @@ const TablaReservas = ({ reservas, onSeleccionar, onEditar, refreshReservas }) =
                             <td>{res.plan?.id} - {res.plan?.descripcion}</td>
                             <td>{res.totalPersonas}</td>
                             <td>
-                                <div className="acciones">
-                                    <button onClick={() => onSeleccionar(res)} title="Ver"><FaEye /></button>
-                                    <button onClick={() => onEditar(res)} title="Editar"><FaEdit /></button>
-                                    <button
-                                        onClick={() => setReservaToDelete(res)}
-                                        className="delete-btn"
-                                        aria-label="Eliminar plan"
-                                    >
-                                        <FaTrash />
-                                        <span className="tooltip-text">Eliminar</span>
-                                    </button>
+                                <div className="actions-cell">
+                                    <div className="tooltip-container">
+                                        <button onClick={() => onSeleccionar(res)} className="see-btn">
+                                            <FaEye />
+                                            <span className="tooltip-text">Ver</span>
+                                        </button>
+                                    </div>
+                                    <div className="tooltip-container">
+                                        <button onClick={() => onEditar(res)} className="edit-btn">
+                                            <FaEdit />
+                                            <span className="tooltip-text">Editar</span>
+                                        </button>
+                                    </div>
+                                    <div className="tooltip-container">
+                                        <button
+                                            onClick={() => setReservaToDelete(res)}
+                                            className="delete-btn"
+                                            aria-label="Eliminar plan"
+                                        >
+                                            <FaTrash />
+                                            <span className="tooltip-text">Eliminar</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </td>
                         </tr>

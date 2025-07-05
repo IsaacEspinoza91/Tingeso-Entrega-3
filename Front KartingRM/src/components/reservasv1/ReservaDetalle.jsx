@@ -107,7 +107,7 @@ const ReservaDetalle = ({ reserva, onClose }) => {
                                 <button className="btn-email" onClick={() => setMostrarEmailPanel(true)}>
                                     <FaEnvelope /> Enviar Comprobante
                                 </button>
-                                <button className="btn-editar"><FaEdit /> Editar</button>
+
                             </div>
                         </div>
 

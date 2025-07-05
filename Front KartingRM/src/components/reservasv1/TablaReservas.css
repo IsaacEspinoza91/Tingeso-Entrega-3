@@ -51,7 +51,6 @@
 }
 
 .acciones button {
-    background-color: #f1f1f1;
     border: none;
     padding: 0.4rem 0.6rem;
     border-radius: 6px;
@@ -61,4 +60,13 @@
 
 .acciones button:hover {
     background-color: #dbeafe;
+}
+
+.see-btn {
+    color: #1565c0;
+    background: none;
+}
+
+.see-btn:hover {
+    background-color: rgba(0, 90, 216, 0.1);
 }

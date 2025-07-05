@@ -343,6 +343,11 @@ const CrearReservaModal = ({ onClose, onReservaCreada, reserva = null }) => {
             setNotification(prev => ({ ...prev, id: Date.now() }));
 
 
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            if (typeof onReservaCreada === 'function') {
+                await onReservaCreada();
+            }
 
             setTimeout(() => {
                 onClose();

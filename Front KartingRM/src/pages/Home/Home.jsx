@@ -72,8 +72,8 @@ export default function Home() {
 
   const quickActions = [
     { icon: <FaUsers size={24} />, label: 'Clientes', action: () => navigate('/clientes') },
-    { icon: <FaCalendarAlt size={24} />, label: 'Reservas', action: () => navigate('/reservas') },
-    { icon: <FaFileInvoice size={24} />, label: 'Comprobantes', action: () => navigate('/comprobantes') },
+    { icon: <FaCalendarAlt size={24} />, label: 'Reservas', action: () => navigate('/reservasv1') },
+    { icon: <FaFileInvoice size={24} />, label: 'Planes', action: () => navigate('/planes') },
     { icon: <FaChartBar size={24} />, label: 'Reportes', action: () => navigate('/reportes') },
     { icon: <FaCalendarWeek size={24} />, label: 'Rack Semanal', action: () => navigate('/calendario') },
     { icon: <FaCog size={24} />, label: 'Configuración', action: () => navigate('/configuraciones') }
@@ -105,8 +105,7 @@ export default function Home() {
       question: "¿Qué reportes necesitas ver?",
       icon: <FaChartBar className="task-icon" />,
       actions: [
-        { label: "Reporte según planes", icon: <FaChartLine />, action: () => navigate('/reportes') },
-        { label: "Reporte según grupos de personas", icon: <FaChartLine />, action: () => navigate('/reportes') }
+        { label: "Generar reportes", icon: <FaChartLine />, action: () => navigate('/reportes') }
       ]
     },
     {
