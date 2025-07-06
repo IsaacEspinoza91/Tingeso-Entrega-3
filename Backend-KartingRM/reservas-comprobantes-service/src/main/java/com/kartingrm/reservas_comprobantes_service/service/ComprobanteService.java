@@ -167,9 +167,8 @@ public class ComprobanteService extends BaseService {
         detalle.setIdComprobante(idComprobante);
         detalle.setIdCliente(idCliente);
 
-
         double porcentajeDescuentoGrupo = calcularDescuentoGrupo(totalPersonas);
-        double porcentajeDescuentoEspecial = calcularDescuentoEspecial(idCliente, fechaReserva, totalPersonas,cantidadCumpleanieros, detalle);
+        double porcentajeDescuentoEspecial = calcularDescuentoEspecial(idCliente, fechaReserva, totalPersonas, cantidadCumpleanieros, detalle);
 
         // Calculamos el monto con descuentos. Utilizamos descuentos en cascada, es decir, el descuento siguiente
         // se realiza sobre el valor anterior con descuento, no sobre el valor original

@@ -20,6 +20,14 @@ const ClientesForm = ({ cliente, onClose, modoCompacto = false }) => {
 
     useEffect(() => {
         if (cliente) {
+            // Manejo de fecha de nacimiento
+            let fechaNacimientoValue = '';
+            if (cliente.fechaNacimiento) {
+                // Crear fecha sin ajustar zona horaria (tratar como UTC)
+                const date = new Date(cliente.fechaNacimiento);
+                fechaNacimientoValue = date.toISOString().split('T')[0];
+            }
+
             setFormData({
                 nombre: cliente.nombre,
                 apellido: cliente.apellido,
@@ -27,7 +35,7 @@ const ClientesForm = ({ cliente, onClose, modoCompacto = false }) => {
                 correo: cliente.correo,
                 telefono: cliente.telefono.startsWith('+569') ? cliente.telefono : '+569' + cliente.telefono.replace(/\D/g, '').slice(0, 8),
                 activo: cliente.activo,
-                fechaNacimiento: cliente.fechaNacimiento?.split('T')[0] || ''
+                fechaNacimiento: fechaNacimientoValue
             });
         }
     }, [cliente]);
@@ -73,7 +81,7 @@ const ClientesForm = ({ cliente, onClose, modoCompacto = false }) => {
         // Validación específica al perder foco
         switch (name) {
             case 'correo':
-                if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
+                if (value && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
                     setErrors(prev => ({ ...prev, correo: 'Formato válido: usuario@dominio.cl' }))
                 } else {
                     setErrors(prev => ({ ...prev, correo: '' }))
@@ -191,7 +199,7 @@ const ClientesForm = ({ cliente, onClose, modoCompacto = false }) => {
             newErrors.correo = 'El correo es requerido'
             errorFields.push('correo')
             isValid = false
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(formData.correo)) {
+        } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.correo)) {
             newErrors.correo = 'Formato válido: usuario@dominio.extension'
             errorFields.push('correo')
             isValid = false
@@ -234,41 +242,43 @@ const ClientesForm = ({ cliente, onClose, modoCompacto = false }) => {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
 
-        const { isValid, errorFields } = validateForm()
+        const { isValid, errorFields } = validateForm();
         if (!isValid) {
-            showNotification(`Corrija los errores en: ${errorFields.join(', ')}`, 'warning')
-            return
+            showNotification(`Corrija los errores en: ${errorFields.join(', ')}`, 'warning');
+            return;
         }
 
-        setLoading(true)
+        setLoading(true);
         try {
             const clienteData = {
                 ...formData,
-                rut: formData.rut.toUpperCase() // Asegurar que la K sea mayúscula
-            }
+                rut: formData.rut.toUpperCase(),
+                // Enviar la fecha exactamente como está en el input (formato YYYY-MM-DD)
+                fechaNacimiento: formData.fechaNacimiento
+            };
 
             if (cliente) {
-                await updateCliente(cliente.id, clienteData)
-                showNotification('Cliente actualizado exitosamente', 'success')
+                await updateCliente(cliente.id, clienteData);
+                showNotification('Cliente actualizado exitosamente', 'success');
             } else {
-                await createCliente(clienteData)
-                showNotification('Cliente creado exitosamente', 'success')
+                await createCliente(clienteData);
+                showNotification('Cliente creado exitosamente', 'success');
             }
 
             setTimeout(() => {
-                onClose()
-            }, 2000)
+                onClose();
+            }, 2000);
         } catch (error) {
-            console.error('Error:', error)
+            console.error('Error:', error);
             const errorMessage = error.response?.data?.message ||
-                (cliente ? 'No se pudo actualizar el cliente' : 'No se pudo crear el cliente')
-            showNotification(errorMessage, 'error')
+                (cliente ? 'No se pudo actualizar el cliente' : 'No se pudo crear el cliente');
+            showNotification(errorMessage, 'error');
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
 
     const renderInput = (name, label, icon, type = 'text', defaultValue = '', customOnChange = null) => (
         <div className="form-group" style={{ marginBottom: errors[name] ? '2.5rem' : '1.5rem' }}>

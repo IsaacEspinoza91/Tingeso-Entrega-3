@@ -42,12 +42,17 @@ export default function PlanForm({ plan, onClose }) {
         } else {
             if (!value && value !== 0) {
                 error = 'Este campo es requerido';
-            } else if (!/^\d*\.?\d+$/.test(value)) {
+            }
+            else if (!/^[0-9]+(?:\.[0-9]+)?$/.test(value)) {
                 error = 'Solo se permiten números positivos';
-            } else if (parseFloat(value) < 0) {
-                error = 'El valor no puede ser negativo';
-            } else if (field === 'duracionTotal' && parseFloat(value) <= 0) {
-                error = 'La duración debe ser mayor a 0';
+            }
+            else {
+                const numericValue = parseFloat(value);
+                if (numericValue < 0) {
+                    error = 'El valor no puede ser negativo';
+                } else if (field === 'duracionTotal' && numericValue <= 0) {
+                    error = 'La duración debe ser mayor a 0';
+                }
             }
         }
 

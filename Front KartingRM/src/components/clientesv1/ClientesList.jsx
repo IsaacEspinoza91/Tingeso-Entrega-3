@@ -15,8 +15,20 @@ export default function ClientesList({
 
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
+
+        // Crear la fecha en UTC para evitar problemas de zona horaria
         const date = new Date(dateString);
-        return date.toLocaleDateString('es-CL');
+
+        // Ajustar por el offset de zona horaria para obtener la fecha correcta
+        const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+
+        // Formatear como DD/MM/YYYY
+        return adjustedDate.toLocaleDateString('es-CL', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            timeZone: 'UTC' // Forzar a usar UTC
+        });
     };
 
     const handleCloseModal = () => {

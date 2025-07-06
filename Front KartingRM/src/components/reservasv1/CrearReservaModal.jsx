@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import './CrearReservaModal.css';
-import { FaCalendarAlt, FaClock, FaClipboardList, FaUsers, FaCalendarPlus, FaUser, FaUserPlus, FaExclamationTriangle, FaTrash, FaExclamationCircle, FaCheckCircle, FaTimes, FaMoneyBillWave } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock, FaClipboardList, FaUsers, FaUser, FaUserPlus, FaExclamationTriangle, FaTrash, FaExclamationCircle, FaCheckCircle, FaTimes, FaMoneyBillWave } from 'react-icons/fa';
 import { getPlanes, getPlanesBuscadosByTexto } from '../../services/planService';
 import { getClientesActivos, getClientesByNombreParcial } from '../../services/clienteService';
 import { createReservaCompleta, updateReservaCompleta, getIntegrantes, getReservaById } from '../../services/reservaService';

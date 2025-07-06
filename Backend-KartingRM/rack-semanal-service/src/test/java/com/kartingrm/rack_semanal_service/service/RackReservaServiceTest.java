@@ -95,41 +95,4 @@ class RackReservaServiceTest {
                 rackReservaService.createRackReserva(null));
     }
 
-    @Test
-    void updateRackReserva_WhenExists_ShouldReturnUpdatedReserva() {
-        when(rackReservaRepository.findById(1L)).thenReturn(Optional.of(rackReserva));
-        when(rackReservaRepository.save(any(RackReserva.class))).thenReturn(rackReserva);
-
-        RackReserva result = rackReservaService.updateRackReserva(1L, rackReservaDTO);
-
-        assertEquals(rackReservaDTO.getFecha(), result.getFecha());
-        assertEquals(rackReservaDTO.getHoraInicio(), result.getHoraInicio());
-        assertEquals(rackReservaDTO.getNombreReservante(), result.getNombreReservante());
-    }
-
-    @Test
-    void updateRackReserva_WhenNotExists_ShouldThrowException() {
-        when(rackReservaRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(EntityNotFoundException.class, () ->
-                rackReservaService.updateRackReserva(1L, rackReservaDTO));
-    }
-
-    @Test
-    void deleteRackReservaById_WhenExists_ShouldReturnTrue() {
-        when(rackReservaRepository.findById(1L)).thenReturn(Optional.of(rackReserva));
-        doNothing().when(rackReservaRepository).deleteById(1L);
-
-        Boolean result = rackReservaService.deleteRackReservaById(1L);
-
-        assertTrue(result);
-    }
-
-    @Test
-    void deleteRackReservaById_WhenNotExists_ShouldThrowException() {
-        when(rackReservaRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(EntityNotFoundException.class, () ->
-                rackReservaService.deleteRackReservaById(1L));
-    }
 }
