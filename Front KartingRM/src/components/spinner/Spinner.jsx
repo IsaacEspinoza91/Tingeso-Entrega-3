@@ -1,4 +1,5 @@
 import './Spinner.css';
+import PropTypes from 'prop-types';
 
 const Spinner = ({ mensaje = "Cargando..." }) => {
     return (
@@ -8,5 +9,10 @@ const Spinner = ({ mensaje = "Cargando..." }) => {
         </div>
     );
 };
+
+Spinner.propTypes = {
+    mensaje: PropTypes.string
+};
+
 
 export default Spinner;

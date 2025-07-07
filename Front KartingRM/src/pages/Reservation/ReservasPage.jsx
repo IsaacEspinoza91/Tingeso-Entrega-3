@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaSearch, FaPlus, FaHome, FaListUl } from 'react-icons/fa';
+import { FaHome } from 'react-icons/fa';
 import {
     getReservas,
     getReservaById,
@@ -16,20 +16,17 @@ import ReservaBusqueda from '../../components/reservasv1/ReservaBusqueda';
 import './ReservasPage.css';
 
 
-
 const ReservasPage = () => {
     const navigate = useNavigate();
     const [reservas, setReservas] = useState([]);
-
     const [reservaSeleccionada, setReservaSeleccionada] = useState(null);
     const [mostrarModalCrear, setMostrarModalCrear] = useState(false);
-
     const [reservaParaEditar, setReservaParaEditar] = useState(null);
     const [planes, setPlanes] = useState([]);
     const [clientes, setClientes] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [searchType, setSearchType] = useState('id');
-    const [mostrarMensajeSinResultados, setMostrarMensajeSinResultados] = useState(false);
+    const [loading, setLoading] = useState(true);
 
 
     useEffect(() => {
@@ -37,11 +34,14 @@ const ReservasPage = () => {
     }, []);
 
     const cargarReservas = async () => {
+        setLoading(true)
         try {
             const data = await getReservas();
             setReservas(data);
         } catch (error) {
             console.error('Error cargando reservas:', error);
+        } finally {
+            setLoading(false)
         }
     };
 
@@ -72,35 +72,32 @@ const ReservasPage = () => {
     const handleBuscar = async () => {
         if (!searchTerm) return;
 
+        setLoading(true)
         try {
-            setMostrarMensajeSinResultados(false);
 
             if (searchType === 'id') {
                 const id = parseInt(searchTerm);
                 if (!isNaN(id)) {
                     const reserva = await getReservaById(id);
                     setReservas([reserva]);
-                    setMostrarMensajeSinResultados(!reserva);
                 }
             } else if (searchType === 'nombre') {
                 const resultados = await getReservasByNombreParcialCliente(searchTerm);
                 setReservas(resultados);
-                setMostrarMensajeSinResultados(resultados.length === 0);
             } else if (searchType === 'fecha') {
                 const resultados = await getReservasByFecha(searchTerm);
                 setReservas(resultados);
-                setMostrarMensajeSinResultados(resultados.length === 0);
             }
         } catch (error) {
             console.error('Error en búsqueda de reservas:', error);
             setReservas([]);
-            setMostrarMensajeSinResultados(true);
+        } finally {
+            setLoading(false)
         }
     };
 
     const handleMostrarTodas = async () => {
         setSearchTerm('');
-        setMostrarMensajeSinResultados(false);
         cargarReservas();
     };
 
@@ -133,6 +130,7 @@ const ReservasPage = () => {
 
                 <TablaReservas
                     reservas={reservas}
+                    loading={loading}
                     onSeleccionar={setReservaSeleccionada}
                     onEditar={(reserva) => abrirModalEditarReserva(reserva)}
                     refreshReservas={cargarReservas}

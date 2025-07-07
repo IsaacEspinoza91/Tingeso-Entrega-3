@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import Select from 'react-select';
 import './CrearReservaModal.css';
 import { FaCalendarAlt, FaClock, FaClipboardList, FaUsers, FaUser, FaUserPlus, FaExclamationTriangle, FaTrash, FaExclamationCircle, FaCheckCircle, FaTimes, FaMoneyBillWave } from 'react-icons/fa';
@@ -369,6 +370,13 @@ const CrearReservaModal = ({ onClose, onReservaCreada, reserva = null }) => {
         return <Spinner mensaje="Cargando datos de la reserva..." />;
     }
 
+    const textoBotonCrearReserva = isLoading
+        ? 'Procesando...'
+        : reserva
+            ? 'Actualizar Reserva'
+            : 'Crear Reserva';
+
+
     return (
         <div className="modal-overlay">
             {notification.show && (
@@ -593,12 +601,48 @@ const CrearReservaModal = ({ onClose, onReservaCreada, reserva = null }) => {
                         disabled={isLoading}
                     >
                         <FaCheckCircle />
-                        {isLoading ? 'Procesando...' : reserva ? 'Actualizar Reserva' : 'Crear Reserva'}
+                        {textoBotonCrearReserva}
                     </button>
                 </div>
             </div>
         </div>
     );
+};
+
+CrearReservaModal.propTypes = {
+    onClose: PropTypes.func.isRequired,
+    onReservaCreada: PropTypes.func.isRequired,
+    reserva: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        fecha: PropTypes.string,
+        horaInicio: PropTypes.string,
+        estado: PropTypes.string,
+        totalPersonas: PropTypes.number,
+        pagado: PropTypes.bool,
+        plan: PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+            descripcion: PropTypes.string
+        }),
+        cliente: PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+            nombre: PropTypes.string,
+            apellido: PropTypes.string,
+            rut: PropTypes.string
+        }),
+        integrantes: PropTypes.arrayOf(
+            PropTypes.shape({
+                id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+                nombre: PropTypes.string,
+                apellido: PropTypes.string
+            })
+        ),
+        descuentoExtra: PropTypes.number
+    })
+};
+
+// Default props
+CrearReservaModal.defaultProps = {
+    reserva: null
 };
 
 export default CrearReservaModal;

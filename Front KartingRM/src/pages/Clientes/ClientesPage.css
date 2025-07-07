@@ -98,16 +98,13 @@
 .search-btn {
     background-color: #00b4d8;
     color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .search-btn:hover {
     background-color: #0096c7;
-}
-
-.search-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
 .search-bar button {
@@ -160,16 +157,6 @@
     background-color: #e9ecef;
     border-color: #00b4d8;
     color: #00b4d8;
-}
-
-.search-btn,
-.add-btn {
-    padding: 0.6rem 1.2rem;
-    border: none;
-    border-radius: 6px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
 }
 
 .add-btn {

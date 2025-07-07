@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
     getAllFrequentCustomerDiscounts,
     createFrequentCustomerDiscount,
@@ -136,7 +137,7 @@ const FrequentCustomers = ({ onBack }) => {
                         <h3>{editingId ? 'Editar Descuento' : 'Nuevo Descuento'}</h3>
                         <form onSubmit={handleSubmit}>
                             <div className="form-group">
-                                <label>Mínimo de reservas:</label>
+                                <label htmlFor='minReservas'>Mínimo de reservas:</label>
                                 <input
                                     type="number"
                                     name="minReservas"
@@ -148,7 +149,7 @@ const FrequentCustomers = ({ onBack }) => {
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Máximo de reservas:</label>
+                                <label htmlFor='maxReservas'>Máximo de reservas:</label>
                                 <input
                                     type="number"
                                     name="maxReservas"
@@ -160,7 +161,7 @@ const FrequentCustomers = ({ onBack }) => {
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Porcentaje de descuento:</label>
+                                <label htmlFor='porcentajeDescuento'>Porcentaje de descuento:</label>
                                 <div className="percentage-input">
                                     <input
                                         type="number"
@@ -247,6 +248,10 @@ const FrequentCustomers = ({ onBack }) => {
             </div>
         </div>
     );
+};
+
+FrequentCustomers.propTypes = {
+    onBack: PropTypes.func.isRequired
 };
 
 export default FrequentCustomers;

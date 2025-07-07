@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
 import { createPlan, updatePlan } from '../../services/planService'
 import { FaSave, FaPlus, FaClock, FaMoneyBillWave, FaListAlt, FaExclamationTriangle, FaTimes } from 'react-icons/fa'
 import Notification from '../notificaciones/Notification'
@@ -39,22 +40,21 @@ export default function PlanForm({ plan, onClose }) {
 
         if (field === 'descripcion') {
             if (!value.trim()) error = 'La descripción es requerida';
-        } else {
-            if (!value && value !== 0) {
-                error = 'Este campo es requerido';
-            }
-            else if (!/^[0-9]+(?:\.[0-9]+)?$/.test(value)) {
-                error = 'Solo se permiten números positivos';
-            }
-            else {
-                const numericValue = parseFloat(value);
-                if (numericValue < 0) {
-                    error = 'El valor no puede ser negativo';
-                } else if (field === 'duracionTotal' && numericValue <= 0) {
-                    error = 'La duración debe ser mayor a 0';
-                }
+        } else if (!value && value !== 0) {
+            error = 'Este campo es requerido';
+        }
+        else if (!/^\d+(?:\.\d+)?$/.test(value)) {
+            error = 'Solo se permiten números positivos';
+        }
+        else {
+            const numericValue = parseFloat(value);
+            if (numericValue < 0) {
+                error = 'El valor no puede ser negativo';
+            } else if (field === 'duracionTotal' && numericValue <= 0) {
+                error = 'La duración debe ser mayor a 0';
             }
         }
+
 
         setErrors({ ...errors, [field]: error });
         return !error;
@@ -176,7 +176,7 @@ export default function PlanForm({ plan, onClose }) {
 
     const renderInput = (name, label, icon, type = 'text', min = undefined) => (
         <div className="form-group">
-            <label>
+            <label htmlFor='name'>
                 {icon && React.cloneElement(icon, { className: 'input-icon' })}
                 {label}
             </label>
@@ -192,7 +192,7 @@ export default function PlanForm({ plan, onClose }) {
                     className={errors[name] ? 'input-error' : ''}
                     onKeyDown={(e) => {
                         // Permitir solo teclas numéricas y comandos
-                        if (name !== 'descripcion' && !/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight|Tab/.test(e.key)) {
+                        if (name !== 'descripcion' && !/\d|Backspace|Delete|ArrowLeft|ArrowRight|Tab/.test(e.key)) {
                             e.preventDefault();
                             setErrors({ ...errors, [name]: 'Solo se permiten números positivos' });
                         }
@@ -252,4 +252,18 @@ export default function PlanForm({ plan, onClose }) {
             </div>
         </div>
     );
+}
+
+
+PlanForm.propTypes = {
+    plan: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        descripcion: PropTypes.string.isRequired,
+        duracionTotal: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        precioRegular: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        precioFinSemana: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        precioFeriado: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        activo: PropTypes.bool
+    }),
+    onClose: PropTypes.func.isRequired
 }

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { getComprobanteByIdReserva } from '../../services/comprobanteService';
 import { getIntegrantes } from '../../services/reservaService';
 import './ReservaDetalle.css';
 import {
     FaSpinner,
     FaEnvelope,
-    FaEdit,
     FaCalendarAlt,
     FaClock,
     FaUser,
@@ -165,6 +165,30 @@ const ReservaDetalle = ({ reserva, onClose }) => {
             </div>
         </div>
     );
+};
+
+ReservaDetalle.propTypes = {
+    reserva: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        fecha: PropTypes.string.isRequired,
+        horaInicio: PropTypes.string.isRequired,
+        horaFin: PropTypes.string.isRequired,
+        estado: PropTypes.oneOf(['confirmada', 'cancelada', 'completada']).isRequired,
+        totalPersonas: PropTypes.number.isRequired,
+        reservante: PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            nombre: PropTypes.string.isRequired,
+            apellido: PropTypes.string.isRequired,
+            rut: PropTypes.string,
+            correo: PropTypes.string,
+            telefono: PropTypes.string
+        }).isRequired,
+        plan: PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            descripcion: PropTypes.string.isRequired
+        }).isRequired
+    }).isRequired,
+    onClose: PropTypes.func.isRequired
 };
 
 export default ReservaDetalle;

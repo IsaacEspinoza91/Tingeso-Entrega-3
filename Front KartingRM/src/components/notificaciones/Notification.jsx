@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { FaCheckCircle, FaTimesCircle, FaExclamationTriangle } from 'react-icons/fa';
 import './Notification.css';
 
@@ -31,3 +32,9 @@ export default function Notification({ message, type, onClose }) {
         </div>
     );
 }
+
+Notification.propTypes = {
+    message: PropTypes.string.isRequired,
+    type: PropTypes.oneOf(['success', 'error', 'warning']).isRequired,
+    onClose: PropTypes.func.isRequired
+};

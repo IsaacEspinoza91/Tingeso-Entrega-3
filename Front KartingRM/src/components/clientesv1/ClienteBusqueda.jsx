@@ -72,6 +72,16 @@ const ClienteBusqueda = ({
         setError(null);
     };
 
+    const placeholderTextoBusqueda = `Ingrese ${searchType === 'id'
+        ? 'ID'
+        : searchType === 'rut'
+            ? 'RUT (12345678-9)'
+            : 'nombre'
+        }...`;
+
+    const maxInputLengthRUT = searchType === 'rut' ? 12 : undefined;
+
+
     return (
         <div className="cliente-busqueda-container">
             <div className="busqueda-superior">
@@ -91,12 +101,12 @@ const ClienteBusqueda = ({
                         <input
                             id="clienteSearch"
                             type="text"
-                            placeholder={`Ingrese ${searchType === 'id' ? 'ID' : searchType === 'rut' ? 'RUT (12345678-9)' : 'nombre'}...`}
+                            placeholder={placeholderTextoBusqueda}
                             value={searchTerm}
                             onChange={handleInputChange}
                             onKeyPress={handleKeyPress}
                             className="busqueda-input"
-                            maxLength={searchType === 'rut' ? 12 : undefined}
+                            maxLength={maxInputLengthRUT}
                         />
                         {error && (
                             <div className="error-tooltip">

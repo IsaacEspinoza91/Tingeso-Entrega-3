@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 import { deletePlan } from '../../services/planService'
 import { FaTrash } from 'react-icons/fa'
 import Notification from '../notificaciones/Notification'
@@ -14,7 +15,6 @@ export default function DeletePlanModal({ plan, onClose, onSuccess }) {
     const closeNotification = () => {
         setNotification({ ...notification, show: false });
     };
-
 
     const handleDelete = async () => {
         setLoading(true)
@@ -61,4 +61,14 @@ export default function DeletePlanModal({ plan, onClose, onSuccess }) {
             </div>
         </div>
     )
+}
+
+
+DeletePlanModal.propTypes = {
+    plan: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        descripcion: PropTypes.string.isRequired
+    }).isRequired,
+    onClose: PropTypes.func.isRequired,
+    onSuccess: PropTypes.func.isRequired
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 import { FaUserCheck } from 'react-icons/fa'
 import { activarCliente } from '../../../services/clienteService'
 import BaseClienteModal from './BaseClienteModal'
@@ -41,4 +42,16 @@ export default function ActivarClienteModal({ cliente, onClose, onSuccess }) {
             )}
         />
     )
+}
+
+// Def de PropTypes
+ActivarClienteModal.propTypes = {
+    cliente: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        nombre: PropTypes.string.isRequired,
+        apellido: PropTypes.string.isRequired,
+        rut: PropTypes.string.isRequired
+    }).isRequired,
+    onClose: PropTypes.func.isRequired,
+    onSuccess: PropTypes.func.isRequired
 }

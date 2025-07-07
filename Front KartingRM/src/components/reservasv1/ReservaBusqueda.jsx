@@ -1,13 +1,14 @@
-import React, { useState } from 'react'
-import './ReservaBusqueda.css'
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import './ReservaBusqueda.css';
 import {
     FaSearch,
     FaListUl,
     FaPlus,
     FaExclamationTriangle
-} from 'react-icons/fa'
+} from 'react-icons/fa';
 
-export default function ReservaBusqueda({
+const ReservaBusqueda = ({
     searchTerm,
     setSearchTerm,
     searchType,
@@ -15,7 +16,7 @@ export default function ReservaBusqueda({
     onBuscar,
     onReset,
     onNuevaReserva
-}) {
+}) => {
     const [error, setError] = useState(null)
 
 
@@ -62,6 +63,16 @@ export default function ReservaBusqueda({
         setError(null);
     };
 
+
+    const inputType = searchType === 'fecha' ? 'date' : 'text';
+
+    const inputPlaceholder =
+        searchType === 'id'
+            ? 'Ingrese ID...'
+            : searchType === 'fecha'
+                ? 'YYYY-MM-DD'
+                : 'Ingrese nombre del cliente...';
+
     return (
         <div className="reserva-busqueda-container">
             <div className="busqueda-superior">
@@ -80,12 +91,8 @@ export default function ReservaBusqueda({
                     <div className="input-with-error-container">
                         <input
                             id="reservaSearch"
-                            type={searchType === 'fecha' ? 'date' : 'text'}
-                            placeholder={
-                                searchType === 'id' ? 'Ingrese ID...' :
-                                    searchType === 'fecha' ? 'YYYY-MM-DD' :
-                                        'Ingrese nombre del cliente...'
-                            }
+                            type={inputType}
+                            placeholder={inputPlaceholder}
                             value={searchTerm}
                             onChange={handleInputChange}
                             onKeyPress={handleKeyPress}
@@ -129,4 +136,17 @@ export default function ReservaBusqueda({
             </div>
         </div>
     )
-}
+};
+
+ReservaBusqueda.propTypes = {
+    searchTerm: PropTypes.string.isRequired,
+    setSearchTerm: PropTypes.func.isRequired,
+    searchType: PropTypes.oneOf(['id', 'nombre', 'fecha']).isRequired,
+    setSearchType: PropTypes.func.isRequired,
+    onBuscar: PropTypes.func.isRequired,
+    onReset: PropTypes.func.isRequired,
+    onNuevaReserva: PropTypes.func.isRequired
+};
+
+
+export default ReservaBusqueda;

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
     getAllDiasFeriados,
     getDiasFeriadosByAnio,
@@ -188,7 +189,7 @@ const HolidayConfig = ({ onBack }) => {
                         <h3>{editandoId ? 'Editar Día Feriado' : 'Nuevo Día Feriado'}</h3>
                         <form onSubmit={handleSubmit}>
                             <div className="form-group">
-                                <label>Nombre:</label>
+                                <label htmlFor="nombre">Nombre:</label>
                                 <input
                                     type="text"
                                     name="nombre"
@@ -199,7 +200,7 @@ const HolidayConfig = ({ onBack }) => {
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Fecha:</label>
+                                <label htmlFor="fecha">Fecha:</label>
                                 <input
                                     type="date"
                                     name="fecha"
@@ -284,6 +285,10 @@ const HolidayConfig = ({ onBack }) => {
             </div>
         </div>
     );
+};
+
+HolidayConfig.propTypes = {
+    onBack: PropTypes.func.isRequired
 };
 
 export default HolidayConfig;

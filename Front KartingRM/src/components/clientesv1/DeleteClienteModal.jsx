@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 import { deleteCliente, desactivarCliente, activarCliente } from '../../services/clienteService'
 import { FaTrash, FaUserCheck } from 'react-icons/fa'
 import Notification from '../Notification'
@@ -61,6 +62,15 @@ export default function DeleteClienteModal({ cliente, onClose, onSuccess }) {
         }
     }
 
+    const textoBotonEliminar = loading
+        ? cliente.activo
+            ? 'Desactivando...'
+            : 'Eliminando...'
+        : cliente.activo
+            ? 'Desactivar'
+            : 'Eliminar Permanentemente';
+
+
     return (
         <div className="modal-overlay">
             {notification.show && (
@@ -95,17 +105,23 @@ export default function DeleteClienteModal({ cliente, onClose, onSuccess }) {
                         className="delete-confirm-btn"
                     >
                         <FaTrash className="btn-icon" />
-                        {loading
-                            ? cliente.activo
-                                ? 'Desactivando...'
-                                : 'Eliminando...'
-                            : cliente.activo
-                                ? 'Desactivar'
-                                : 'Eliminar Permanentemente'
-                        }
+                        {textoBotonEliminar}
                     </button>
                 </div>
             </div>
         </div>
     )
+}
+
+
+DeleteClienteModal.propTypes = {
+    cliente: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        nombre: PropTypes.string.isRequired,
+        apellido: PropTypes.string.isRequired,
+        rut: PropTypes.string.isRequired,
+        activo: PropTypes.bool.isRequired
+    }).isRequired,
+    onClose: PropTypes.func.isRequired,
+    onSuccess: PropTypes.func.isRequired
 }

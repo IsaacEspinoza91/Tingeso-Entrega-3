@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { pdf } from '@react-pdf/renderer';
 import ComprobantePDF from './ComprobantePDF';
 import httpClient from '../../../http-common';
-import { FaEnvelope, FaTimes, FaPaperPlane, FaSpinner } from 'react-icons/fa';
+import { FaEnvelope, FaPaperPlane, FaSpinner } from 'react-icons/fa';
 import './EmailForm.css';
 
 const URL = '/api/reservas-comprobantes-service/email/send-pdf';
@@ -111,5 +112,22 @@ const EmailForm = ({ comprobante, onClose }) => {
     </div>
   );
 };
+
+
+
+EmailForm.propTypes = {
+  comprobante: PropTypes.shape({
+    idComprobante: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    reserva: PropTypes.shape({
+      fecha: PropTypes.string.isRequired,
+      horaInicio: PropTypes.string.isRequired,
+      reservante: PropTypes.shape({
+        correo: PropTypes.string
+      }).isRequired
+    }).isRequired
+  }).isRequired,
+  onClose: PropTypes.func.isRequired
+};
+
 
 export default EmailForm;

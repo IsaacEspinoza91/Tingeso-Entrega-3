@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 import { FaTrash } from 'react-icons/fa'
 import { deleteCliente } from '../../../services/clienteService'
 import BaseClienteModal from './BaseClienteModal'
@@ -41,4 +42,16 @@ export default function EliminarClienteModal({ cliente, onClose, onSuccess }) {
             )}
         />
     )
+}
+
+
+EliminarClienteModal.propTypes = {
+    cliente: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        nombre: PropTypes.string.isRequired,
+        apellido: PropTypes.string.isRequired,
+        rut: PropTypes.string.isRequired
+    }).isRequired,
+    onClose: PropTypes.func.isRequired,
+    onSuccess: PropTypes.func.isRequired
 }

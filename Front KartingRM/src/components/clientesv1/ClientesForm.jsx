@@ -62,7 +62,7 @@ const ClientesForm = ({ cliente, onClose, modoCompacto = false }) => {
         }));
 
         // Validación en tiempo real solo para caracteres no numéricos
-        if (/[^0-9]/.test(value.slice(4))) {
+        if (/\D/.test(value.slice(4))) {
             setErrors(prev => ({
                 ...prev,
                 telefono: 'Solo se permiten números'
@@ -280,35 +280,69 @@ const ClientesForm = ({ cliente, onClose, modoCompacto = false }) => {
         }
     };
 
-    const renderInput = (name, label, icon, type = 'text', defaultValue = '', customOnChange = null) => (
-        <div className="form-group" style={{ marginBottom: errors[name] ? '2.5rem' : '1.5rem' }}>
-            <label>
-                {icon && React.cloneElement(icon, { className: 'input-icon' })}
-                {label}
-            </label>
-            <div className="input-with-error-container">
-                <input
-                    type={type}
-                    name={name}
-                    value={formData[name] || defaultValue}
-                    onChange={customOnChange || handleChange}
-                    onBlur={handleBlur}
-                    className={errors[name] ? 'input-error' : ''}
-                    maxLength={
-                        name === 'telefono' ? 12 :
-                            name === 'rut' ? 10 :
-                                undefined
-                    }
-                />
-                {errors[name] && (
-                    <div className="error-tooltip">
-                        <FaExclamationTriangle className="error-icon" />
-                        {errors[name]}
-                    </div>
-                )}
+    const renderInput = (
+        name,
+        label,
+        icon,
+        type = 'text',
+        defaultValue = '',
+        customOnChange = null
+    ) => {
+        const maxInputLength =
+            name === 'telefono' ? 12 : name === 'rut' ? 10 : undefined;
+
+        return (
+            <div
+                className="form-group"
+                style={{ marginBottom: errors[name] ? '2.5rem' : '1.5rem' }}
+            >
+                <label>
+                    {icon && React.cloneElement(icon, { className: 'input-icon' })}
+                    {label}
+                </label>
+                <div className="input-with-error-container">
+                    <input
+                        type={type}
+                        name={name}
+                        value={formData[name] || defaultValue}
+                        onChange={customOnChange || handleChange}
+                        onBlur={handleBlur}
+                        className={errors[name] ? 'input-error' : ''}
+                        maxLength={maxInputLength}
+                    />
+                    {errors[name] && (
+                        <div className="error-tooltip">
+                            <FaExclamationTriangle className="error-icon" />
+                            {errors[name]}
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
-    )
+        );
+    };
+
+
+
+    let contenidoBoton;
+
+    if (loading) {
+        contenidoBoton = 'Procesando...';
+    } else if (cliente) {
+        contenidoBoton = (
+            <>
+                <FaSave className="btn-icon" />
+                Actualizar Cliente
+            </>
+        );
+    } else {
+        contenidoBoton = (
+            <>
+                <FaUserPlus className="btn-icon" />
+                Crear Cliente
+            </>
+        );
+    }
+
 
     return (
         <div className={modoCompacto ? 'clientes-form-compacto' : 'modal-overlay'}>
@@ -348,19 +382,7 @@ const ClientesForm = ({ cliente, onClose, modoCompacto = false }) => {
 
                     <div className="form-actions">
                         <button disabled={loading} className="submit-btn">
-                            {loading ? (
-                                'Procesando...'
-                            ) : cliente ? (
-                                <>
-                                    <FaSave className="btn-icon" />
-                                    Actualizar Cliente
-                                </>
-                            ) : (
-                                <>
-                                    <FaUserPlus className="btn-icon" />
-                                    Crear Cliente
-                                </>
-                            )}
+                            {contenidoBoton}
                         </button>
                     </div>
                 </form>

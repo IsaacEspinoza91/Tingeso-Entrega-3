@@ -1,13 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
     getClientesActivos,
     getClientesInactivos,
     getClienteById,
     getClienteByRut,
-    getClientesByNombreParcial,
-    desactivarCliente,
-    activarCliente
+    getClientesByNombreParcial
 } from '../../services/clienteService'
 import ClientesList from '../../components/clientesv1/ClientesList'
 import ClientesForm from '../../components/clientesv1/ClientesForm'
@@ -26,27 +24,7 @@ export default function ClientesPage() {
     const [hayResultadosFiltrados, setHayResultadosFiltrados] = useState(false)
     const navigate = useNavigate()
 
-    useEffect(() => {
-        fetchClientes()
-    }, [showInactivos])
-
-    const handleToggleStatus = async (cliente) => {
-        setLoading(true);
-        try {
-            if (cliente.activo) {
-                await desactivarCliente(cliente.id);
-            } else {
-                await activarCliente(cliente.id);
-            }
-            fetchClientes();
-        } catch (error) {
-            console.error('Error al cambiar estado del cliente:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchClientes = async () => {
+    const fetchClientes = useCallback(async () => {
         setLoading(true)
         try {
             const data = showInactivos
@@ -59,7 +37,11 @@ export default function ClientesPage() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [showInactivos])
+
+    useEffect(() => {
+        fetchClientes()
+    }, [fetchClientes])
 
     const handleSearch = async () => {
         if (!searchTerm.trim()) {

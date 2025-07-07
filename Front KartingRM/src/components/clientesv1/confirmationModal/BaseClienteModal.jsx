@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 import Notification from '../../notificaciones/Notification'
 import { FaTimes } from 'react-icons/fa'
 import './ConfirmationModal.css'
@@ -45,4 +46,19 @@ export default function BaseClienteModal({
             </div>
         </div>
     )
+}
+
+
+BaseClienteModal.propTypes = {
+    title: PropTypes.string.isRequired,
+    message: PropTypes.string.isRequired,
+    onClose: PropTypes.func.isRequired,
+    actionButton: PropTypes.func.isRequired,
+    secondaryButton: PropTypes.node,
+    notificationProps: PropTypes.shape({
+        autoClose: PropTypes.bool,
+        autoCloseDuration: PropTypes.number,
+        position: PropTypes.string,
+        animation: PropTypes.string
+    })
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import HolidayConfig from './HolidayConfig';
 import GroupDiscounts from './GroupDiscounts';
 import FrequentCustomers from './FrequentCustomers';
@@ -46,6 +47,25 @@ const SettingsMenu = () => {
             {renderView()}
         </div>
     );
+};
+
+
+
+SettingsMenu.propTypes = {
+    // Props para HolidayConfig
+    HolidayConfig: PropTypes.shape({
+        onBack: PropTypes.func.isRequired
+    }),
+
+    // Props para GroupDiscounts
+    GroupDiscounts: PropTypes.shape({
+        onBack: PropTypes.func.isRequired
+    }),
+
+    // Props para FrequentCustomers
+    FrequentCustomers: PropTypes.shape({
+        onBack: PropTypes.func.isRequired
+    })
 };
 
 export default SettingsMenu;

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import DeletePlanModal from './DeletePlanModal'
 
@@ -67,4 +68,21 @@ export default function PlanesList({ planes, loading, onEdit, refreshPlanes }) {
             )}
         </div>
     )
+}
+
+PlanesList.propTypes = {
+    planes: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            descripcion: PropTypes.string.isRequired,
+            duracionTotal: PropTypes.number.isRequired,
+            precioRegular: PropTypes.number.isRequired,
+            precioFinSemana: PropTypes.number.isRequired,
+            precioFeriado: PropTypes.number.isRequired,
+            activo: PropTypes.bool
+        })
+    ).isRequired,
+    loading: PropTypes.bool.isRequired,
+    onEdit: PropTypes.func.isRequired,
+    refreshPlanes: PropTypes.func.isRequired
 }

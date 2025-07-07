@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const ReportesTable = ({ data, tipoReporte }) => {
   if (!data || data.length === 0) {
@@ -50,5 +51,19 @@ const ReportesTable = ({ data, tipoReporte }) => {
     </div>
   );
 };
+
+ReportesTable.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      descripcionPlan: PropTypes.string,
+      rangoPersonas: PropTypes.string,
+      ingresosPorMes: PropTypes.objectOf(PropTypes.number).isRequired,
+      total: PropTypes.number.isRequired,
+      esTotalGeneral: PropTypes.bool
+    })
+  ).isRequired,
+  tipoReporte: PropTypes.oneOf(['vueltas', 'personas']).isRequired
+};
+
 
 export default ReportesTable;

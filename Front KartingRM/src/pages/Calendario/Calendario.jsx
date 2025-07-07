@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { getReservasSemana } from '../../services/calendarioService';
 import { FaArrowLeft, FaArrowRight, FaCalendarDay, FaHome } from 'react-icons/fa';
@@ -20,6 +21,20 @@ const Calendario = () => {
 
 
   useEffect(() => {
+    const cargarReservas = async () => {
+      try {
+        const data = await getReservasSemana(offset);
+        setReservasSemana(data);
+
+        const inicio = new Date(data.fechaInicioSemana + 'T00:00:00Z');
+        const fechas = diasOrden.map((_, i) =>
+          new Date(Date.UTC(inicio.getUTCFullYear(), inicio.getUTCMonth(), inicio.getUTCDate() + i))
+        );
+        setFechasDias(fechas);
+      } catch (error) {
+        console.error('Error al cargar calendario:', error);
+      }
+    };
     cargarReservas();
   }, [offset]);
 
@@ -28,21 +43,6 @@ const Calendario = () => {
     const timer = setTimeout(() => setAnimarEntrada(false), 600);
     return () => clearTimeout(timer);
   }, []);
-
-  const cargarReservas = async () => {
-    try {
-      const data = await getReservasSemana(offset);
-      setReservasSemana(data);
-
-      const inicio = new Date(data.fechaInicioSemana + 'T00:00:00Z');
-      const fechas = diasOrden.map((_, i) =>
-        new Date(Date.UTC(inicio.getUTCFullYear(), inicio.getUTCMonth(), inicio.getUTCDate() + i))
-      );
-      setFechasDias(fechas);
-    } catch (error) {
-      console.error('Error al cargar calendario:', error);
-    }
-  };
 
   const cambiarSemana = (valor) => setOffset((prev) => prev + valor);
   const volverSemanaActual = () => setOffset(0);
@@ -139,6 +139,17 @@ const ReservaBlock = ({ reserva }) => {
       {horaInicio.substring(0, 5)} - {horaFin.substring(0, 5)}
     </div>
   );
+};
+
+
+
+ReservaBlock.propTypes = {
+  reserva: PropTypes.shape({
+    horaInicio: PropTypes.string.isRequired,
+    horaFin: PropTypes.string.isRequired,
+    nombreReservante: PropTypes.string.isRequired,
+    codigoReserva: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+  }).isRequired
 };
 
 export default Calendario;

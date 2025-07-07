@@ -1,4 +1,5 @@
 import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
+import PropTypes from 'prop-types';
 
 // Estilos para el PDF
 const styles = StyleSheet.create({
@@ -223,5 +224,49 @@ const ComprobantePDF = ({ comprobante }) => (
     </Page>
   </Document>
 );
+
+
+ComprobantePDF.propTypes = {
+  comprobante: PropTypes.shape({
+    idComprobante: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    pagado: PropTypes.bool.isRequired,
+    total: PropTypes.number.isRequired,
+    reserva: PropTypes.shape({
+      idReserva: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      fecha: PropTypes.string.isRequired,
+      horaInicio: PropTypes.string.isRequired,
+      totalPersonas: PropTypes.number.isRequired,
+      plan: PropTypes.shape({
+        idPlan: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        descripcion: PropTypes.string.isRequired
+      }).isRequired,
+      reservante: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        nombre: PropTypes.string.isRequired,
+        apellido: PropTypes.string.isRequired,
+        rut: PropTypes.string.isRequired,
+        correo: PropTypes.string,
+        telefono: PropTypes.string
+      }).isRequired
+    }).isRequired,
+    detalles: PropTypes.arrayOf(
+      PropTypes.shape({
+        idDetalle: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        cliente: PropTypes.shape({
+          nombre: PropTypes.string.isRequired,
+          apellido: PropTypes.string.isRequired
+        }).isRequired,
+        tarifa: PropTypes.number.isRequired,
+        porcentajeDescuentoGrupo: PropTypes.number.isRequired,
+        descuentoGrupo: PropTypes.number.isRequired,
+        porcentajeDescuentoEspecial: PropTypes.number.isRequired,
+        descuentoEspecial: PropTypes.number.isRequired,
+        montoFinal: PropTypes.number.isRequired,
+        montoIva: PropTypes.number.isRequired,
+        montoTotal: PropTypes.number.isRequired
+      })
+    ).isRequired
+  }).isRequired
+};
 
 export default ComprobantePDF;

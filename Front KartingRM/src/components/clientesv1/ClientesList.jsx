@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 import { FaEdit, FaTrash, FaUserCheck, FaUserSlash } from 'react-icons/fa'
 import DesactivarClienteModal from './confirmationModal/DesactivarClienteModal'
 import EliminarClienteModal from './confirmationModal/EliminarClienteModal'
@@ -154,4 +155,23 @@ export default function ClientesList({
             )}
         </div>
     )
+}
+
+
+ClientesList.propTypes = {
+    clientes: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            nombre: PropTypes.string.isRequired,
+            apellido: PropTypes.string.isRequired,
+            rut: PropTypes.string.isRequired,
+            correo: PropTypes.string,
+            telefono: PropTypes.string,
+            fechaNacimiento: PropTypes.string,
+            activo: PropTypes.bool.isRequired
+        })
+    ).isRequired,
+    loading: PropTypes.bool.isRequired,
+    onEdit: PropTypes.func.isRequired,
+    refreshClientes: PropTypes.func.isRequired
 }

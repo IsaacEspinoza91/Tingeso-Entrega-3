@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { FaFileAlt, FaCalendarAlt, FaFileContract } from 'react-icons/fa';
 
 const meses = [
@@ -66,7 +67,7 @@ const ReportesForm = ({ onGenerarReporte, loading }) => {
 
           <div className="date-range">
             <div className="form-group">
-              <label>Fecha Inicio:</label>
+              <label htmlFor="mesInicio">Fecha Inicio:</label>
               <div className="date-inputs">
                 <select
                   name="mesInicio"
@@ -91,7 +92,7 @@ const ReportesForm = ({ onGenerarReporte, loading }) => {
             </div>
 
             <div className="form-group">
-              <label>Fecha Fin:</label>
+              <label htmlFor="mesFin">Fecha Fin:</label>
               <div className="date-inputs">
                 <select
                   name="mesFin"
@@ -129,6 +130,12 @@ const ReportesForm = ({ onGenerarReporte, loading }) => {
       </form>
     </div>
   );
+};
+
+
+ReportesForm.propTypes = {
+  onGenerarReporte: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired
 };
 
 export default ReportesForm;

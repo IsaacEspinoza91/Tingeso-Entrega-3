@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
     getAllGroupDiscounts,
     createGroupDiscount,
@@ -136,7 +137,7 @@ const GroupDiscounts = ({ onBack }) => {
                         <h3>{editingId ? 'Editar Descuento' : 'Nuevo Descuento'}</h3>
                         <form onSubmit={handleSubmit}>
                             <div className="form-group">
-                                <label>Mínimo de personas:</label>
+                                <label htmlFor="minPersonas">Mínimo de personas:</label>
                                 <input
                                     type="number"
                                     name="minPersonas"
@@ -148,7 +149,7 @@ const GroupDiscounts = ({ onBack }) => {
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Máximo de personas:</label>
+                                <label htmlFor="maxPersonas">Máximo de personas:</label>
                                 <input
                                     type="number"
                                     name="maxPersonas"
@@ -160,7 +161,7 @@ const GroupDiscounts = ({ onBack }) => {
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Porcentaje de descuento:</label>
+                                <label htmlFor="porcentajeDescuento">Porcentaje de descuento:</label>
                                 <div className="percentage-input">
                                     <input
                                         type="number"
@@ -247,6 +248,10 @@ const GroupDiscounts = ({ onBack }) => {
             </div>
         </div>
     );
+};
+
+GroupDiscounts.propTypes = {
+    onBack: PropTypes.func.isRequired
 };
 
 export default GroupDiscounts;

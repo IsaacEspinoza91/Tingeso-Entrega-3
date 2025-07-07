@@ -1,7 +1,8 @@
-import { useState } from 'react'
-import { deleteReserva } from '../../services/reservaService'
-import { FaTrash, FaTimes } from 'react-icons/fa'
-import Notification from '../notificaciones/Notification'
+import { useState } from 'react';
+import PropTypes from 'prop-types';
+import { deleteReserva } from '../../services/reservaService';
+import { FaTrash } from 'react-icons/fa';
+import Notification from '../notificaciones/Notification';
 
 export default function DeleteReservaModal({ reserva, onClose, onSuccess }) {
     const [loading, setLoading] = useState(false)
@@ -62,3 +63,17 @@ export default function DeleteReservaModal({ reserva, onClose, onSuccess }) {
         </div>
     )
 }
+
+DeleteReservaModal.propTypes = {
+    reserva: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        // Puedes agregar más propiedades si son necesarias para mostrar en el modal
+        fecha: PropTypes.string,
+        cliente: PropTypes.shape({
+            nombre: PropTypes.string,
+            apellido: PropTypes.string
+        })
+    }).isRequired,
+    onClose: PropTypes.func.isRequired,
+    onSuccess: PropTypes.func.isRequired
+};

@@ -14,7 +14,6 @@ export default function PlanesPage() {
     const [currentPlan, setCurrentPlan] = useState(null)
     const [inputError, setInputError] = useState(false);
     const navigate = useNavigate();
-    const [lastKeyPressed, setLastKeyPressed] = useState('');
 
 
 
@@ -35,8 +34,7 @@ export default function PlanesPage() {
     }
 
     const handleKeyDown = (e) => {
-        setLastKeyPressed(e.key);
-        if (!/[0-9]|Backspace|Delete|ArrowLeft|ArrowRight|Tab|Control|Meta|Shift|Alt/.test(e.key)) {
+        if (!/\D|Backspace|Delete|ArrowLeft|ArrowRight|Tab|Control|Meta|Shift|Alt/.test(e.key)) {
             setInputError(true);
             e.preventDefault();
         }
@@ -61,12 +59,6 @@ export default function PlanesPage() {
             setLoading(false)
         }
     }
-
-    const validateNumberInput = (value) => {
-        // Permite solo números y elimina ceros a la izquierda
-        const numericValue = value.replace(/[^0-9]/g, '').replace(/^0+/, '');
-        return numericValue === '' ? '' : numericValue;
-    };
 
     const handleEdit = (plan) => {
         setCurrentPlan(plan)
@@ -105,7 +97,7 @@ export default function PlanesPage() {
                                     placeholder="Ingrese ID..."
                                     value={searchId}
                                     onChange={(e) => {
-                                        const validatedValue = e.target.value.replace(/[^0-9]/g, '');
+                                        const validatedValue = e.target.value.replace(/\D/g, '');
                                         setSearchId(validatedValue);
                                         setInputError(false);
                                     }}

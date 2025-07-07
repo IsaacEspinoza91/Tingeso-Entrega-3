@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import './TablaReservas.css';
-import DeleteReservaModal from './DeleteReservaModal'
+import DeleteReservaModal from './DeleteReservaModal';
 import { FaEye, FaEdit, FaTrash, FaCalendarTimes } from 'react-icons/fa';
 
-const TablaReservas = ({ reservas, onSeleccionar, onEditar, refreshReservas }) => {
+const TablaReservas = ({ reservas, onSeleccionar, onEditar, refreshReservas, loading }) => {
     const obtenerClaseEstado = (estado) => {
         switch (estado) {
             case 'confirmada':
@@ -18,11 +19,13 @@ const TablaReservas = ({ reservas, onSeleccionar, onEditar, refreshReservas }) =
     };
     const [reservaToDelete, setReservaToDelete] = useState(null);
 
+    if (loading) return <div className="loading-message">Cargando reservas...</div>
+
     if (reservas.length === 0) {
         return (
             <div className="sin-resultados-mensaje">
                 <FaCalendarTimes className="mensaje-icono" />
-                <p>No se encontraron reservas con los criterios de búsqueda</p>
+                <p>No se encontraron reservas</p>
             </div>
         );
     }
@@ -96,6 +99,32 @@ const TablaReservas = ({ reservas, onSeleccionar, onEditar, refreshReservas }) =
             )}
         </div>
     );
+};
+
+
+TablaReservas.propTypes = {
+    reservas: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            fecha: PropTypes.string.isRequired,
+            horaInicio: PropTypes.string.isRequired,
+            estado: PropTypes.oneOf(['confirmada', 'cancelada', 'completada']).isRequired,
+            totalPersonas: PropTypes.number.isRequired,
+            plan: PropTypes.shape({
+                id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+                descripcion: PropTypes.string.isRequired
+            }).isRequired,
+            cliente: PropTypes.shape({
+                id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+                nombre: PropTypes.string.isRequired,
+                apellido: PropTypes.string.isRequired
+            }).isRequired
+        })
+    ).isRequired,
+    onSeleccionar: PropTypes.func.isRequired,
+    loading: PropTypes.bool.isRequired,
+    onEditar: PropTypes.func.isRequired,
+    refreshReservas: PropTypes.func.isRequired
 };
 
 export default TablaReservas;

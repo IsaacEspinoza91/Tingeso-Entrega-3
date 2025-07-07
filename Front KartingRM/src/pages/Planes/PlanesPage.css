@@ -3,7 +3,6 @@
     width: 100%;
     padding: 2rem;
     background-color: var(--background-light);
-    /*background-image: linear-gradient(to bottom, rgba(240, 248, 255, 0.8), rgba(240, 248, 255, 0.5)), url('../../assets/images/background-home.jpg');*/
     background-image: linear-gradient(to bottom, rgba(240, 248, 255, 0.8), rgba(240, 248, 255, 0.5));
     background-size: cover;
 }
@@ -55,17 +54,13 @@
 .search-btn {
     background-color: #00b4d8;
     color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .search-btn:hover {
     background-color: #0096c7;
-}
-
-
-.search-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
 .search-bar button {
@@ -216,7 +211,6 @@
     white-space: nowrap;
 }
 
-/* Triángulo indicador */
 .error-tooltip::before {
     content: '';
     position: absolute;
@@ -237,7 +231,6 @@
     border-color: transparent transparent #fff transparent;
 }
 
-/* Contexto de apilamiento para la tabla */
 .planes-table-container {
     position: relative;
     z-index: 1;
@@ -259,6 +252,7 @@
     position: sticky;
     top: 0;
     z-index: 10;
+    background-color: #00b4d8;
 }
 
 .planes-table th,
@@ -278,11 +272,6 @@
     background-color: #f8f9fa;
 }
 
-.planes-table thead {
-    background-color: #00b4d8;
-    position: sticky;
-    top: 0;
-}
 
 .actions-cell {
     display: flex;
@@ -496,21 +485,6 @@ input:invalid+.input-hint {
     display: block;
 }
 
-.error-feedback {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    margin-top: 4px;
-    color: #e74c3c;
-    font-size: 0.8rem;
-    background-color: #fdeded;
-    padding: 4px 8px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    animation: shake 0.5s ease;
-}
 
 .error-icon {
     font-size: 0.9rem;
