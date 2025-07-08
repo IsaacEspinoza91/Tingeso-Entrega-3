@@ -84,7 +84,7 @@ export default function Home() {
       question: "¿Quieres crear una nueva reserva?",
       icon: <FaCalendarAlt className="task-icon" />,
       actions: [
-        { label: "Crear nueva reserva", icon: <FaPlus />, action: () => navigate('/reservas') }
+        { label: "Crear nueva reserva", icon: <FaPlus />, action: () => navigate('/reservasv1') }
       ]
     },
     {
@@ -92,13 +92,6 @@ export default function Home() {
       icon: <FaUsers className="task-icon" />,
       actions: [
         { label: "Crear nuevo cliente", icon: <FaPlus />, action: () => navigate('/clientes') }
-      ]
-    },
-    {
-      question: "¿Necesitas generar un comprobante?",
-      icon: <FaFileInvoice className="task-icon" />,
-      actions: [
-        { label: "Generar comprobante", icon: <FaFileInvoice />, action: () => navigate('/comprobantes') }
       ]
     },
     {

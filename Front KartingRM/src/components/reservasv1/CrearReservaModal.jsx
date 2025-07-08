@@ -514,7 +514,7 @@ const CrearReservaModal = ({ onClose, onReservaCreada, reserva = null }) => {
                         classNamePrefix="Select"
                     />
                     <button className="boton-nuevo-cliente" onClick={() => setShowNuevoCliente(true)}>
-                        <FaUserPlus /> Nuevo Cliente
+                        <FaUserPlus /> Nuevo Cliente o integrante
                     </button>
                     {showNuevoCliente && (
                         <div style={{ marginTop: '2rem' }}>
