@@ -15,8 +15,6 @@ export default function PlanesPage() {
     const [inputError, setInputError] = useState(false);
     const navigate = useNavigate();
 
-
-
     useEffect(() => {
         fetchPlanes()
     }, [])
@@ -32,13 +30,6 @@ export default function PlanesPage() {
             setLoading(false)
         }
     }
-
-    const handleKeyDown = (e) => {
-        if (!/\D|Backspace|Delete|ArrowLeft|ArrowRight|Tab|Control|Meta|Shift|Alt/.test(e.key)) {
-            setInputError(true);
-            e.preventDefault();
-        }
-    };
 
     const handleSearch = async () => {
         if (!searchId) return fetchPlanes()
@@ -101,7 +92,7 @@ export default function PlanesPage() {
                                         setSearchId(validatedValue);
                                         setInputError(false);
                                     }}
-                                    onKeyDown={handleKeyDown}
+                                    inputMode="numeric"
                                 />
                                 {inputError && (
                                     <div className="error-tooltip">
