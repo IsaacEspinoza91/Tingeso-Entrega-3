@@ -12,7 +12,7 @@ import java.util.List;
 @RequestMapping("/api/reportes-service/segun-plan")
 public class ReporteIngresosPlanController {
 
-    private ReporteIngresosPlanService reporteService;
+    private final ReporteIngresosPlanService reporteService;
     public ReporteIngresosPlanController(ReporteIngresosPlanService reporteService) {
         this.reporteService = reporteService;
     }

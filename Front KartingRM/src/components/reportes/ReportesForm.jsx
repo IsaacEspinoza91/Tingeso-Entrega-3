@@ -26,17 +26,40 @@ const ReportesForm = ({ onGenerarReporte, loading }) => {
     mesFin: 12,
     anioFin: currentYear
   });
+  const [errorFecha, setErrorFecha] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
+    const newFormData = {
       ...formData,
       [name]: name.includes('anio') ? parseInt(value) : value
-    });
+    };
+
+    setFormData(newFormData);
+
+    // Validar fechas cada vez que cambian
+    const fechaInicio = new Date(newFormData.anioInicio, newFormData.mesInicio - 1);
+    const fechaFin = new Date(newFormData.anioFin, newFormData.mesFin - 1);
+
+    if (fechaInicio > fechaFin) {
+      setErrorFecha('La fecha de inicio no puede ser posterior a la fecha de fin');
+    } else {
+      setErrorFecha('');
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validar fechas antes de enviar
+    const fechaInicio = new Date(formData.anioInicio, formData.mesInicio - 1);
+    const fechaFin = new Date(formData.anioFin, formData.mesFin - 1);
+
+    if (fechaInicio > fechaFin) {
+      setErrorFecha('La fecha de inicio no puede ser posterior a la fecha de fin');
+      return;
+    }
+
     onGenerarReporte(formData);
   };
 
@@ -54,8 +77,8 @@ const ReportesForm = ({ onGenerarReporte, loading }) => {
             onChange={handleChange}
             className="form-control"
           >
-            <option value="vueltas">Ingresos por vueltas</option>
-            <option value="personas">Ingresos por personas</option>
+            <option value="vueltas">Ingresos por número de vueltas o tiempo máximo</option>
+            <option value="personas">Ingresos por número de personas</option>
           </select>
         </div>
 
@@ -85,7 +108,7 @@ const ReportesForm = ({ onGenerarReporte, loading }) => {
                   value={formData.anioInicio}
                   onChange={handleChange}
                   min="2020"
-                  max="2100"
+                  max="2050"
                   className="form-control"
                 />
               </div>
@@ -110,19 +133,25 @@ const ReportesForm = ({ onGenerarReporte, loading }) => {
                   value={formData.anioFin}
                   onChange={handleChange}
                   min="2000"
-                  max="2100"
+                  max="2050"
                   className="form-control"
                 />
               </div>
             </div>
           </div>
+
+          {errorFecha && (
+            <div className="error-message" style={{ color: 'red', marginTop: '10px' }}>
+              {errorFecha}
+            </div>
+          )}
         </div>
 
         <div className="form-actions">
           <button
             type="submit"
             className="submit-btn"
-            disabled={loading}
+            disabled={loading || errorFecha}
           >
             <FaFileContract /> {loading ? 'Generando...' : 'Generar Reporte'}
           </button>
@@ -131,7 +160,6 @@ const ReportesForm = ({ onGenerarReporte, loading }) => {
     </div>
   );
 };
-
 
 ReportesForm.propTypes = {
   onGenerarReporte: PropTypes.func.isRequired,

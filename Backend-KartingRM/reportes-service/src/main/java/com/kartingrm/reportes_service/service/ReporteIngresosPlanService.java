@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Service
 public class ReporteIngresosPlanService extends ReportesIngresosServiceBase {
 
-    private ReporteIngresosPlanRepository reportesPlanRepository;
+    private final ReporteIngresosPlanRepository reportesPlanRepository;
     public ReporteIngresosPlanService(ReporteIngresosPlanRepository reportesPlanRepository) {
         this.reportesPlanRepository = reportesPlanRepository;
     }
